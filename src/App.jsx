@@ -1,63 +1,31 @@
-import { useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-  useLocation,
-} from 'react-router-dom';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
-import Step1 from './components/Step1';
-import Step2 from './components/Step2';
-import Step3 from './components/Step3';
+// App.jsx
+import React, { useState } from 'react';
+import Login from './pages/Login'; // Adjust the import path as necessary
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Ensure Routes is imported here
+import Dashboard from './pages/Dashboard'; // Adjust the import path as necessary
+import Bookings from './pages/Bookings'; // Adjust the import path as necessary
+import SellCar from './pages/SellCar'; // Adjust the import path as necessary
+import Settings from './pages/Settings'; // Adjust the import path as necessary
+import Layout from './components/Layout/Layout'; // Adjust the import path as necessary
+import "./styles/App.css"
 
-function NavigationButtons() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const currentStep = parseInt(location.pathname.replace('/step', '')) || 1;
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const handleNext = () => {
-    if (currentStep < 3) {
-      navigate(`/step${currentStep + 1}`);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      navigate(`/step${currentStep - 1}`);
-    }
+  const handleLogin = () => {
+    setIsLoggedIn(true);
   };
 
   return (
-    <div>
-      <button onClick={handlePrevious} disabled={currentStep === 1}>
-        Previous
-      </button>
-      <button onClick={handleNext} disabled={currentStep === 3}>
-        Next
-      </button>
-    </div>
+    <Routes>
+      <Route path="/login" element={<Login onLogin={handleLogin} />} />
+      <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+      <Route path="/dashboard" element={isLoggedIn ? <Layout><Dashboard /></Layout> : <Navigate to="/login" />} />
+      <Route path="/bookings" element={isLoggedIn ? <Layout><Bookings /></Layout> : <Navigate to="/login" />} />
+      <Route path="/sell-car" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
+      <Route path="/settings" element={isLoggedIn ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
+    </Routes>
   );
-}
-
-function App() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <Router>
-
-
-      <Routes>
-        <Route path="/" element={<Step1 />} />
-        <Route path="/step1" element={<Step1 />} />
-        <Route path="/step2" element={<Step2 />} />
-        <Route path="/step3" element={<Step3 />} />
-      </Routes>
-      <NavigationButtons />
-    </Router>
-  );
-}
+};
 
 export default App;

@@ -1,0 +1,263 @@
+
+.login-main{
+    display: flex;
+  }
+  
+  .login-left {
+    width: 50%;
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #181b3a;
+    display: flex;
+    color: white;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .login-left-container{
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  
+  }
+  
+  .login-left-image img {
+    width: 60%;
+    margin-bottom: 20px;
+    border-radius: 20px;
+  }
+  
+  .login-left p {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 17px;
+  }
+
+   
+  .guest-button span {
+
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+   
+  }
+  
+  .guest-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #fbfdfc;
+    border: none;
+    border-radius: 40px;
+    color: rgb(0, 3, 2);
+    cursor: pointer;
+    font-size: 16px;
+    width: 180px;
+
+  }
+
+  .info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    bottom: 20px; 
+    left: 50%; 
+    gap: 20px;
+  }
+  
+  .info a {
+    color: white;
+    text-decoration: none;
+    margin: 10px 0;
+  }
+  
+  .info a:hover {
+    text-decoration: underline;
+  }
+  
+  
+  .guest-button:hover {
+    background-color: #00b381;
+  }
+  
+  
+  .login-right{
+    height: 100vh;
+    flex-grow: 1;
+  
+  
+  }
+  
+  .login-right-container{
+    height: 100%;
+    width: 80%;
+    margin: 0 auto;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  
+  }
+  
+  .login-right form{
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .login-logo{
+    align-self: center;
+    padding-top: 50px;
+  }
+  .login-logo h2 {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    color: var(--heading-color);
+  }
+  
+  .login-logo h2 span {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary-color);
+    border-radius: 50%;
+  }
+    
+  .login-center{
+    margin: auto 20px ;
+    color: #E9E9E9;
+  }
+  
+  .login-logo img{
+    width: 50px;
+  }
+  
+  .login-center h2{
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+  }
+  
+  .login-center{
+    text-align: center;
+  }
+  
+  .login-center p{
+    font-weight: 400;
+    font-size: 2rem;
+    margin-bottom: 40px;
+  }
+  
+  form input[type='email'],
+  form input[type='password'],
+  form input[type='text']
+   {
+    width: 100%;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 0px;
+    border-radius: 20px;
+    border-bottom: 1px solid black;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  form button[type='button'] {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 30px;
+    font-weight: 600;
+  }
+  form button[type='submit'] {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 30px;
+    font-weight: 600;
+    color: white;
+    background-color: #01d293;
+  }
+  
+  .login-center-options{
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .remember-div{
+    display:flex;
+    align-items: center;
+    column-gap: 5px;
+  }
+  
+  .remember-div label{
+    font-size: 1.0rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 2px;
+  }
+  
+  .forgot-pass-link{
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.0rem;
+  }
+  
+  .forgot-pass-link:hover{
+    text-decoration: underline;
+  }
+  
+  .login-center-buttons{
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+  }
+  
+  .login-center-buttons button:nth-child(1):hover{
+    color: #333;
+    background-color: white;
+  }
+  
+  .login-center-buttons button:nth-child(2){
+    background-color: #F0F0F0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 10px;
+  }
+  
+  .login-center-buttons button:nth-child(2) img{
+    width: 30px;
+  }
+  
+  .login-center-buttons button:nth-child(2):hover{
+    background-color: #c4c4c457;
+  }
+  
+  .login-bottom-p{
+    text-align: center;
+    font-size: 1.3rem;
+    padding-bottom: 40px;
+    color: #F0F0F0;
+  }
+  
+  .login-bottom-p a{
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .login-bottom-p a:hover{
+    text-decoration: underline;
+  }
