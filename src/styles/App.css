@@ -21,6 +21,10 @@
   margin: 0;
   box-sizing: border-box;
 }
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
 
 body {
   font-family: "DM Sans", sans-serif;
