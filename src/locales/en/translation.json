@@ -1,9 +1,10 @@
 {
-    "welcome_message": "Welcome to our car rental shop. We offer a wide range of vehicles to meet all your transportation needs. Enjoy your ride with UberX.",
+    "name": "Al-Asour Car Rental Company",
+    "welcome_message": "Welcome to our car rental shop. We offer a wide range of vehicles to meet all your transportation needs.",
     "go_as_guest": "Go As Guest",
     "about_us": "About Us",
     "contact": "Contact",
-    "welcome_back": "Welcome back!",
+    "welcome_back": "Welcome Dear!",
     "email": "Email",
     "password": "Password",
     "remember_me": "Remember me",

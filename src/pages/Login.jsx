@@ -15,10 +15,12 @@ const Login = ({ onLogin }) => {
     navigate('/dashboard');
   };
 
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-    localStorage.setItem('language', lng);
+  const toggleLanguage = () => {
+    const newLanguage = i18n.language === 'en' ? 'ar' : 'en';
+    i18n.changeLanguage(newLanguage);
+    localStorage.setItem('language', newLanguage);
   };
+
   React.useEffect(() => {
     const storedLanguage = localStorage.getItem('language');
     if (storedLanguage) {
@@ -29,27 +31,40 @@ const Login = ({ onLogin }) => {
   return (
     <div className={`login-main ${i18n.language === 'ar' ? 'rtl' : ''}`}>
       <div className="login-left">
-        <div className="login-left-container">
-          <div className="login-center">
-            <p>{t('welcome_message')}</p>
-            <div className="login-left-image">
-              <img src={Image} alt=""/>
-            </div>
-            <button className="guest-button" onClick={handleLoginClick}>
-              {t('go_as_guest')}<span><i className="ri-glasses-2-line"></i></span>
-            </button>
-          </div>
-          <div className="info">
-            <a href="#">{t('about_us')}</a>
-            <a href="#">{t('contact')}</a>
-          </div>
+        <div className="language-switcher">
+          <button onClick={toggleLanguage}>
+            {i18n.language === 'en' ? 'العربية' : 'EN'}
+          </button>
         </div>
+        <div className="login-left-container">
+            <div className="login-center">
+              <p>{t('welcome_message')}</p>
+              <div className="login-left-image">
+                <img src={Image} alt=""/>
+              </div>
+              <button className="guest-button" onClick={handleLoginClick}>
+                {t('go_as_guest')}<span><i className="ri-glasses-2-line"></i></span>
+              </button>
+            </div>
+            <div className="info">
+              <a href="#">{t('about_us')}</a>
+              <a href="#">{t('contact')}</a>
+            </div>
+          </div>
       </div>
       <div className="login-right">
         <div className="login-right-container">
-          <div className="login-logo">
-            <h2><span><i className="ri-taxi-line"></i></span>{" "}UberX</h2>
+          <div className="language-switcher-mobile">
+          <button onClick={toggleLanguage}>
+            {i18n.language === 'en' ? 'العربية' : 'EN'}
+          </button>
+        </div>
+        <div className="login-logo">
+          <h2>{t('name')}</h2>
+          <div className={`image-logo ${i18n.language === 'ar' ? 'rtl' : ''}`}>
+            <img src="src/assets/images/logo.png" alt="Logo" />
           </div>
+        </div>
           <div className="login-center">
             <h2>{t('welcome_back')}</h2>
             <form onSubmit={handleLoginClick}>
@@ -72,11 +87,13 @@ const Login = ({ onLogin }) => {
             </form>
           </div>
           <p className="login-bottom-p">{t('no_account')} <a href="#">{t('sign_up')}</a></p>
+          <div className="guest-button-mobile">
+          <button className="guest-button" onClick={handleLoginClick}>
+            {t('go_as_guest')}<span><i className="ri-glasses-2-line"></i></span>
+          </button>
         </div>
-      </div>
-      <div className="language-switcher">
-        <button onClick={() => changeLanguage('en')}>English</button>
-        <button onClick={() => changeLanguage('ar')}>العربية</button>
+        </div>
+        
       </div>
     </div>
   );

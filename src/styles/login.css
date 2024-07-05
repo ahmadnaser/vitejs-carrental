@@ -1,22 +1,23 @@
 
-.login-main{
-    display: flex;
-  }
   
+  .login-main{
+      display: flex;
+    }
+    
   .login-left {
     width: 50%;
     flex-grow: 1;
+    height: 100vh;
     flex-direction: column;
     justify-content: center;
     background-color: #181b3a;
-    display: flex;
     color: white;
     align-items: center;
     padding: 20px;
   }
   
   .login-left-container{
-    height: 100%;
+    height: 95%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -33,7 +34,11 @@
   .login-left p {
     margin-bottom: 20px;
     text-align: center;
-    font-size: 17px;
+    /* font-size: 17px; */
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-weight: 300;
+    font-style: normal;
   }
 
    
@@ -88,8 +93,6 @@
   .login-right{
     height: 100vh;
     flex-grow: 1;
-  
-  
   }
   
   .login-right-container{
@@ -108,27 +111,41 @@
     flex-direction: column;
   }
   
-  .login-logo{
-    align-self: center;
-    padding-top: 50px;
-  }
-  .login-logo h2 {
-    display: flex;
-    align-items: center;
-    column-gap: 0.5rem;
-    color: var(--heading-color);
-  }
+.login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 50px;
   
-  .login-logo h2 span {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--secondary-color);
-    border-radius: 50%;
-  }
-    
+}
+
+.login-logo h2 {
+  font-size: large;
+  display: flex;
+  margin: 10px;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  color: var(--heading-color);
+}
+
+.image-logo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary-color);
+  border-radius: 50%;
+  overflow: hidden; 
+  border: #00b381 2px solid;
+}
+
+.image-logo img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover; 
+}
   .login-center{
     margin: auto 20px ;
     color: #E9E9E9;
@@ -144,6 +161,9 @@
   }
   
   .login-center{
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-weight: 300;
+    font-style: normal;
     text-align: center;
   }
   
@@ -157,6 +177,9 @@
   form input[type='password'],
   form input[type='text']
    {
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-weight: 300;
+    font-style: normal;
     width: 100%;
     padding: 16px;
     margin-bottom: 16px;
@@ -168,21 +191,24 @@
   }
   
   form button[type='button'] {
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-weight: 500;
+    font-style: normal;
     width: 100%;
     padding: 16px;
     border: none;
     border-radius: 4px;
-    font-size: 16px;
     cursor: pointer;
     border-radius: 30px;
-    font-weight: 600;
   }
   form button[type='submit'] {
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-weight: 500;
+    font-style: normal;
     width: 100%;
     padding: 16px;
     border: none;
     border-radius: 4px;
-    font-size: 16px;
     cursor: pointer;
     border-radius: 30px;
     font-weight: 600;
@@ -247,6 +273,9 @@
   }
   
   .login-bottom-p{
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-weight: 300;
+    font-style: normal;
     text-align: center;
     font-size: 1.3rem;
     padding-bottom: 40px;
@@ -260,4 +289,150 @@
   
   .login-bottom-p a:hover{
     text-decoration: underline;
+  }
+
+  .language-switcher-mobile{
+    display: none;
+  }
+  .guest-button-mobile{
+    display: none;
+  }
+
+
+
+  @media (max-width: 768px) {
+    .login-left, .login-right {
+      padding: 15px; 
+    }
+    .login-left{
+      display: none;
+    }
+    .language-switcher-mobile{
+      display: block;
+      text-align: right;
+      margin-top: 10px;
+    }
+    
+    .language-switcher-mobile button {
+      padding:none;
+      margin: none;
+      font-size: 11px;
+      cursor: pointer;
+      border: none;
+      background-color: transparent;
+      color: #fff;
+      outline: none;
+      transition: color 0.3s ease;
+    }
+  
+    .guest-button-mobile button {
+      padding:none;
+      margin: none;
+      cursor: pointer;
+      border: none;
+      background-color: transparent;
+      color: #fff;
+      outline: none;
+      transition: color 0.3s ease;
+    }
+  
+    
+  
+    .guest-button-mobile  span {
+      padding: 10px;
+      align-items: center;
+      justify-content: center;
+     
+    }
+    .guest-button-mobile  {
+      display: block;
+      text-align: center;
+      margin-top: 0px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 16px;
+  
+    }
+    .guest-button-mobile :hover {
+      background-color: #00b381;
+    }
+    
+    .language-switcher-mobile button:hover{
+      color: #00b381;
+    }
+  }
+  
+  
+  @media (max-width: 480px) {
+    .login-left, .login-right {
+      padding: 10px;
+    }
+    .login-left{
+      display: none;
+    }
+  
+    .login-center input {
+      font-size: 14px; 
+    }
+    .login-center h2 {
+      font-size: 20px; 
+    }
+    .login-center-buttons {
+      flex-direction: column; 
+    }
+    .language-switcher-mobile{
+      text-align: right;
+      margin-top: 10px;
+    }
+    
+    .language-switcher-mobile button {
+      padding:none;
+      margin: none;
+      font-size: 11px;
+      cursor: pointer;
+      border: none;
+      background-color: transparent;
+      color: #fff;
+      outline: none;
+      transition: color 0.3s ease;
+    }
+  
+    .guest-button-mobile button {
+      padding:none;
+      margin: none;
+      cursor: pointer;
+      border: none;
+      background-color: transparent;
+      color: #fff;
+      outline: none;
+      transition: color 0.3s ease;
+    }
+  
+    
+  
+    .guest-button-mobile  span {
+      padding: 10px;
+      align-items: center;
+      justify-content: center;
+     
+    }
+    
+    .guest-button-mobile  {
+      text-align: center;
+      margin-top: 0px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 16px;
+  
+    }
+    .guest-button-mobile :hover {
+      background-color: #00b381;
+    }
+    
+    .language-switcher-mobile button:hover{
+      color: #00b381;
+    }
+
   }
