@@ -1,12 +1,12 @@
-// App.jsx
+
 import React, { useState } from 'react';
-import Login from './pages/Login'; // Adjust the import path as necessary
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Ensure Routes is imported here
-import Dashboard from './pages/Dashboard'; // Adjust the import path as necessary
-import Bookings from './pages/Bookings'; // Adjust the import path as necessary
-import SellCar from './pages/SellCar'; // Adjust the import path as necessary
-import Settings from './pages/Settings'; // Adjust the import path as necessary
-import Layout from './components/Layout/Layout'; // Adjust the import path as necessary
+import Login from './pages/Login'; 
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; 
+import Dashboard from './pages/Dashboard'; 
+import Bookings from './pages/Bookings'; 
+import SellCar from './pages/SellCar'; 
+import Settings from './pages/Settings'; 
+import Layout from './components/Layout/Layout';  
 import "./styles/App.css"
 
 const App = () => {

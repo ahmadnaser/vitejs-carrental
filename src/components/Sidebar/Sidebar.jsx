@@ -15,7 +15,6 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    // Add your logout logic here if necessary
     navigate("/login");
   };
 
@@ -75,5 +74,7 @@ const Sidebar = () => {
     </>
   );
 };
+
+
 
 export default Sidebar;
