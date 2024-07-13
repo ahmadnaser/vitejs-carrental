@@ -1,11 +1,9 @@
 import React from "react";
-import "../styles/dashboard.css";
 import SingleCard from "../components/reuseable/SingleCard";
 
 import MileChart from "../charts/MileCharts";
 import CarStatsChart from "../charts/CarStatsChart";
 import RecommendCarCard from "../components/UI/RecommendCarCard";
-
 import recommendCarsData from "../assets/dummy-data/recommendCars";
 
 const carObj = {
@@ -34,28 +32,28 @@ const distanceObj = {
 
 const Dashboard = () => {
   return (
-    <div className="dashboard">
-      <div className="dashboard__wrapper">
-        <div className="dashboard__cards">
+    <div className="px-8 bg-bodyBg-color text-heading-color">
+      <div className="pt-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <SingleCard item={carObj} />
           <SingleCard item={tripObj} />
           <SingleCard item={clientObj} />
           <SingleCard item={distanceObj} />
         </div>
 
-        <div className="statics">
-          <div className="stats">
-            <h3 className="stats__title">Miles Statistics</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+          <div className="bg-primary-color p-8 rounded-md h-80 pb-12">
+            <h3 className="text-white text-lg font-medium mb-5">Miles Statistics</h3>
             <MileChart />
           </div>
 
-          <div className="stats">
-            <h3 className="stats__title">Car Statistics</h3>
+          <div className="bg-primary-color p-8 rounded-md h-80 pb-12">
+            <h3 className="text-white text-lg font-medium mb-5">Car Statistics</h3>
             <CarStatsChart />
           </div>
         </div>
 
-        <div className="recommend__cars-wrapper">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 pb-12">
           {recommendCarsData.map((item) => (
             <RecommendCarCard item={item} key={item.id} />
           ))}

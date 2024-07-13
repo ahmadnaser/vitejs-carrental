@@ -1,27 +1,21 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import navLinks from "../../assets/dummy-data/navLinks";
-import "./Sidebar.css";
 import { useTranslation } from 'react-i18next';
-import closeIcon from "../../assets/images/Sidebar.png";
 
-const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
+const Sidebar = ({ isSidebarOpen }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  const [expandedMenu, setExpandedMenu] = useState(null);
 
   const handleLogout = () => {
     navigate("/login");
   };
 
-  const toggleLanguage = () => {
-    const newLanguage = i18n.language === 'en' ? 'ar' : 'en';
-    i18n.changeLanguage(newLanguage);
-    localStorage.setItem('language', newLanguage);
+  const toggleSubmenu = (index, hasSubmenu) => {
+    if (hasSubmenu) {
+      setExpandedMenu(expandedMenu === index ? null : index);
+    }
   };
 
   React.useEffect(() => {
@@ -32,49 +26,59 @@ const Sidebar = () => {
   }, [i18n]);
 
   return (
-    <>
-      <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
-        <button className="toggle-button" onClick={toggleSidebar}>
-        <img src={isOpen ? closeIcon : closeIcon} alt="Toggle Sidebar" />
-        </button>
-
-        <div className="logo">
-          <h2>{t('name')}</h2>
-          <div className={`image-logo ${i18n.language === 'ar' ? 'rtl' : ''}`}>
-            <img src="src/assets/images/logo.png" alt="Logo" />
-          </div>
-        </div>
-
-        <div className="sidebar__content">
-          <div className="menu">
-            <ul className="nav__list">
-              {navLinks.map((item, index) => (
-                <li className="nav__item" key={index}>
-                  <NavLink
-                    to={item.path}
-                    className={(navClass) =>
-                      navClass.isActive ? "nav__active nav__link" : "nav__link"
-                    }
-                  >
-                    <i className={item.icon}></i>
-                    {item.display}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="sidebar__bottom">
-            <span className="logout" onClick={handleLogout}>
-              <i className="ri-logout-circle-r-line"></i> Logout
-            </span>
-          </div>
+    <div className={`fixed top-0 left-0 z-40 h-full bg-primary-color p-5 transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0 w-[300px]' : '-translate-x-full w-[300px]'} lg:translate-x-0 lg:w-[300px] flex flex-col`}>
+      <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center">
+          <h2 className="text-lg mx-1.5 font-arabic font-light text-heading-color">{t('name')}</h2>
+          <div className="flex items-center justify-center w-10 h-10 bg-secondary-color rounded-full overflow-hidden border-2 border-secondary-color">
+              <img src="src/assets/images/logo.png" alt="Logo" className="w-full h-auto object-cover" />
+            </div>
         </div>
       </div>
-    </>
+
+      <div className="flex-1 overflow-y-auto">
+        <ul className="flex flex-col gap-8 text-small-text-color">
+          {navLinks.map((item, index) => (
+            <li key={index}>
+              <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleSubmenu(index, item.submenu.length > 0)}>
+                {item.submenu.length > 0 ? (
+                  <div className={`flex items-center gap-2.5 transition-colors duration-300 ${expandedMenu === index ? 'bg-[#b7ffe913] text-white py-1.5 px-2.5 rounded-md' : 'text-secondary-color'}`}>
+                    <i className={item.icon}></i>
+                    {t(item.display)}
+                  </div>
+                ) : (
+                  <NavLink to={item.path} className={({ isActive }) => `flex items-center gap-2.5 transition-colors duration-300 ${isActive ? 'bg-[#b7ffe913] text-white py-1.5 px-2.5 rounded-md' : 'text-secondary-color'}`}>
+                    <i className={item.icon}></i>
+                    {t(item.display)}
+                  </NavLink>
+                )}
+                {item.submenu.length > 0 && (
+                  <span className={`transition-transform duration-300 ${expandedMenu === index ? 'rotate-180' : 'rotate-0'}`}>
+                    <i className="ri-arrow-down-s-line"></i>
+                  </span>
+                )}
+              </div>
+              {item.submenu.length > 0 && expandedMenu === index && (
+                <ul className="pl-10 mt-2 flex flex-col gap-2">
+                  {item.submenu.map((subItem, subIndex) => (
+                    <li key={subIndex}>
+                      <NavLink to={subItem.path} className="text-secondary-color hover:text-white transition-colors duration-300">
+                        {t(subItem.display)}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-auto flex items-center gap-2.5 cursor-pointer text-small-text-color transition-colors duration-300 hover:text-white mb-10" onClick={handleLogout}>
+        <i className="ri-logout-circle-r-line"></i> Logout
+      </div>
+    </div>
   );
 };
-
-
 
 export default Sidebar;

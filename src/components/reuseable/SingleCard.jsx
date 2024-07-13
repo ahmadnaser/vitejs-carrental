@@ -1,17 +1,22 @@
-import React from "react";
+import React from 'react';
 
-const SingleCard = (props) => {
-  const { title, totalNumber, icon } = props.item;
+const SingleCard = ({ item }) => {
+  const cardBackgrounds = {
+    "ri-police-car-line": "bg-gradient-to-r from-orange-500 to-red-500",
+    "ri-steering-2-line": "bg-gradient-to-r from-green-500 to-green-300",
+    "ri-user-line": "bg-purple-600",
+    "ri-timer-flash-line": "bg-blue-600"
+  };
+
   return (
-    <div className="single__card">
-      <div className="card__content">
-        <h4>{title}</h4>
-        <span>{totalNumber}+</span>
+    <div className={`p-5 flex items-center justify-between rounded-md cursor-pointer ${cardBackgrounds[item.icon]}`}>
+      <div>
+        <h4 className="text-heading-color text-base font-normal">{item.title}</h4>
+        <span className="text-heading-color text-2xl">{item.totalNumber}</span>
       </div>
-
-      <span className="card__icon">
-        <i class={icon}></i>
-      </span>
+      <div>
+        <i className={`text-2xl font-normal text-white ${item.icon}`}></i>
+      </div>
     </div>
   );
 };
