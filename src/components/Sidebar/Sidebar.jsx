@@ -7,6 +7,7 @@ const Sidebar = ({ isSidebarOpen }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [expandedMenu, setExpandedMenu] = useState(null);
+  const isRTL = i18n.language === 'ar';
 
   const handleLogout = () => {
     navigate("/login");
@@ -26,13 +27,13 @@ const Sidebar = ({ isSidebarOpen }) => {
   }, [i18n]);
 
   return (
-    <div className={`fixed top-0 left-0 z-40 h-full bg-primary-color p-5 transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0 w-[300px]' : '-translate-x-full w-[300px]'} lg:translate-x-0 lg:w-[300px] flex flex-col`}>
+    <div className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-40 h-full bg-primary-color p-5 transition-transform duration-300 ${isSidebarOpen ? 'w-[300px]' : `${isRTL ? 'translate-x-full' : '-translate-x-full'}`} ${isRTL ? 'rtl' : 'ltr'} flex flex-col`}>
       <div className="flex items-center justify-between mb-10">
         <div className="flex items-center">
           <h2 className="text-lg mx-1.5 font-arabic font-light text-heading-color">{t('name')}</h2>
           <div className="flex items-center justify-center w-10 h-10 bg-secondary-color rounded-full overflow-hidden border-2 border-secondary-color">
-              <img src="src/assets/images/logo.png" alt="Logo" className="w-full h-auto object-cover" />
-            </div>
+            <img src="src/assets/images/logo.png" alt="Logo" className="w-full h-auto object-cover" />
+          </div>
         </div>
       </div>
 

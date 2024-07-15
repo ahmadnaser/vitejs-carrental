@@ -10,7 +10,7 @@ const navLinks = [
     icon: "ri-taxi-line",
     display: "Renting",
     submenu: [
-      { path: "/renting/rented-car", display: "Rented car" },
+      { path: "/renting/rented-car", display: "Rented Cars" },
       { path: "/renting/rental-contracts", display: "Rental contracts" },
       { path: "/renting/reservations", display: "Reservations" },
       { path: "/renting/tenants", display: "Tenants" },

@@ -2,15 +2,19 @@ import React from "react";
 import { Link } from "react-router-dom";
 import profileImg from "../../assets/images/profile-02.png";
 import closeIcon from "../../assets/images/Sidebar.png";
+import { useTranslation } from 'react-i18next';
 
 const TopNav = ({ isSidebarOpen, onToggleSidebar }) => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
   return (
-    <div className={`fixed top-0 ${isSidebarOpen ? 'left-[300px] w-[calc(100%-300px)]' : 'left-0 w-full'} z-[999] bg-primary-color h-[70px] leading-[70px] transition-all duration-300`}>
+    <div className={`fixed top-0 ${isSidebarOpen ? `${isRTL ? 'right-[300px] w-[calc(100%-300px)]' : 'left-[300px] w-[calc(100%-300px)]'}` : `${isRTL ? 'right-0' : 'left-0'} w-full`} z-[999] ${isRTL ? 'rtl' : 'ltr'} bg-primary-color h-[70px] leading-[70px] transition-all duration-300`}>
       <div className="flex items-center justify-between px-[30px] h-full">
         <button
           className="bg-primary-color p-1 rounded-full transition-all duration-300"
           onClick={onToggleSidebar}
-          style={{ top: '50%', transform: 'translateY(-50%)', position: 'fixed', left: isSidebarOpen ? '272px' : '-16px' }}
+          style={{ top: '50%', transform: 'translateY(-50%)', position: 'fixed', [isSidebarOpen ? (isRTL ? 'right' : 'left') : (isRTL ? 'right' : 'left')]: isSidebarOpen ? '272px' : '-16px' }}
         >
           <img src={closeIcon} alt="Toggle Sidebar" className="w-9 h-9" />
         </button>

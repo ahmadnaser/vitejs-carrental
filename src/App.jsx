@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import Login from './views/Login'; 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; 
 import Dashboard from './views/Dashboard'; 
-import RentedCar from './views/RentedCar'; 
+import RentedCar from './views/Rental-Management/RentedCar'; 
+import RentalContract from './views/Rental-Management/RentalContracta'; 
+import AddRentalForm from './views/Rental-Management/AddRentalContract'; 
 import SellCar from './views/SellCar'; 
 import Settings from './views/Settings'; 
 import Layout from './components/Layout/Layout';  
@@ -22,6 +24,8 @@ const App = () => {
       <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
       <Route path="/dashboard" element={isLoggedIn ? <Layout><Dashboard /></Layout> : <Navigate to="/login" />} />
       <Route path="/renting/rented-car" element={isLoggedIn ? <Layout><RentedCar /></Layout> : <Navigate to="/login" />} />
+      <Route path="/renting/rental-contracts" element={isLoggedIn ? <Layout><RentalContract /></Layout> : <Navigate to="/login" />} />
+      <Route path="/renting/add-rental-contract" element={isLoggedIn ? <Layout><AddRentalForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
       <Route path="/car-tracking" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
