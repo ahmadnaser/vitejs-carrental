@@ -13,8 +13,8 @@ const navLinks = [
       { path: "/renting/rented-car", display: "Rented Cars" },
       { path: "/renting/rental-contracts", display: "Rental contracts" },
       { path: "/renting/reservations", display: "Reservations" },
-      { path: "/renting/tenants", display: "Tenants" },
-      { path: "/renting/cars", display: "Cars" }
+      { path: "/tenants", display: "Tenants" },
+      { path: "/cars", display: "Cars" }
     ],
   },
   {

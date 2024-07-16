@@ -3,7 +3,7 @@ module.exports = {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: false,
+  media: false,
   theme: {
     extend: {
       colors: {

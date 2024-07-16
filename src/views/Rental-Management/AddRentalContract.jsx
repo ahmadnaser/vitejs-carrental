@@ -27,11 +27,19 @@ const AddRentalForm = () => {
     });
   }, [time]);
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  const handleAddNewClick = () => {
+    navigate('/tenants/add-tenants');
+  };
+
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
         <h1 className="text-3xl font-bold text-secondary-color">{t('Add')}</h1>
-        <h3 className="font-bold text-l mt-3 text-heading-color cursor-pointer">{t('Rental contracts')}</h3>
+        <h3 className="font-bold text-l mt-3 text-heading-color cursor-pointer" >{t('Rental contracts')}</h3>
       </div>
 
       <form className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-15 mb-10 max-w-md mx-auto`}>
@@ -45,7 +53,7 @@ const AddRentalForm = () => {
             </span>
             <input type="text" id="tenants" className="rounded-none rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Name of Tenants or ID Number')} required />
           </div>
-          <h6 className="font-bold text-sm mt-3 text-blue-400 cursor-pointer">{t('Add Tenant')}</h6>
+          <h6 className="font-bold text-sm mt-3 text-blue-400 cursor-pointer" onClick={handleAddNewClick}>{t('Add Tenant')}</h6>
           <div className="flex items-center h-5 mt-5 mb-5">
             <input id="alternative-driver" type="checkbox" value="" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" required />
             <label htmlFor="alternative-driver" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Alternative driver')}</label>
@@ -155,7 +163,10 @@ const AddRentalForm = () => {
         </div>
 
 
-        <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{t('Submit')}</button>
+        <div className="mb-5">
+            <button type="submit" className="  text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{t('Submit')}</button>
+            <button  className="bg-gray-500 text-white ml-5 mr-5 rounded-md  opacity-100 font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center" onClick={handleGoBack}>{t('Go Back')}</button>
+        </div>
       </form>
     </div>
   );

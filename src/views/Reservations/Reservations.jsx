@@ -4,7 +4,7 @@ import { getRentedCars } from '../../controller/RentedCarController';
 import { useTranslation } from 'react-i18next';
 import PrintIcon from "../../assets/images/print.png";
 
-const RentedCarTable = () => {
+const ReservationTable = () => {
   const { t, i18n } = useTranslation();
   const [rentedCarData, setRentedCarData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -101,7 +101,7 @@ const RentedCarTable = () => {
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
-        <h1 className="text-3xl font-bold text-secondary-color">{t('Rental contracts')}</h1>
+        <h1 className="text-3xl font-bold text-secondary-color">{t('Reservations')}</h1>
         <h3 className="font-bold text-l mt-3  cursor-pointer text-blue-400" onClick={handleAddNewClick}>
           {t('Add New')}
         </h3>
@@ -243,10 +243,7 @@ const RentedCarTable = () => {
                 </div>
               </th>
 
-              <th scope="col" className="px-1 py-3">{t('Has Returned?')}</th>
-              <th scope="col" className="px-2 py-3">{t('Print')}</th>
-              <th scope="col" className="px-3 py-3"><span class="sr-only">{t('Action')}</span></th>
-            
+              <th scope="col" className="px-1 py-3">{t('Convert to contract')}</th>
             </tr>
           </thead>
           <tbody>
@@ -279,16 +276,8 @@ const RentedCarTable = () => {
                   <td className="px-1 py-4">{item.total_amount}</td>
                   <td className="px-1 py-4">{item.total_amount}</td>
                   <td className="px-4 py-4"></td>
-                  <td className="px-4 py-4"> 
-                  <img src={PrintIcon} alt="Toggle Sidebar" className="w-13 h-10" />
-                  </td>
                   
-                  <td class="px-4 py-4">
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Edit')}</a><br/>
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Extension')}</a><br/>
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Details')}</a><br/>
-                    <a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">{t('Delete')}</a>
-                </td>
+                  
                 
                 </tr>
               ))
@@ -300,4 +289,4 @@ const RentedCarTable = () => {
   );
 };
 
-export default RentedCarTable;
+export default ReservationTable;
