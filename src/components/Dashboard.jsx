@@ -1,9 +1,9 @@
 import React from "react";
-import SingleCard from "../components/reuseable/SingleCard";
+import SingleCard from "./reuseable/SingleCard";
 
 import MileChart from "../charts/MileCharts";
 import CarStatsChart from "../charts/CarStatsChart";
-import RecommendCarCard from "../components/UI/RecommendCarCard";
+import RecommendCarCard from "./UI/RecommendCarCard";
 import recommendCarsData from "../assets/dummy-data/recommendCars";
 
 const carObj = {

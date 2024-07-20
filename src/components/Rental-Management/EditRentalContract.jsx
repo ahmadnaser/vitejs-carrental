@@ -5,7 +5,7 @@ import 'flowbite';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css'; // Use a theme that works well with Tailwind
 
-const AddRentalForm = () => {
+const EditRentalForm = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [time, setTime] = useState('12:00');
@@ -38,7 +38,7 @@ const AddRentalForm = () => {
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
-        <h1 className="text-3xl font-bold text-secondary-color">{t('Add')}</h1>
+        <h1 className="text-3xl font-bold text-secondary-color">{t('Edit')}</h1>
         <h3 className="font-bold text-l mt-3 text-heading-color cursor-pointer" >{t('Rental contracts')}</h3>
       </div>
 
@@ -164,7 +164,7 @@ const AddRentalForm = () => {
 
 
         <div className="mb-5">
-            <button type="submit" className="  text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{t('Submit')}</button>
+            <button type="submit" className="  text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{t('Save')}</button>
             <button  className="bg-gray-500 text-white ml-5 mr-5 rounded-md  opacity-100 font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center" onClick={handleGoBack}>{t('Go Back')}</button>
         </div>
       </form>
@@ -172,4 +172,4 @@ const AddRentalForm = () => {
   );
 };
 
-export default AddRentalForm;
+export default EditRentalForm;

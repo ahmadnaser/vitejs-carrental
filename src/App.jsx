@@ -1,18 +1,18 @@
 
 import React, { useState } from 'react';
-import Login from './views/Login'; 
+import Login from './components/Login'; 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; 
-import Dashboard from './views/Dashboard'; 
-import RentedCar from './views/Rental-Management/RentedCar'; 
-import RentalContract from './views/Rental-Management/RentalContracta'; 
-import AddRentalForm from './views/Rental-Management/AddRentalContract'; 
-import AddTenants from './views/Tenants-Management/AddTenants';
-import Reservation from './views/Reservations/Reservations';
-import Tenants from './views/Tenants-Management/Tenants';
-import Cars from './views/Cars-Management/Cars';
-
-import SellCar from './views/SellCar'; 
-import Settings from './views/Settings'; 
+import Dashboard from './components/Dashboard'; 
+import RentedCar from './components/Rental-Management/RentedCar'; 
+import RentalContract from './components/Rental-Management/RentalContracta'; 
+import AddRentalForm from './components/Rental-Management/AddRentalContract';
+import EditRentalForm from './components/Rental-Management/EditRentalContract';  
+import AddTenants from './components/Tenants-Management/AddTenants';
+import Reservation from './components/Reservations-Management/Reservations';
+import Tenants from './components/Tenants-Management/Tenants';
+import Cars from './components/Cars-Management/Cars';
+import SellCar from './components/SellCar'; 
+import Settings from './components/Settings'; 
 import Layout from './components/Layout/Layout';  
 
 
@@ -31,6 +31,7 @@ const App = () => {
       <Route path="/renting/rented-car" element={isLoggedIn ? <Layout><RentedCar /></Layout> : <Navigate to="/login" />} />
       <Route path="/renting/rental-contracts" element={isLoggedIn ? <Layout><RentalContract /></Layout> : <Navigate to="/login" />} />
       <Route path="/renting/add-rental-contract" element={isLoggedIn ? <Layout><AddRentalForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/renting/edit-rental-contract" element={isLoggedIn ? <Layout><EditRentalForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/renting/reservations" element={isLoggedIn ? <Layout><Reservation /></Layout> : <Navigate to="/login" />} />
       <Route path="/tenants" element={isLoggedIn ? <Layout><Tenants /></Layout> : <Navigate to="/login" />} />
       <Route path="/tenants/add-tenants" element={isLoggedIn ? <Layout><AddTenants /></Layout> : <Navigate to="/login" />} />

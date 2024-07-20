@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getRentedCars } from '../../controller/RentedCarController';
+import { useNavigate,Link } from 'react-router-dom';
+import { getContracts } from '../../controller/RentedCarController';
 import { useTranslation } from 'react-i18next';
+import PrintIcon from "../../assets/images/print.png";
 
-const CarTable = () => {
+const RentedCarTable = () => {
   const { t, i18n } = useTranslation();
   const [rentedCarData, setRentedCarData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -14,7 +15,7 @@ const CarTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getRentedCars();
+      const data = await getContracts();
       setRentedCarData(data);
     };
     fetchData();
@@ -100,7 +101,7 @@ const CarTable = () => {
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
-        <h1 className="text-3xl font-bold text-secondary-color">{t('Cars')}</h1>
+        <h1 className="text-3xl font-bold text-secondary-color">{t('Rental contracts')}</h1>
         <h3 className="font-bold text-l mt-3  cursor-pointer text-blue-400" onClick={handleAddNewClick}>
           {t('Add New')}
         </h3>
@@ -242,7 +243,10 @@ const CarTable = () => {
                 </div>
               </th>
 
-              <th scope="col" className="px-1 py-3">{t('Convert to contract')}</th>
+              <th scope="col" className="px-1 py-3">{t('Has Returned?')}</th>
+              <th scope="col" className="px-2 py-3">{t('Print')}</th>
+              <th scope="col" className="px-3 py-3"><span class="sr-only">{t('Action')}</span></th>
+            
             </tr>
           </thead>
           <tbody>
@@ -265,18 +269,31 @@ const CarTable = () => {
                       className="cursor-pointer"
                     />
                   </td>
-                  <td className="px-1 py-4">{item.rental_id}</td>
+                  <td className="px-1 py-4">{item.rentalId}</td>
                   <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{item.make} {item.model}</td>
                   <td className="px-3 py-4 text-blue-500">{item.customer}</td>
-                  <td className="px-1 py-4">{item.start_date}</td>
+                  <td className="px-1 py-4">{item.startDate}</td>
                   <td className="px-2 py-4">{item.dayNum}</td>
-                  <td className="px-1 py-4">{item.end_date}</td>
-                  <td className="px-2 py-4">{item.price_perday}</td>
-                  <td className="px-1 py-4">{item.total_amount}</td>
-                  <td className="px-1 py-4">{item.total_amount}</td>
+                  <td className="px-1 py-4">{item.endDate}</td>
+                  <td className="px-2 py-4">{item.pricePerDay}</td>
+                  <td className="px-1 py-4">{item.totalAmount}</td>
+                  <td className="px-1 py-4">{item.remainingAmount}</td>
                   <td className="px-4 py-4"></td>
+                  <td className="px-4 py-4"> 
+                  <img src={PrintIcon} alt="Toggle Sidebar" className="w-13 h-10" />
+                  </td>
                   
+                  <td class="px-4 py-4">
+                  <Link to="/renting/edit-rental-contract" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                    {t('Edit')}
+                  </Link>
+                  <br/>
+
                   
+                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Extension')}</a><br/>
+                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Details')}</a><br/>
+                    <a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">{t('Delete')}</a>
+                </td>
                 
                 </tr>
               ))
@@ -288,4 +305,4 @@ const CarTable = () => {
   );
 };
 
-export default CarTable;
+export default RentedCarTable;

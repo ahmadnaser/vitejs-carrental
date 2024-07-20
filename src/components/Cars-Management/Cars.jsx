@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getRentedCars } from '../../controller/RentedCarController';
+import { getContracts } from '../../controller/RentedCarController';
 import { useTranslation } from 'react-i18next';
-import PrintIcon from "../../assets/images/print.png";
 
-const ReservationTable = () => {
+const CarTable = () => {
   const { t, i18n } = useTranslation();
   const [rentedCarData, setRentedCarData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -101,7 +100,7 @@ const ReservationTable = () => {
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
-        <h1 className="text-3xl font-bold text-secondary-color">{t('Tenants')}</h1>
+        <h1 className="text-3xl font-bold text-secondary-color">{t('Cars')}</h1>
         <h3 className="font-bold text-l mt-3  cursor-pointer text-blue-400" onClick={handleAddNewClick}>
           {t('Add New')}
         </h3>
@@ -289,4 +288,4 @@ const ReservationTable = () => {
   );
 };
 
-export default ReservationTable;
+export default CarTable;

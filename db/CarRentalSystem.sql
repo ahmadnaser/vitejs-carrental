@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 13, 2024 at 01:54 PM
+-- Generation Time: Jul 19, 2024 at 08:41 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -163,16 +163,17 @@ CREATE TABLE `Rentals` (
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
   `total_amount` decimal(10,2) NOT NULL,
-  `payment_status` enum('paid','unpaid') NOT NULL
+  `payment_status` enum('paid','unpaid') NOT NULL,
+  `note` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Rentals`
 --
 
-INSERT INTO `Rentals` (`rental_id`, `reservation_id`, `start_date`, `end_date`, `total_amount`, `payment_status`) VALUES
-(1, 1, '2024-07-01', '2024-07-07', 315.00, 'paid'),
-(2, 2, '2024-07-10', '2024-07-15', 200.00, 'unpaid');
+INSERT INTO `Rentals` (`rental_id`, `reservation_id`, `start_date`, `end_date`, `total_amount`, `payment_status`, `note`) VALUES
+(1, 1, '2024-07-01', '2024-07-07', 315.00, 'paid', 'جاهز'),
+(2, 2, '2024-07-10', '2024-07-15', 200.00, 'unpaid', 'جيد');
 
 -- --------------------------------------------------------
 
@@ -207,6 +208,7 @@ CREATE TABLE `Reservations` (
   `vehicle_id` int(11) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
+  `price_perday` decimal(10,2) NOT NULL,
   `status` enum('pending','confirmed','cancelled') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -214,10 +216,38 @@ CREATE TABLE `Reservations` (
 -- Dumping data for table `Reservations`
 --
 
-INSERT INTO `Reservations` (`reservation_id`, `user_id`, `vehicle_id`, `start_date`, `end_date`, `status`) VALUES
-(1, 1, 1, '2024-07-01', '2024-07-07', 'confirmed'),
-(2, 1, 2, '2024-07-10', '2024-07-15', 'pending'),
-(3, 1, 3, '2024-08-01', '2024-08-05', 'cancelled');
+INSERT INTO `Reservations` (`reservation_id`, `user_id`, `vehicle_id`, `start_date`, `end_date`, `price_perday`, `status`) VALUES
+(1, 1, 1, '2024-07-01', '2024-07-07', 100.00, 'confirmed'),
+(2, 1, 2, '2024-07-10', '2024-07-15', 100.00, 'pending'),
+(3, 1, 3, '2024-08-01', '2024-08-05', 100.00, 'cancelled');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Tenants`
+--
+
+CREATE TABLE `Tenants` (
+  `id_number` varchar(255) NOT NULL,
+  `tenant_name` varchar(255) NOT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `phone_number` varchar(50) DEFAULT NULL,
+  `blood_type` varchar(10) DEFAULT NULL,
+  `birth_date` date DEFAULT NULL,
+  `license_number` varchar(50) DEFAULT NULL,
+  `license_start_date` date DEFAULT NULL,
+  `license_end_date` date DEFAULT NULL,
+  `id_image_path` varchar(255) DEFAULT NULL,
+  `license_image_path` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `Tenants`
+--
+
+INSERT INTO `Tenants` (`id_number`, `tenant_name`, `address`, `phone_number`, `blood_type`, `birth_date`, `license_number`, `license_start_date`, `license_end_date`, `id_image_path`, `license_image_path`) VALUES
+('1', 'q', 'zad', '123', 'A1', '2024-07-11', '12323', '2024-07-11', '2024-07-11', NULL, NULL),
+('12342342١٢١', 'احمد', 'رام الله ', '2354', 'A-', '2024-07-29', '7865432', '2024-07-01', '2024-08-26', 'id_uploads/id_669a211b31f7f.jpeg', 'license_uploads/license_669a211b32166.jpg');
 
 -- --------------------------------------------------------
 
@@ -397,6 +427,12 @@ ALTER TABLE `Reservations`
   ADD PRIMARY KEY (`reservation_id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `vehicle_id` (`vehicle_id`);
+
+--
+-- Indexes for table `Tenants`
+--
+ALTER TABLE `Tenants`
+  ADD PRIMARY KEY (`id_number`);
 
 --
 -- Indexes for table `Tracking`
