@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
-import { handleTenantFormSubmit } from '../../controller/tenantController';
+import { addTenants } from '../../controller/tenantController';
 
 const AddTenantsForm = () => {
   const { t, i18n } = useTranslation();
@@ -95,7 +95,7 @@ const AddTenantsForm = () => {
 
     setStatus('loading');
     try {
-      const response = await handleTenantFormSubmit(formData);
+      const response = await addTenants(formData);
       if (response.success) {
         setStatus('success');
         setTimeout(() => navigate('/renting/add-rental-contract', { state: { tenantName: formData.tenantName, idNumber: formData.idNumber } }), 2000);

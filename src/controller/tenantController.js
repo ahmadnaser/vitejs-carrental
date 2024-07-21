@@ -1,6 +1,6 @@
 import { Tenant } from '../models/tenantModel';
 
-export const handleTenantFormSubmit = async (formData) => {
+export const addTenants = async (formData) => {
   const tenant = new Tenant(formData);
   
   const form = new FormData();
@@ -27,5 +27,28 @@ export const handleTenantFormSubmit = async (formData) => {
 
   } catch (error) {
     return { success: false, message: 'An unexpected error occurred' };
+  }
+};
+
+export const getTenants = async () => {
+  try {
+    const response = await fetch('http://localhost/CarRentalSystem/get_tenants.php', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message);
+    }
+
+    return responseData.map(tenantData => new Tenant(tenantData));
+
+  } catch (error) {
+    console.error('There was an error fetching the tenants!', error);
+    throw error;
   }
 };
