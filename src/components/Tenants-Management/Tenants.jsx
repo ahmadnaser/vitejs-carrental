@@ -24,7 +24,7 @@ const ReservationTable = () => {
   const navigate = useNavigate();
 
   const handleAddNewClick = () => {
-    navigate('/renting/add-rental-contract');
+    navigate('/tenants/add-tenants');
   };
 
   const handleRowSelect = (index) => {
