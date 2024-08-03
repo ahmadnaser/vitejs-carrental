@@ -1,9 +1,11 @@
-export class Contract {
-    constructor(rentalId, make, model, customer, startDate, endDate, endDateAgreed, pricePerDay, dayNum, totalAmount, note, remainingAmount, timeReturned, paymentStatus) {
+export class ContractView {
+    constructor(rentalId,vehicle_id, make, model, customer,tenantID, startDate, endDate, endDateAgreed, pricePerDay, dayNum, totalAmount, note, remainingAmount, timeReturned, paymentStatus) {
       this.rentalId = rentalId;
+      this.vehicle_id = vehicle_id;
       this.make = make;
       this.model = model;
       this.customer = customer;
+      this.tenantID = tenantID;
       this.startDate = startDate;
       this.endDate = endDate;
       this.endDateAgreed = endDateAgreed;

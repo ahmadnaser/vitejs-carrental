@@ -14,12 +14,12 @@ const TopNav = ({ isSidebarOpen, onToggleSidebar }) => {
         <button
           className="bg-primary-color p-1 rounded-full transition-all duration-300"
           onClick={onToggleSidebar}
-          style={{ top: '50%', transform: 'translateY(-50%)', position: 'fixed', [isSidebarOpen ? (isRTL ? 'right' : 'left') : (isRTL ? 'right' : 'left')]: isSidebarOpen ? '272px' : '-16px' }}
+          style={{ top: '4%', transform: 'translateY(-50%)', position: 'fixed', [isSidebarOpen ? (isRTL ? 'right' : 'left') : (isRTL ? 'right' : 'left')]: isSidebarOpen ? '300px' : '-1px' }}
         >
           <img src={closeIcon} alt="Toggle Sidebar" className="w-9 h-9" />
         </button>
 
-        <div className="relative pr-5 justify-center flex-grow">
+        <div className="relative p-10 justify-center flex-grow">
           <div className="flex items-center justify-between bg-[#0b0c28] px-[10px] rounded-md cursor-pointer h-[40px] w-full max-w-[300px]">
             <input
               type="text"

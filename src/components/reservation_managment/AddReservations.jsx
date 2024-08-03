@@ -6,7 +6,7 @@ import Select from 'react-select';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
 import { getAvailableCars,getCarById } from '../../controller/carController';
-import { addContract } from '../../controller/RentedCarController';
+import { addReservation } from '../../controller/ReservationsController';
 import { getTenants } from '../../controller/tenantController';
 
 const AddRentalForm = () => {
@@ -14,17 +14,15 @@ const AddRentalForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [formData, setFormData] = useState({
+    reservation_id: null,
     tenant_id: '',
+    second_driver_id: null,
     vehicle_id: '',
     start_date: '',
     end_date: '',
-    start_timestamp: '',
-    end_timestamp: '',
     price_perday: '',
     total_amount: '',
-    amount_paid: '',
-    car_mileage: '',
-    note: ''
+    amount_paid: ''
   });
   const [status, setStatus] = useState(null);
   const [errors, setErrors] = useState({});
@@ -44,11 +42,7 @@ const AddRentalForm = () => {
     check_amount: '',
     check_date: ''
   });
-  const [isCarState, setIsCarState] = useState(false);
-  const [carCondition, setCarCondition] = useState({
-    car_condition: '',
-    car_damage: ''
-  });
+
   const [showCarWarning, setShowCarWarning] = useState(false);
 
   useEffect(() => {
@@ -141,8 +135,8 @@ const AddRentalForm = () => {
   }, [formData.start_date, formData.end_date]);
 
   const tenantOptions = tenants.map(tenant => ({
-    value: tenant.idNumber,
-    label: `${tenant.tenantName} - ${tenant.idNumber}`
+    value: tenant.id_number,
+    label: `${tenant.tenant_name} - ${tenant.id_number}`
   }));
 
   const carOptions = cars.map(car => ({
@@ -189,10 +183,6 @@ const AddRentalForm = () => {
     navigate(-1);
   };
 
-  const handleAddNewClick = () => {
-    navigate('/tenants/add-tenants');
-  };
-
   const handleTenantChange = (selectedOption) => {
     setSelectedTenant(selectedOption);
     setFormData(prevFormData => ({
@@ -232,13 +222,7 @@ const AddRentalForm = () => {
     }));
   };
 
-  const handleCarConditionChange = (e) => {
-    const { name, value } = e.target;
-    setCarCondition(prevCondition => ({
-      ...prevCondition,
-      [name]: value
-    }));
-  };
+
 
   const validateForm = () => {
     const errors = {};
@@ -248,8 +232,6 @@ const AddRentalForm = () => {
     if (!formData.price_perday) errors.price_perday = t('Price per day is required');
     if (!formData.total_amount) errors.total_amount = t('Total amount is required');
     if (!formData.amount_paid) errors.amount_paid = t('Amount paid is required');
-    if (!formData.car_mileage) errors.car_mileage = t('Car mileage is required');
-    if (!formData.note) errors.note = t('Note is required');
 
     if (isBankCheck) {
       if (!bankDetails.check_number) errors.check_number = t('Check number is required');
@@ -271,6 +253,10 @@ const AddRentalForm = () => {
       }));
     }
   }, [formData.price_perday, numDays]);
+
+  const handleAddNewClick = () => {
+    navigate('/tenants/add-tenants');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -301,16 +287,10 @@ const AddRentalForm = () => {
       }
     }
   
-    if (isCarState) {
-      for (const key in carCondition) {
-        if (carCondition[key] !== undefined && carCondition[key] !== null) {
-          submissionData.append(key, carCondition[key]);
-        }
-      }
-    }  
     setStatus('loading');
     try {
-      const response = await addContract(submissionData);
+     
+      const response = await addReservation(submissionData);
       if (response.success) {
         setStatus('success');
         setTimeout(() => navigate(-1), 2000);
@@ -327,10 +307,6 @@ const AddRentalForm = () => {
       setErrors({ form: 'An unexpected error occurred' });
     }
   };
-  
-  
-  
-  
 
   const customStyles = {
     control: (provided) => ({
@@ -358,7 +334,7 @@ const AddRentalForm = () => {
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
         <h1 className="text-3xl font-bold text-secondary-color">{t('Add')}</h1>
-        <h3 className="font-bold text-l mt-3 text-heading-color cursor-pointer">{t('Rental contracts')}</h3>
+        <h3 className="font-bold text-l mt-3 text-heading-color cursor-pointer">{t('New Reservation')}</h3>
       </div>
 
       <form onSubmit={handleSubmit} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-15 mb-10 max-w-md mx-auto`}>
@@ -477,11 +453,6 @@ const AddRentalForm = () => {
         </div>
 
         <div className="mb-5">
-          <label htmlFor="car_mileage" className="block mb-2 text-sm font-medium">{t('Car Mileage')}</label>
-          <input type="text" id="car_mileage" name="car_mileage" value={formData.car_mileage} onChange={handleInputChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter car mileage')} required />
-        </div>
-
-        <div className="mb-5">
           <label htmlFor="price_perday" className="block mb-2 text-sm font-medium">{t('Price Per Day')}</label>
           <input type="text" id="price_perday" name="price_perday" value={formData.price_perday} onChange={handleInputChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter price per day')} required />
         </div>
@@ -531,35 +502,6 @@ const AddRentalForm = () => {
             </div>
           </div>
         )}
-
-        <div className="flex items-center h-5 mt-5 mb-5">
-          <input id="carState" type="checkbox" checked={isCarState} onChange={(e) => setIsCarState(e.target.checked)} className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
-          <label htmlFor="carState" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Car State')}</label>
-        </div>
-
-        {isCarState && (
-          <div className="mb-10 mt-10">
-            <div className=" mb-5">
-              <label htmlFor="car_condition" className="block mb-2 text-sm font-medium">{t('Car Condition')}</label>
-              <input type="text" id="car_condition" name="car_condition" value={carCondition.car_condition} onChange={handleCarConditionChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter car condition')} required />
-            </div>
-
-            <div className="mb-5">
-              <label htmlFor="car_damage" className="block mb-2 text-sm font-medium">{t('Car Damage')}</label>
-              <input type="text" id="car_damage" name="car_damage" value={carCondition.car_damage} onChange={handleCarConditionChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter car damage details')} required />
-            </div>
-          </div>
-        )}
-
-        <div className="mb-5">
-          <label htmlFor="note" className="block mb-2 text-sm font-medium">{t('Note')}</label>
-          <input type="text" id="note" name="note" value={formData.note} onChange={handleInputChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter note')} required />
-        </div>
-
-        <div className="flex items-center h-5 mt-5 mb-5">
-          <input id="print" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
-          <label htmlFor="print" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Print')}</label>
-        </div>
 
         <div className="mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

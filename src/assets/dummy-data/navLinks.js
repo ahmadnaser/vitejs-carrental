@@ -12,7 +12,7 @@ const navLinks = [
     submenu: [
       { path: "/renting/rented-car", display: "Rented Cars" },
       { path: "/renting/rental-contracts", display: "Rental contracts" },
-      { path: "/renting/reservations", display: "Reservations" },
+      { path: "/reservations", display: "Reservations" },
       { path: "/tenants", display: "Tenants" },
       { path: "/cars", display: "Cars" }
     ],
@@ -26,6 +26,7 @@ const navLinks = [
       { path: "/expenses/general-expenses", display: "General expenses" },
       { path: "/expenses/garages", display: "Garages" },
       { path: "/expenses/beneficiaries", display: "Beneficiaries" },
+      { path: "/expenses/meerchants", display: "Meerchants" },
       { path: "/expenses/types-of-expenses", display: "Types of expenses" }
     ],
   },
@@ -33,7 +34,14 @@ const navLinks = [
     path: "/reports",
     icon: "ri-file-pdf-2-line",
     display: "Reports",
-    submenu: [],
+    submenu: [ { path: "/reports/car-maintenance", display: "Cars tracking" },
+      { path: "/reports/car-statement", display: "Car statment" },
+      { path: "/reports/expensese-statement", display: "Expensese statment" },
+      { path: "/reports/customer-statement", display: "Customer statment" },
+      { path: "/reports/full-account-statement", display: "Full account statement" },
+      { path: "/reports/garage-account-statement", display: "Garage account statement" },
+      { path: "/reports/meerchants-account-statement", display: "Meerchant account statement" }
+    ],
   },
   {
     path: "/car-tracking",

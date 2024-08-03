@@ -52,3 +52,26 @@ export const getTenants = async () => {
     throw error;
   }
 };
+
+export const getTenantById = async (idNumber) => {
+  try {
+    const response = await fetch(`http://localhost/CarRentalSystem/get_tenants_by_id.php?id_number=${idNumber}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message);
+    }
+
+    return new Tenant(responseData);
+
+  } catch (error) {
+    console.error('There was an error fetching the tenant by ID!', error);
+    throw error;
+  }
+};

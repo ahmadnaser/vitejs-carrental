@@ -9,17 +9,17 @@ const AddTenantsForm = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    tenantName: '',
-    idNumber: '',
+    tenant_name: '',
+    id_number: '',
     address: '',
-    phoneNumber: '',
-    bloodType: '',
-    birthDate: '',
-    licenseNumber: '',
-    licenseStartDate: '',
-    licenseEndDate: '',
-    idImage: null,
-    licenseImage: null,
+    phone_number: '',
+    blood_type: '',
+    birth_date: '',
+    license_number: '',
+    license_start_date: '',
+    license_end_date: '',
+    id_image_path: null,
+    license_image_path: null,
   });
   const [status, setStatus] = useState(null);
   const [errors, setErrors] = useState({});
@@ -32,7 +32,7 @@ const AddTenantsForm = () => {
         const formattedDate = date ? flatpickr.formatDate(date, 'Y-m-d') : '';
         setFormData((prevState) => ({
           ...prevState,
-          birthDate: formattedDate,
+          birth_date: formattedDate,
         }));
       },
     });
@@ -44,7 +44,7 @@ const AddTenantsForm = () => {
         const formattedDate = date ? flatpickr.formatDate(date, 'Y-m-d') : '';
         setFormData((prevState) => ({
           ...prevState,
-          licenseStartDate: formattedDate,
+          license_start_date: formattedDate,
         }));
       },
     });
@@ -56,7 +56,7 @@ const AddTenantsForm = () => {
         const formattedDate = date ? flatpickr.formatDate(date, 'Y-m-d') : '';
         setFormData((prevState) => ({
           ...prevState,
-          licenseEndDate: formattedDate,
+          license_end_date: formattedDate,
         }));
       },
     });
@@ -73,17 +73,16 @@ const AddTenantsForm = () => {
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.tenantName) errors.tenantName = t('Tenant Name is required');
-    if (!formData.idNumber) errors.idNumber = t('ID Number is required');
+    if (!formData.tenant_name) errors.tenant_name = t('Tenant Name is required');
+    if (!formData.id_number) errors.id_number = t('ID Number is required');
     if (!formData.address) errors.address = t('Address is required');
-    if (!formData.phoneNumber) errors.phoneNumber = t('Phone Number is required');
-    if (!formData.bloodType) errors.bloodType = t('Blood Type is required');
-    if (!formData.birthDate) errors.birthDate = t('Date Of Birth is required');
-    if (!formData.licenseNumber) errors.licenseNumber = t('Driving license number is required');
-    if (!formData.licenseStartDate) errors.licenseStartDate = t('License start date is required');
-    if (!formData.licenseEndDate) errors.licenseEndDate = t('License end date is required');
-    if (!formData.idImage) errors.idImage = t('Copy of personal ID is required');
-    if (!formData.licenseImage) errors.licenseImage = t('Copy of personal Driving license is required');
+    if (!formData.phone_number) errors.phone_number = t('Phone Number is required');
+    if (!formData.blood_type) errors.blood_type = t('Blood Type is required');
+    if (!formData.birth_date) errors.birth_date = t('Date Of Birth is required');
+    if (!formData.license_number) errors.license_number = t('Driving license number is required');
+    if (!formData.license_start_date) errors.license_start_date = t('License start date is required');
+    if (!formData.license_end_date) errors.license_end_date = t('License end date is required');
+
 
     setErrors(errors);
     return Object.keys(errors).length === 0;
@@ -98,7 +97,6 @@ const AddTenantsForm = () => {
       const response = await addTenants(formData);
       if (response.success) {
         setStatus('success');
-        setTimeout(() => navigate('/renting/add-rental-contract', { state: { tenantName: formData.tenantName, idNumber: formData.idNumber } }), 2000);
       } else {
         setStatus('error');
         if (response.message) {
@@ -112,6 +110,7 @@ const AddTenantsForm = () => {
       setErrors({ form: 'An unexpected error occurred' });
     }
   };
+
   const handleGoBack = () => {
     navigate(-1);
   };
@@ -125,14 +124,14 @@ const AddTenantsForm = () => {
 
       <form onSubmit={handleSubmit} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-15 mb-10 max-w-md mx-auto`} encType="multipart/form-data">
         <div className="mb-5">
-          <label htmlFor="tenantName" className="block mb-2 text-sm font-medium">{t('Tenant Name')}</label>
-          <input type="text" name="tenantName" value={formData.tenantName} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Name of Tenants')} required />
-          {errors.tenantName && <div className="text-red-500">{errors.tenantName}</div>}
+          <label htmlFor="tenant_name" className="block mb-2 text-sm font-medium">{t('Tenant Name')}</label>
+          <input type="text" name="tenant_name" value={formData.tenant_name} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Name of Tenants')} required />
+          {errors.tenant_name && <div className="text-red-500">{errors.tenant_name}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="idNumber" className="block mb-2 text-sm font-medium">{t('ID Number')}</label>
-          <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('ID Number')} required />
-          {errors.idNumber && <div className="text-red-500">{errors.idNumber}</div>}
+          <label htmlFor="id_number" className="block mb-2 text-sm font-medium">{t('ID Number')}</label>
+          <input type="text" name="id_number" value={formData.id_number} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('ID Number')} required />
+          {errors.id_number && <div className="text-red-500">{errors.id_number}</div>}
         </div>
         <div className="mb-5">
           <label htmlFor="address" className="block mb-2 text-sm font-medium">{t('Address')}</label>
@@ -140,13 +139,13 @@ const AddTenantsForm = () => {
           {errors.address && <div className="text-red-500">{errors.address}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="phoneNumber" className="block mb-2 text-sm font-medium">{t('Phone')}</label>
-          <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Phone')} required />
-          {errors.phoneNumber && <div className="text-red-500">{errors.phoneNumber}</div>}
+          <label htmlFor="phone_number" className="block mb-2 text-sm font-medium">{t('Phone')}</label>
+          <input type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Phone')} required />
+          {errors.phone_number && <div className="text-red-500">{errors.phone_number}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="bloodType" className="block mb-2 text-sm font-medium">{t('Blood Type')}</label>
-          <select name="bloodType" value={formData.bloodType} onChange={handleChange} className="text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          <label htmlFor="blood_type" className="block mb-2 text-sm font-medium">{t('Blood Type')}</label>
+          <select name="blood_type" value={formData.blood_type} onChange={handleChange} className="text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
             <option value="" disabled>{t('Select your blood type')}</option>
             <option value="A+">A+</option>
             <option value="A-">A-</option>
@@ -157,58 +156,37 @@ const AddTenantsForm = () => {
             <option value="AB+">AB+</option>
             <option value="AB-">AB-</option>
           </select>
-          {errors.bloodType && <div className="text-red-500">{errors.bloodType}</div>}
+          {errors.blood_type && <div className="text-red-500">{errors.blood_type}</div>}
         </div>
         <div className="mb-5">
           <label htmlFor="birthDate" className="block mb-2 text-sm font-medium">{t('Date Of Birth')}</label>
-          <div className="relative max-w-sm">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
-            </div>
-            <input name="birthDate" id="birthDate" value={formData.birthDate} onChange={handleChange} data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
-          </div>
-          {errors.birthDate && <div className="text-red-500">{errors.birthDate}</div>}
+          <input type="text" id="birthDate" name="birth_date" value={formData.birth_date} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Date Of Birth')} required />
+          {errors.birth_date && <div className="text-red-500">{errors.birth_date}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="licenseNumber" className="block mb-2 text-sm font-medium">{t('Driving license number')}</label>
-          <input type="text" name="licenseNumber" value={formData.licenseNumber} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Driving license number')} required />
-          {errors.licenseNumber && <div className="text-red-500">{errors.licenseNumber}</div>}
+          <label htmlFor="license_number" className="block mb-2 text-sm font-medium">{t('Driving License Number')}</label>
+          <input type="text" name="license_number" value={formData.license_number} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Driving License Number')} required />
+          {errors.license_number && <div className="text-red-500">{errors.license_number}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="licenseStartDate" className="block mb-2 text-sm font-medium">{t('License start date')}</label>
-          <div className="relative max-w-sm">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
-            </div>
-            <input name="licenseStartDate" id="licenseStartDate" value={formData.licenseStartDate} onChange={handleChange} data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
-          </div>
-          {errors.licenseStartDate && <div className="text-red-500">{errors.licenseStartDate}</div>}
+          <label htmlFor="licenseStartDate" className="block mb-2 text-sm font-medium">{t('License Start Date')}</label>
+          <input type="text" id="licenseStartDate" name="license_start_date" value={formData.license_start_date} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('License Start Date')} required />
+          {errors.license_start_date && <div className="text-red-500">{errors.license_start_date}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="licenseEndDate" className="block mb-2 text-sm font-medium">{t('License end date')}</label>
-          <div className="relative max-w-sm">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
-            </div>
-            <input name="licenseEndDate" id="licenseEndDate" value={formData.licenseEndDate} onChange={handleChange} data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
-          </div>
-          {errors.licenseEndDate && <div className="text-red-500">{errors.licenseEndDate}</div>}
+          <label htmlFor="licenseEndDate" className="block mb-2 text-sm font-medium">{t('License End Date')}</label>
+          <input type="text" id="licenseEndDate" name="license_end_date" value={formData.license_end_date} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('License End Date')} required />
+          {errors.license_end_date && <div className="text-red-500">{errors.license_end_date}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="idImage" className="block mb-2 text-sm font-medium">{t('Copy of personal ID')}</label>
-          <input name="idImage" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file" required />
-          {errors.idImage && <div className="text-red-500">{errors.idImage}</div>}
+          <label htmlFor="id_image_path" className="block mb-2 text-sm font-medium">{t('Copy of personal ID')}</label>
+          <input name="id_image_path" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
+          
         </div>
         <div className="mb-5">
-          <label htmlFor="licenseImage" className="block mb-2 text-sm font-medium">{t('Copy of personal Driving licence')}</label>
-          <input name="licenseImage" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file" required />
-          {errors.licenseImage && <div className="text-red-500">{errors.licenseImage}</div>}
+          <label htmlFor="license_image_path" className="block mb-2 text-sm font-medium">{t('Copy of personal Driving licence')}</label>
+          <input name="license_image_path" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
+          
         </div>
         <div className="mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -218,7 +196,7 @@ const AddTenantsForm = () => {
         </div>
         {status === 'success' && (
           <div className="text-green-500">
-            {t('Tenant added successfully! Redirecting...')}
+            {t('Tenant added successfully!')}
           </div>
         )}
         {status === 'error' && (
@@ -232,5 +210,6 @@ const AddTenantsForm = () => {
 };
 
 export default AddTenantsForm;
+
 
 
