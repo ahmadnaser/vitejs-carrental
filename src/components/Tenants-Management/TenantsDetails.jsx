@@ -18,11 +18,11 @@ const TenantsDetails = ({ tenantId }) => {
         setTenants(tenantsList);
 
      
-        const initialTenant = tenantsList.find(tenant => tenant.idNumber === tenantId);
+        const initialTenant = tenantsList.find(tenant => tenant.id_number === tenantId);
         if (initialTenant) {
           setSelectedTenant({
-            value: initialTenant.idNumber,
-            label: `${initialTenant.tenantName} - ${initialTenant.idNumber}`
+            value: initialTenant.id_number,
+            label: `${initialTenant.tenant_name} - ${initialTenant.id_number}`
           });
           setTenant(initialTenant); 
         }
@@ -123,7 +123,7 @@ const TenantsDetails = ({ tenantId }) => {
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700">Account Status</label>
           <div className="mt-1 p-2 border border-yellow-500 rounded-md bg-yellow-100">
-            The owner of this account has not yet signup with email address
+            The owner of this account has not yet sign up with email address
           </div>
         </div>
 
@@ -131,16 +131,21 @@ const TenantsDetails = ({ tenantId }) => {
           <div className='bg-white p-4 rounded-xl flex-1'>
             <h3 className="text-lg font-bold mb-2">Client Information</h3>
             <div className="space-y-2">
-              <div><strong>Name:</strong> {tenant.tenantName}</div>
-              <div><strong>Address :</strong> Silwad Ramallah</div>
-              <div><strong>Phone Number:</strong> {tenant.phoneNumber}</div>
+              <div><strong>Id Number:</strong> {tenant.id_number}</div>
+              <div><strong>Name:</strong> {tenant.tenant_name}</div>
+              <div><strong>Address :</strong> {tenant.address}</div>
+              <div><strong>Blood Type:</strong> {tenant.blood_type}</div>
+              <div><strong>Birth Date:</strong> {tenant.birth_date}</div>
+              <div><strong>License Start Date:</strong> {tenant.license_start_date}</div>
+              <div><strong>License End Date:</strong> {tenant.license_end_date}</div>
             </div>
           </div>
           <div className='bg-white p-4 rounded-xl flex-1'>
             <h3 className="text-lg font-bold mb-2">Invoices/Billing</h3>
             <div className="space-y-2">
-              <div><strong>Paid:</strong> 1 ($900.00 USD)</div>
-              <div><strong>Draft:</strong> 0 ($0.00 USD)</div>
+              <div><strong>Number of invoices:</strong> 1 ($900.00 USD)</div>
+              <div><strong>Total Bills:</strong> 1 ($900.00 USD)</div>
+              <div><strong>Paid:</strong> 0 ($0.00 USD)</div>
               <div><strong>Unpaid/Due:</strong> 0 ($0.00 USD)</div>
               <div><strong>Cancelled:</strong> 0 ($0.00 USD)</div>
               <div><strong>Refunded:</strong> 0 ($0.00 USD)</div>

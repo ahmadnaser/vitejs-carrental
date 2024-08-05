@@ -166,7 +166,7 @@ const RentedCarTable = () => {
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               
-              <th scope="col" className="px-3 py-3 cursor-pointer" onClick={() => requestSort('car')}>
+              <th scope="col" className="px-3 py-3 cursor-pointer text-center" onClick={() => requestSort('car')}>
                 <div className="flex items-center">
                   {t('Cars')}
                   <svg className={`w-4 h-3 ms-1.5 ${getClassNamesFor('car')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -174,7 +174,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-3 py-3 cursor-pointer" onClick={() => requestSort('customer')}>
+              <th scope="col" className="px-3 py-3 cursor-pointer text-center" onClick={() => requestSort('customer')}>
                 <div className="flex items-center">
                   {t('Year')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('customer')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -182,7 +182,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer" onClick={() => requestSort('fromDate')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('fromDate')}>
                 <div className="flex items-center">
                   {t('Plate Number')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('fromDate')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -190,7 +190,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer" onClick={() => requestSort('dayNum')}>
+              <th scope="col" className="px-2 py-3 cursor-pointer text-center" onClick={() => requestSort('dayNum')}>
                 <div className="flex items-center">
                   {t('Color')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('dayNum')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -198,7 +198,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer" onClick={() => requestSort('toDateExpected')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('toDateExpected')}>
                 <div className="flex items-center">
                   {t('Mileage')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('toDateExpected')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -207,7 +207,7 @@ const RentedCarTable = () => {
                 </div>
               </th>
             
-              <th scope="col" className="px-2 py-3 cursor-pointer" onClick={() => requestSort('pricePerDay')}>
+              <th scope="col" className="px-2 py-3 cursor-pointe text-center" onClick={() => requestSort('pricePerDay')}>
                 <div className="flex items-center">
                   {t('Last Oil Change Mileage')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('pricePerDay')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -215,7 +215,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('totalAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('totalAmount')}>
                 <div className="flex items-center">
                   {t('Last Oil Change Date')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('totalAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -223,7 +223,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('remainingAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('remainingAmount')}>
                 <div className="flex items-center">
                   {t('License Expiry Date')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('remainingAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -232,7 +232,7 @@ const RentedCarTable = () => {
                 </div>
               </th>
 
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('remainingAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('remainingAmount')}>
                 <div className="flex items-center">
                   {t('Insurance Expiry Date')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('remainingAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -241,7 +241,7 @@ const RentedCarTable = () => {
                 </div>
               </th>
 
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('remainingAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('remainingAmount')}>
                 <div className="flex items-center">
                   {t('Oil Change Every (km)')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('remainingAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -249,7 +249,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('remainingAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('remainingAmount')}>
                 <div className="flex items-center">
                 {t('Oil Change Every (month)')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('remainingAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -257,7 +257,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-3 py-3"><span class="sr-only">{t('Action')}</span></th>
+              <th scope="col" className="px-3 py-3 text-center"><span class="sr-only">{t('Action')}</span></th>
             
             </tr>
           </thead>
@@ -273,17 +273,17 @@ const RentedCarTable = () => {
                   className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${selectedRows.includes(index) ? 'bg-gray-200 dark:bg-gray-600' : ''}`}
                   onClick={() => handleRowSelect(index)}
                 >
-                  <td className="px-4 py-4">{item.make} {item.model}</td>
-                  <td className="px-4 py-4">{item.year}</td>
-                  <td className="px-4 py-4">{item.vehicle_id}</td>
-                  <td className="px-2 py-4">{item.color}</td>
-                  <td className="px-1 py-4">{item.mileage}</td>
-                  <td className="px-1 py-4">{item.last_oil_change_miles}</td>
-                  <td className="px-1 py-4">{item.last_oil_change_date}</td>
-                  <td className="px-1 py-4">{item.license_expiry_date}</td>
-                  <td className="px-4 py-4">{item.insurance_expiry_date}</td>
-                  <td className="px-4 py-4">{item.change_oil_every_km}</td>
-                  <td className="px-4 py-4">{item.change_oil_every_month}</td>
+                  <td className="px-4 py-4 text-center">{item.make} {item.model}</td>
+                  <td className="px-4 py-4 text-center">{item.year}</td>
+                  <td className="px-4 py-4 text-center">{item.vehicle_id}</td>
+                  <td className="px-2 py-4 text-center">{item.color}</td>
+                  <td className="px-1 py-4 text-center">{item.mileage}</td>
+                  <td className="px-1 py-4 text-center">{item.last_oil_change_miles}</td>
+                  <td className="px-1 py-4 text-center">{item.last_oil_change_date}</td>
+                  <td className="px-1 py-4 text-center">{item.license_expiry_date}</td>
+                  <td className="px-4 py-4 text-center">{item.insurance_expiry_date}</td>
+                  <td className="px-4 py-4 text-center">{item.change_oil_every_km}</td>
+                  <td className="px-4 py-4 text-center">{item.change_oil_every_month}</td>
                   <td class="px-4 py-4">
                   <Link to="/renting/edit-rental-contract" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                     {t('Edit')}

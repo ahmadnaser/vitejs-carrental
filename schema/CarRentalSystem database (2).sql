@@ -3,10 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 19, 2024 at 08:41 PM
+-- Generation Time: Aug 05, 2024 at 12:27 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
-
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -25,6 +24,19 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `BankChecks`
+--
+
+CREATE TABLE `BankChecks` (
+  `check_number` varchar(50) NOT NULL,
+  `amount` varchar(50) NOT NULL,
+  `bank_name` varchar(50) NOT NULL,
+  `check_date` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `BlackListRenters`
 --
 
@@ -34,13 +46,6 @@ CREATE TABLE `BlackListRenters` (
   `reason` text NOT NULL,
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `BlackListRenters`
---
-
-INSERT INTO `BlackListRenters` (`blacklist_id`, `user_id`, `reason`, `date`) VALUES
-(1, 1, 'Repeated late returns and damage to vehicles', '2024-07-01');
 
 -- --------------------------------------------------------
 
@@ -55,37 +60,6 @@ CREATE TABLE `CompaniesMessages` (
   `timestamp` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `CompaniesMessages`
---
-
-INSERT INTO `CompaniesMessages` (`message_id`, `company_name`, `message`, `timestamp`) VALUES
-(1, 'Insurance Co.', 'Monthly insurance invoice due', '2024-07-01 09:00:00'),
-(2, 'Local Police', 'Traffic violation report', '2024-07-01 14:00:00');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Expenses`
---
-
-CREATE TABLE `Expenses` (
-  `expense_id` int(11) NOT NULL,
-  `type` varchar(50) NOT NULL,
-  `amount` decimal(10,2) NOT NULL,
-  `date` date NOT NULL,
-  `description` text DEFAULT NULL,
-  `beneficiary` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `Expenses`
---
-
-INSERT INTO `Expenses` (`expense_id`, `type`, `amount`, `date`, `description`, `beneficiary`) VALUES
-(1, 'Maintenance', 400.00, '2024-06-30', 'Monthly vehicle maintenance', 'Garage Inc.'),
-(2, 'Fuel', 150.00, '2024-06-28', 'Fuel expenses for rental vehicles', 'Local Gas Station');
-
 -- --------------------------------------------------------
 
 --
@@ -99,14 +73,6 @@ CREATE TABLE `Feedback` (
   `response` text DEFAULT NULL,
   `status` enum('open','closed') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `Feedback`
---
-
-INSERT INTO `Feedback` (`feedback_id`, `user_id`, `message`, `response`, `status`) VALUES
-(1, 1, 'Great service, will rent again!', 'Thank you for your feedback!', 'closed'),
-(2, 1, 'The car had a minor issue with the AC.', 'We apologize for the inconvenience and will look into it.', 'closed');
 
 -- --------------------------------------------------------
 
@@ -132,25 +98,45 @@ INSERT INTO `Garages` (`garage_id`, `name`, `location`, `contact_info`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `Maintenance`
+--
+
+CREATE TABLE `Maintenance` (
+  `maintenance_id` int(11) NOT NULL,
+  `vehicle_id` varchar(50) NOT NULL,
+  `maintenance_date` date NOT NULL,
+  `details` text NOT NULL,
+  `cost` decimal(10,2) NOT NULL,
+  `amount_paid` decimal(10,2) NOT NULL,
+  `Trader` varchar(50) NOT NULL,
+  `spare_parts` text NOT NULL,
+  `spare_parts_price` decimal(10,2) NOT NULL,
+  `amount_paid_of_spare_parts` decimal(10,2) NOT NULL,
+  `garage_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `Payments`
 --
 
 CREATE TABLE `Payments` (
   `payment_id` int(11) NOT NULL,
-  `rental_id` int(11) NOT NULL,
+  `reservation_id` int(11) DEFAULT NULL,
   `amount` decimal(10,2) NOT NULL,
-  `payment_date` date NOT NULL,
-  `payment_method` enum('credit_card','online_wallet','cash') NOT NULL,
-  `status` enum('successful','failed') NOT NULL
+  `payment_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `payment_method` enum('bank_check','cash') NOT NULL,
+  `check_number` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Payments`
 --
 
-INSERT INTO `Payments` (`payment_id`, `rental_id`, `amount`, `payment_date`, `payment_method`, `status`) VALUES
-(1, 1, 315.00, '2024-07-01', 'credit_card', 'successful'),
-(2, 2, 200.00, '2024-07-10', 'online_wallet', 'successful');
+INSERT INTO `Payments` (`payment_id`, `reservation_id`, `amount`, `payment_date`, `payment_method`, `check_number`) VALUES
+(43, 122, 100.00, '2024-08-03 11:45:59', 'cash', NULL),
+(44, 123, 100.00, '2024-08-03 12:11:46', 'cash', NULL);
 
 -- --------------------------------------------------------
 
@@ -161,10 +147,11 @@ INSERT INTO `Payments` (`payment_id`, `rental_id`, `amount`, `payment_date`, `pa
 CREATE TABLE `Rentals` (
   `rental_id` int(11) NOT NULL,
   `reservation_id` int(11) NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `total_amount` decimal(10,2) NOT NULL,
-  `payment_status` enum('paid','unpaid') NOT NULL,
+  `start_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `end_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `car_mileage` varchar(255) NOT NULL,
+  `car_condition` varchar(255) DEFAULT NULL,
+  `car_damage` varchar(255) DEFAULT NULL,
   `note` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -172,55 +159,36 @@ CREATE TABLE `Rentals` (
 -- Dumping data for table `Rentals`
 --
 
-INSERT INTO `Rentals` (`rental_id`, `reservation_id`, `start_date`, `end_date`, `total_amount`, `payment_status`, `note`) VALUES
-(1, 1, '2024-07-01', '2024-07-07', 315.00, 'paid', 'جاهز'),
-(2, 2, '2024-07-10', '2024-07-15', 200.00, 'unpaid', 'جيد');
+INSERT INTO `Rentals` (`rental_id`, `reservation_id`, `start_date`, `end_date`, `car_mileage`, `car_condition`, `car_damage`, `note`) VALUES
+(47, 122, '2024-07-25 09:00:00', '2024-07-25 09:00:00', '100', NULL, NULL, '10000km'),
+(48, 123, '2024-08-14 09:00:00', '2024-09-03 09:00:00', '123km', NULL, NULL, '213');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Reports`
+-- Table structure for table `reservations`
 --
 
-CREATE TABLE `Reports` (
-  `report_id` int(11) NOT NULL,
-  `report_type` varchar(100) NOT NULL,
-  `generated_date` date NOT NULL,
-  `details` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `Reports`
---
-
-INSERT INTO `Reports` (`report_id`, `report_type`, `generated_date`, `details`) VALUES
-(1, 'Revenue Report', '2024-07-01', 'Total revenue for June 2024: $5000.00'),
-(2, 'Maintenance Report', '2024-07-01', 'Total maintenance costs for June 2024: $400.00');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Reservations`
---
-
-CREATE TABLE `Reservations` (
+CREATE TABLE `reservations` (
   `reservation_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `vehicle_id` int(11) NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
+  `tenant_id` varchar(50) NOT NULL,
+  `second_driver_id` varchar(50) DEFAULT NULL,
+  `vehicle_id` varchar(50) NOT NULL,
+  `start_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `end_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `price_perday` decimal(10,2) NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `amount_paid` decimal(10,2) NOT NULL,
   `status` enum('pending','confirmed','cancelled') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `Reservations`
+-- Dumping data for table `reservations`
 --
 
-INSERT INTO `Reservations` (`reservation_id`, `user_id`, `vehicle_id`, `start_date`, `end_date`, `price_perday`, `status`) VALUES
-(1, 1, 1, '2024-07-01', '2024-07-07', 100.00, 'confirmed'),
-(2, 1, 2, '2024-07-10', '2024-07-15', 100.00, 'pending'),
-(3, 1, 3, '2024-08-01', '2024-08-05', 100.00, 'cancelled');
+INSERT INTO `reservations` (`reservation_id`, `tenant_id`, `second_driver_id`, `vehicle_id`, `start_date`, `end_date`, `price_perday`, `total_amount`, `amount_paid`, `status`) VALUES
+(122, '4532', NULL, '2', '2024-07-25 09:00:00', '2024-07-25 09:00:00', 120.00, 100.00, 100.00, 'confirmed'),
+(123, '19876543', NULL, '2', '2024-08-14 09:00:00', '2024-09-03 09:00:00', 100.00, 2000.00, 100.00, 'confirmed');
 
 -- --------------------------------------------------------
 
@@ -247,29 +215,22 @@ CREATE TABLE `Tenants` (
 --
 
 INSERT INTO `Tenants` (`id_number`, `tenant_name`, `address`, `phone_number`, `blood_type`, `birth_date`, `license_number`, `license_start_date`, `license_end_date`, `id_image_path`, `license_image_path`) VALUES
-('1', 'q', 'zad', '123', 'A1', '2024-07-11', '12323', '2024-07-11', '2024-07-11', NULL, NULL),
-('12342342١٢١', 'احمد', 'رام الله ', '2354', 'A-', '2024-07-29', '7865432', '2024-07-01', '2024-08-26', 'id_uploads/id_669a211b31f7f.jpeg', 'license_uploads/license_669a211b32166.jpg');
+('19876543', 'Ahmed', 'zad', '123', 'A1', '2024-07-11', '12323', '2024-07-11', '2024-07-11', NULL, NULL),
+('4532', 'halaaa', 'Ramallah', '432', 'B+', '2024-07-09', '908765432', '2024-07-16', '2024-07-10', NULL, NULL),
+('453280976543', 'khalid', '32', '432', 'B+', '2024-07-24', '908765432', '2024-07-23', '2024-07-10', NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Tracking`
+-- Table structure for table `tracking`
 --
 
-CREATE TABLE `Tracking` (
+CREATE TABLE `tracking` (
   `tracking_id` int(11) NOT NULL,
-  `vehicle_id` int(11) NOT NULL,
+  `vehicle_id` varchar(50) NOT NULL,
   `location` varchar(100) NOT NULL,
   `timestamp` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `Tracking`
---
-
-INSERT INTO `Tracking` (`tracking_id`, `vehicle_id`, `location`, `timestamp`) VALUES
-(1, 1, 'City Center, City, Country', '2024-07-01 10:00:00'),
-(2, 3, 'Airport, City, Country', '2024-07-01 12:00:00');
 
 -- --------------------------------------------------------
 
@@ -284,13 +245,30 @@ CREATE TABLE `Traders` (
   `type` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `Traders`
+-- Table structure for table `Transactions`
 --
 
-INSERT INTO `Traders` (`trader_id`, `name`, `contact_info`, `type`) VALUES
-(1, 'Parts Supplier', 'parts@example.com', 'Parts'),
-(2, 'Service Provider', 'service@example.com', 'Service');
+CREATE TABLE `Transactions` (
+  `transaction_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `description` text NOT NULL,
+  `debit` decimal(10,2) NOT NULL,
+  `credit` decimal(10,2) NOT NULL,
+  `payment_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `Transactions`
+--
+
+INSERT INTO `Transactions` (`transaction_id`, `date`, `description`, `debit`, `credit`, `payment_id`) VALUES
+(1, '2024-08-03', 'Rental Payment - halaaa', 100.00, 0.00, 43),
+(2, '2024-08-03', 'Rental Payment - halaaa', 0.00, 100.00, 43),
+(3, '2024-08-03', 'Rental Payment - Ahmed', 2000.00, 0.00, 44),
+(4, '2024-08-03', 'Rental Payment - Ahmed', 0.00, 100.00, 44);
 
 -- --------------------------------------------------------
 
@@ -323,51 +301,45 @@ INSERT INTO `Users` (`user_id`, `name`, `email`, `password`, `phone`, `address`,
 --
 
 CREATE TABLE `Vehicles` (
-  `vehicle_id` int(11) NOT NULL,
+  `vehicle_id` varchar(50) NOT NULL,
   `make` varchar(50) NOT NULL,
   `model` varchar(50) NOT NULL,
-  `year` year(4) NOT NULL,
-  `rental_rate` decimal(10,2) NOT NULL,
+  `year` int(11) NOT NULL,
+  `color` varchar(50) NOT NULL,
+  `rental_rate` decimal(10,2) DEFAULT NULL,
   `status` enum('available','rented','maintenance') NOT NULL,
-  `category` varchar(50) DEFAULT NULL,
-  `mileage` int(11) DEFAULT NULL
+  `mileage` varchar(55) DEFAULT NULL,
+  `last_oil_change_miles` varchar(50) NOT NULL,
+  `last_oil_change_date` date NOT NULL,
+  `license_expiry_date` date NOT NULL,
+  `insurance_expiry_date` date NOT NULL,
+  `change_oil_every_km` varchar(50) NOT NULL,
+  `change_oil_every_month` varchar(50) NOT NULL,
+  `license_image` varchar(255) DEFAULT NULL,
+  `insurance_image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Vehicles`
 --
 
-INSERT INTO `Vehicles` (`vehicle_id`, `make`, `model`, `year`, `rental_rate`, `status`, `category`, `mileage`) VALUES
-(1, 'Toyota', 'Corolla', '2020', 45.00, 'available', 'sedan', 15000),
-(2, 'Honda', 'Civic', '2019', 40.00, 'maintenance', 'sedan', 25000),
-(3, 'Ford', 'Escape', '2021', 60.00, 'rented', 'SUV', 10000),
-(4, 'Chevrolet', 'Tahoe', '2020', 80.00, 'available', 'SUV', 20000);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Vehicle_Maintenance`
---
-
-CREATE TABLE `Vehicle_Maintenance` (
-  `maintenance_id` int(11) NOT NULL,
-  `vehicle_id` int(11) NOT NULL,
-  `maintenance_date` date NOT NULL,
-  `details` text NOT NULL,
-  `cost` decimal(10,2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `Vehicle_Maintenance`
---
-
-INSERT INTO `Vehicle_Maintenance` (`maintenance_id`, `vehicle_id`, `maintenance_date`, `details`, `cost`) VALUES
-(1, 2, '2024-06-15', 'Oil change and tire rotation', 100.00),
-(2, 3, '2024-06-20', 'Brake inspection and replacement', 300.00);
+INSERT INTO `Vehicles` (`vehicle_id`, `make`, `model`, `year`, `color`, `rental_rate`, `status`, `mileage`, `last_oil_change_miles`, `last_oil_change_date`, `license_expiry_date`, `insurance_expiry_date`, `change_oil_every_km`, `change_oil_every_month`, `license_image`, `insurance_image`) VALUES
+('11312-H', 'Toyota', 'Corolla', 2020, 'red', 45.00, 'available', '15000', '1000', '2024-07-29', '2024-07-02', '2024-07-02', '1000', '6', '', ''),
+('2', 'Honda', 'Civic', 2019, 'white', 40.00, 'available', '25000', '123112', '2024-06-04', '2024-07-02', '2024-07-02', '1000', '6', '', ''),
+('3', 'Ford', 'Escape', 2021, 'black', 60.00, 'available', '10000', '11122', '2024-07-29', '2024-07-02', '2024-07-02', '1000', '6', '', ''),
+('4', 'Chevrolet', 'Tahoe', 2020, 'red', 80.00, 'maintenance', '20000', '123100', '2024-07-02', '2024-07-02', '2024-07-02', '1000', '6', '', ''),
+('765432-H', 'BMW', 'm1', 2022, '2024-07-25T12:00', NULL, 'maintenance', NULL, '120', '2024-07-25', '2024-07-25', '2024-07-25', '10000km', '4', NULL, NULL),
+('Skoda', 'Skoda', 'Octavia', 2022, 'Red', NULL, 'available', '120', '0KM', '2024-08-21', '2024-08-14', '2024-08-20', '10000KM', '6', NULL, NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `BankChecks`
+--
+ALTER TABLE `BankChecks`
+  ADD PRIMARY KEY (`check_number`);
 
 --
 -- Indexes for table `BlackListRenters`
@@ -383,12 +355,6 @@ ALTER TABLE `CompaniesMessages`
   ADD PRIMARY KEY (`message_id`);
 
 --
--- Indexes for table `Expenses`
---
-ALTER TABLE `Expenses`
-  ADD PRIMARY KEY (`expense_id`);
-
---
 -- Indexes for table `Feedback`
 --
 ALTER TABLE `Feedback`
@@ -402,11 +368,20 @@ ALTER TABLE `Garages`
   ADD PRIMARY KEY (`garage_id`);
 
 --
+-- Indexes for table `Maintenance`
+--
+ALTER TABLE `Maintenance`
+  ADD PRIMARY KEY (`maintenance_id`),
+  ADD KEY `vehicle_maintenance_ibfk_1` (`vehicle_id`),
+  ADD KEY `fk_garage_id` (`garage_id`);
+
+--
 -- Indexes for table `Payments`
 --
 ALTER TABLE `Payments`
   ADD PRIMARY KEY (`payment_id`),
-  ADD KEY `rental_id` (`rental_id`);
+  ADD KEY `fk_check_number` (`check_number`),
+  ADD KEY `fk_reservation_id` (`reservation_id`);
 
 --
 -- Indexes for table `Rentals`
@@ -416,18 +391,13 @@ ALTER TABLE `Rentals`
   ADD KEY `reservation_id` (`reservation_id`);
 
 --
--- Indexes for table `Reports`
+-- Indexes for table `reservations`
 --
-ALTER TABLE `Reports`
-  ADD PRIMARY KEY (`report_id`);
-
---
--- Indexes for table `Reservations`
---
-ALTER TABLE `Reservations`
+ALTER TABLE `reservations`
   ADD PRIMARY KEY (`reservation_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `vehicle_id` (`vehicle_id`);
+  ADD KEY `reservations_ibfk_2` (`vehicle_id`),
+  ADD KEY `reservations_ibfk_1` (`tenant_id`),
+  ADD KEY `reservations_ibfk_3` (`second_driver_id`);
 
 --
 -- Indexes for table `Tenants`
@@ -436,17 +406,24 @@ ALTER TABLE `Tenants`
   ADD PRIMARY KEY (`id_number`);
 
 --
--- Indexes for table `Tracking`
+-- Indexes for table `tracking`
 --
-ALTER TABLE `Tracking`
+ALTER TABLE `tracking`
   ADD PRIMARY KEY (`tracking_id`),
-  ADD KEY `vehicle_id` (`vehicle_id`);
+  ADD KEY `tracking_ibfk_1` (`vehicle_id`);
 
 --
 -- Indexes for table `Traders`
 --
 ALTER TABLE `Traders`
   ADD PRIMARY KEY (`trader_id`);
+
+--
+-- Indexes for table `Transactions`
+--
+ALTER TABLE `Transactions`
+  ADD PRIMARY KEY (`transaction_id`),
+  ADD KEY `fk_payment` (`payment_id`);
 
 --
 -- Indexes for table `Users`
@@ -460,13 +437,6 @@ ALTER TABLE `Users`
 --
 ALTER TABLE `Vehicles`
   ADD PRIMARY KEY (`vehicle_id`);
-
---
--- Indexes for table `Vehicle_Maintenance`
---
-ALTER TABLE `Vehicle_Maintenance`
-  ADD PRIMARY KEY (`maintenance_id`),
-  ADD KEY `vehicle_id` (`vehicle_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -485,12 +455,6 @@ ALTER TABLE `CompaniesMessages`
   MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `Expenses`
---
-ALTER TABLE `Expenses`
-  MODIFY `expense_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT for table `Feedback`
 --
 ALTER TABLE `Feedback`
@@ -503,33 +467,33 @@ ALTER TABLE `Garages`
   MODIFY `garage_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `Maintenance`
+--
+ALTER TABLE `Maintenance`
+  MODIFY `maintenance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `Payments`
 --
 ALTER TABLE `Payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `Rentals`
 --
 ALTER TABLE `Rentals`
-  MODIFY `rental_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `rental_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
--- AUTO_INCREMENT for table `Reports`
+-- AUTO_INCREMENT for table `reservations`
 --
-ALTER TABLE `Reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `reservations`
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
 
 --
--- AUTO_INCREMENT for table `Reservations`
+-- AUTO_INCREMENT for table `tracking`
 --
-ALTER TABLE `Reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `Tracking`
---
-ALTER TABLE `Tracking`
+ALTER TABLE `tracking`
   MODIFY `tracking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
@@ -539,22 +503,16 @@ ALTER TABLE `Traders`
   MODIFY `trader_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `Transactions`
+--
+ALTER TABLE `Transactions`
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `Users`
 --
 ALTER TABLE `Users`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `Vehicles`
---
-ALTER TABLE `Vehicles`
-  MODIFY `vehicle_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `Vehicle_Maintenance`
---
-ALTER TABLE `Vehicle_Maintenance`
-  MODIFY `maintenance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
@@ -573,10 +531,18 @@ ALTER TABLE `Feedback`
   ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`);
 
 --
+-- Constraints for table `Maintenance`
+--
+ALTER TABLE `Maintenance`
+  ADD CONSTRAINT `fk_garage_id` FOREIGN KEY (`garage_id`) REFERENCES `Garages` (`garage_id`),
+  ADD CONSTRAINT `maintenance_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`vehicle_id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `Payments`
 --
 ALTER TABLE `Payments`
-  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`rental_id`) REFERENCES `Rentals` (`rental_id`);
+  ADD CONSTRAINT `fk_check_number` FOREIGN KEY (`check_number`) REFERENCES `BankChecks` (`check_number`),
+  ADD CONSTRAINT `fk_reservation_id` FOREIGN KEY (`reservation_id`) REFERENCES `reservations` (`reservation_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `Rentals`
@@ -585,23 +551,24 @@ ALTER TABLE `Rentals`
   ADD CONSTRAINT `rentals_ibfk_1` FOREIGN KEY (`reservation_id`) REFERENCES `Reservations` (`reservation_id`);
 
 --
--- Constraints for table `Reservations`
+-- Constraints for table `reservations`
 --
-ALTER TABLE `Reservations`
-  ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`),
-  ADD CONSTRAINT `reservations_ibfk_2` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`vehicle_id`);
+ALTER TABLE `reservations`
+  ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`tenant_id`) REFERENCES `Tenants` (`id_number`),
+  ADD CONSTRAINT `reservations_ibfk_2` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`vehicle_id`),
+  ADD CONSTRAINT `reservations_ibfk_3` FOREIGN KEY (`second_driver_id`) REFERENCES `Tenants` (`id_number`);
 
 --
--- Constraints for table `Tracking`
+-- Constraints for table `tracking`
 --
-ALTER TABLE `Tracking`
-  ADD CONSTRAINT `tracking_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`vehicle_id`);
+ALTER TABLE `tracking`
+  ADD CONSTRAINT `tracking_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`vehicle_id`) ON DELETE NO ACTION;
 
 --
--- Constraints for table `Vehicle_Maintenance`
+-- Constraints for table `Transactions`
 --
-ALTER TABLE `Vehicle_Maintenance`
-  ADD CONSTRAINT `vehicle_maintenance_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`vehicle_id`);
+ALTER TABLE `Transactions`
+  ADD CONSTRAINT `fk_payment` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`payment_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

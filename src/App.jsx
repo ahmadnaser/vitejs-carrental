@@ -16,6 +16,8 @@ import TenantsDetalis from './components/Tenants-Management/TenantsDetails';
 import Cars from './components/cars_managemnt/Cars';
 import AddCarForm from './components/cars_managemnt/AddCar';
 import CarsMaintenanceTable from './components/cars_maintenance/CarsMaintenance';
+import CustomerAccountStatementForm from './components/reports/customer_statement/CustomerStatement';
+import ContractStatmentTable from './components/reports/customer_statement/ContractStatement';
 import SellCar from './components/SellCar'; 
 import Settings from './components/Settings'; 
 
@@ -46,7 +48,8 @@ const App = () => {
       <Route path="/cars" element={isLoggedIn ? <Layout><Cars /></Layout> : <Navigate to="/login" />} />
       <Route path="/cars/add-car" element={isLoggedIn ? <Layout><AddCarForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses/car-maintenance" element={isLoggedIn ? <Layout><CarsMaintenanceTable /></Layout> : <Navigate to="/login" />} />
-      <Route path="/reports" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/customer-statement" element={isLoggedIn ? <Layout><CustomerAccountStatementForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/customer-statement/contract" element={isLoggedIn ? <Layout><ContractStatmentTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/car-tracking" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
       <Route path="/traffic-violations" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
       <Route path="/messages" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />

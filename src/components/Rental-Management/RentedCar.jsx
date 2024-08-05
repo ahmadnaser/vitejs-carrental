@@ -156,8 +156,8 @@ const RentedCarTable = () => {
         <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-left text-gray-800 dark:text-gray-100 rounded-lg">
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-2 py-3">{t('Select')}</th>
-              <th scope="col" className="px-3 py-3 cursor-pointer" onClick={() => requestSort('car')}>
+              <th scope="col" className="px-2 py-3 text-center">{t('Select')}</th>
+              <th scope="col" className="px-3 py-3 cursor-pointer text-center" onClick={() => requestSort('car')}>
                 <div className="flex items-center">
                   {t('Car')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('car')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -165,7 +165,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-3 py-3 cursor-pointer" onClick={() => requestSort('customer')}>
+              <th scope="col" className="px-3 py-3 cursor-pointer text-center" onClick={() => requestSort('customer')}>
                 <div className="flex items-center">
                   {t('Customer')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('customer')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -173,7 +173,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer" onClick={() => requestSort('fromDate')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('fromDate')}>
                 <div className="flex items-center">
                   {t('From Date')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('fromDate')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -181,7 +181,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer" onClick={() => requestSort('dayNum')}>
+              <th scope="col" className="px-2 py-3 cursor-pointer text-center" onClick={() => requestSort('dayNum')}>
                 <div className="flex items-center">
                   {t('Days')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('dayNum')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -189,7 +189,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer" onClick={() => requestSort('toDateExpected')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('toDateExpected')}>
                 <div className="flex items-center">
                   {t('To Date (Agreed)')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('toDateExpected')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -197,7 +197,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer" onClick={() => requestSort('toDate')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('toDate')}>
                 <div className="flex items-center">
                   {t('To Date')}
                   <svg className={`w-4 h-3 ms-1.5 ${getClassNamesFor('toDate')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -205,7 +205,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('timeReturned')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('timeReturned')}>
                 <div className="flex items-center">
                   {t('Time Returned')}
                   <svg className={`w-4 h-3 ms-1.5 ${getClassNamesFor('timeReturned')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -213,7 +213,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer" onClick={() => requestSort('pricePerDay')}>
+              <th scope="col" className="px-2 py-3 cursor-pointer text-center" onClick={() => requestSort('pricePerDay')}>
                 <div className="flex items-center">
                   {t('Price/Day')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('pricePerDay')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -221,7 +221,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('totalAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('totalAmount')}>
                 <div className="flex items-center">
                   {t('Total Amount')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('totalAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -229,7 +229,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('remainingAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('remainingAmount')}>
                 <div className="flex items-center">
                   {t('Remaining Amount')}
                   <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('remainingAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -237,7 +237,7 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3">{t('Note')}</th>
+              <th scope="col" className="px-4 py-3 text-center">{t('Note')}</th>
             </tr>
           </thead>
           <tbody>
@@ -261,16 +261,16 @@ const RentedCarTable = () => {
                     />
                   </td>
                   <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{item.make} {item.model}</td>
-                  <td className="px-3 py-4  text-blue-500">{item.customer}</td>
-                  <td className="px-1 py-4">{item.startDate}</td>
-                  <td className="px-2 py-4">{item.dayNum}</td>
-                  <td className="px-1 py-4">{item.endDateAgreed}</td>
-                  <td className="px-1 py-4">{item.endDate}</td>
-                  <td className="px-2 py-4">{item.timeReturned}</td>
-                  <td className="px-2 py-4">{item.pricePerDay}</td>
-                  <td className="px-1 py-4">{item.totalAmount}</td>
-                  <td className="px-4 py-4">{item.remainingAmount}</td>
-                  <td className="px-4 py-4">{item.note}</td>
+                  <td className="px-3 py-4  text-blue-500 text-center">{item.customer}</td>
+                  <td className="px-1 py-4 text-center">{item.startDate}</td>
+                  <td className="px-2 py-4 text-center">{item.dayNum}</td>
+                  <td className="px-1 py-4 text-center">{item.endDateAgreed}</td>
+                  <td className="px-1 py-4 text-center">{item.endDate}</td>
+                  <td className="px-2 py-4 text-center">{item.timeReturned}</td>
+                  <td className="px-2 py-4 text-center">{item.pricePerDay}</td>
+                  <td className="px-1 py-4 text-center">{item.totalAmount}</td>
+                  <td className="px-4 py-4 text-center">{item.remainingAmount}</td>
+                  <td className="px-4 py-4 text-center">{item.note}</td>
                 </tr>
               ))
             )}

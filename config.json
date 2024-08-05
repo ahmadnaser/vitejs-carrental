@@ -1,0 +1,5 @@
+{
+    "FetchRentedCarURL": "http://localhost/CarRentalSystem/fetch_rental_cars.php",
+    "AdddRentalContract": "http://localhost/CarRentalSystem/add_rental_contract.php",
+    "FetchRentedCarByIdURL": "http://localhost/CarRentalSystem/fetch_rental_car_by_id.php"
+}

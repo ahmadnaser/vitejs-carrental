@@ -1,12 +1,17 @@
 import axios from 'axios';
 import { ContractView } from '../models/ContractViewModel';
-import { Contract } from '../models/Contract';
 
-const API_URL = 'http://localhost/CarRentalSystem/fetch_rental_cars.php';
-const ADD_API_URL = 'http://localhost/CarRentalSystem/add_rental_contract.php';
+async function loadConfig() {
+  const config = await import('../../config.json', {
+    assert: { type: 'json' }
+  });
+  return config.default;
+}
+const config = await loadConfig(); 
+
 export const getContracts = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await axios.get(config.FetchRentedCarURL);
     return response.data.map(contract => 
       new ContractView(
         contract.rental_id,
@@ -32,10 +37,48 @@ export const getContracts = async () => {
   }
 };
 
-export const addContract = async (formData) => {
-  
+export const getContractsByTenantId = async (tenantId, startDate, endDate) => {
   try {
-    const response = await fetch(ADD_API_URL, {
+    const response = await axios.get(`${config.FetchRentedCarByIdURL}`, {
+      params: {
+        tenant_id: tenantId,
+        start_date: startDate,
+        end_date: endDate,
+      },
+    });
+    if (response.data.message === "No contracts found") {
+      console.warn("No contracts found for the given criteria.");
+      return []; 
+    }
+    
+    return response.data.map(contract => 
+      new ContractView(
+        contract.rental_id,
+        contract.vehicle_id,
+        contract.make,
+        contract.model,
+        contract.customer,
+        contract.tenantID,
+        contract.start_date,
+        contract.end_date,
+        contract.end_date_agreed,
+        contract.price_perday,
+        contract.dayNum,
+        contract.total_amount,
+        contract.note,
+        contract.remainingAmount,
+        contract.timeReturned,
+      )
+    );
+  } catch (error) {
+    console.error("There was an error fetching the contracts by tenant ID!", error);
+    throw error;
+  }
+};
+
+export const addContract = async (formData) => {  
+  try {
+    const response = await fetch(config.AdddRentalContract, {
       method: 'POST',
       body: formData,
       headers: {
@@ -54,6 +97,6 @@ export const addContract = async (formData) => {
   
   } catch (error) {
    
-    return { success: false, message: 'An unexpected error occurred' };
+    return { success: false, message: error.message };
   }
 };

@@ -54,13 +54,13 @@ const AddRentalForm = () => {
   useEffect(() => {
     if (location.state && location.state.tenantName && location.state.idNumber) {
       const selectedTenantOption = {
-        value: location.state.idNumber,
+        value: location.state.id_number,
         label: `${location.state.tenantName} - ${location.state.idNumber}`
       };
       setSelectedTenant(selectedTenantOption);
       setFormData(prevFormData => ({
         ...prevFormData,
-        tenant_id: location.state.idNumber
+        tenant_id: location.state.id_number
       }));
     }
 
@@ -141,8 +141,8 @@ const AddRentalForm = () => {
   }, [formData.start_date, formData.end_date]);
 
   const tenantOptions = tenants.map(tenant => ({
-    value: tenant.idNumber,
-    label: `${tenant.tenantName} - ${tenant.idNumber}`
+    value: tenant.id_number,
+    label: `${tenant.tenant_name} - ${tenant.id_number}`
   }));
 
   const carOptions = cars.map(car => ({
@@ -203,17 +203,11 @@ const AddRentalForm = () => {
 
   const handleCarChange = async (selectedOption) => {
     setSelectedCar(selectedOption);
-    try {
-      const carDetails = await getCarById(selectedOption.value);
-
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        vehicle_id: selectedOption.value,
-        price_perday: carDetails.price_perday
-      }));
-    } catch (error) {
-      console.error('Error fetching car details:', error);
-    }
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      vehicle_id: selectedOption.value,
+    }));
+   
   };
 
   const handleInputChange = (e) => {
@@ -319,19 +313,15 @@ const AddRentalForm = () => {
         if (response.message) {
           setErrors(response.message);
         } else {
-          setErrors({ form: 'An unexpected error occurred' });
+          setErrors(response.message);
         }
       }
     } catch (error) {
       setStatus('error');
-      setErrors({ form: 'An unexpected error occurred' });
+      setErrors(error.message);
     }
   };
   
-  
-  
-  
-
   const customStyles = {
     control: (provided) => ({
       ...provided,

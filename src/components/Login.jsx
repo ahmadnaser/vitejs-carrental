@@ -97,12 +97,22 @@ const Login = ({ onLogin }) => {
               </div>
 
               <div className="text-sm flex flex-col gap-2.5 mt-10 items-center">
-                <button type="submit" className="w-3/5 h-auto py-2 rounded-full cursor-pointer text-white bg-secondary-color font-semibold font-arabic">{t('log_in')}</button>
-                <button type="button" className="w-3/5 h-auto py-1 bg-gray-100 flex justify-center items-center gap-1.05 rounded-full hover:bg-gray-200 text-black">
-                  <img src={GoogleSvg} alt="" className="w-8" />
+                <button
+                  type="submit"
+                  className="w-3/5 h-auto py-2 rounded-full cursor-pointer hover:bg-white "
+                  style={{ backgroundColor: '#01d293' }}
+                >
+                  {t('log_in')}
+                </button>
+                <button
+                  type="button"
+                  className="w-3/5 h-auto py-1 bg-gray-100 flex justify-center items-center gap-1.05 rounded-full hover:bg-gray-200 text-black"
+                >
+                  <img src={GoogleSvg} alt="Google Logo" className="w-8" />
                   {t('log_in_with_google')}
                 </button>
               </div>
+
             </form>
           </div>
 
