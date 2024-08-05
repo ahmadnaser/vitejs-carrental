@@ -81,6 +81,14 @@ const Settings = () => {
         </button>
         <button
           className={`border-none rounded-md text-heading-color text-lg cursor-pointer py-1.5 px-6 ${
+            activeSection === "code" ? "bg-[#b7ffe913]" : "bg-transparent"
+          } hover:bg-[#b7ffe913]`}
+          onClick={() => setActiveSection("code")}
+        >
+          {t("Admin Code ")} 
+        </button>
+        <button
+          className={`border-none rounded-md text-heading-color text-lg cursor-pointer py-1.5 px-6 ${
             activeSection === "notification"
               ? "bg-[#b7ffe913]"
               : "bg-transparent"
