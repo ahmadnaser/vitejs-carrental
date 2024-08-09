@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 05, 2024 at 12:27 PM
+-- Generation Time: Aug 09, 2024 at 10:43 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -37,6 +37,26 @@ CREATE TABLE `BankChecks` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `Beneficiaries`
+--
+
+CREATE TABLE `Beneficiaries` (
+  `beneficiarie_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `contact_info` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `Beneficiaries`
+--
+
+INSERT INTO `Beneficiaries` (`beneficiarie_id`, `name`, `contact_info`, `type`) VALUES
+(1, 'Mujahed Abuali', '908765', '132');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `BlackListRenters`
 --
 
@@ -63,6 +83,27 @@ CREATE TABLE `CompaniesMessages` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ExpensesType`
+--
+
+CREATE TABLE `ExpensesType` (
+  `expense_type_id` int(11) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `type_info` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ExpensesType`
+--
+
+INSERT INTO `ExpensesType` (`expense_type_id`, `type`, `type_info`) VALUES
+(1, 'Diesel', ''),
+(2, 'الايجار', ''),
+(3, 'Maintenance ', '');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `Feedback`
 --
 
@@ -83,17 +124,21 @@ CREATE TABLE `Feedback` (
 CREATE TABLE `Garages` (
   `garage_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `type` varchar(50) NOT NULL,
   `location` varchar(100) NOT NULL,
-  `contact_info` varchar(100) DEFAULT NULL
+  `contact_info` varchar(100) DEFAULT NULL,
+  `garage_info` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Garages`
 --
 
-INSERT INTO `Garages` (`garage_id`, `name`, `location`, `contact_info`) VALUES
-(1, 'Garage Inc.', '123 Mechanic St, City, Country', 'garage@example.com'),
-(2, 'Auto Fix', '456 Repair Rd, City, Country', 'autofix@example.com');
+INSERT INTO `Garages` (`garage_id`, `name`, `type`, `location`, `contact_info`, `garage_info`) VALUES
+(1, 'Garage Inc.', 'Maintenance ', '123 Mechanic St, City, Country', 'garage@example.com', 'Car wash '),
+(2, 'Auto Fix', 'Maintenance ', '456 Repair Rd, City, Country', 'autofix@example.com', 'Motor maintenance '),
+(3, 'Al-Amir', 'Maintenance ', 'ramallah', '+97234235', 'lalala'),
+(4, 'Ahmad have ', 'This ', 'This ', 'This ', 'This ');
 
 -- --------------------------------------------------------
 
@@ -108,12 +153,19 @@ CREATE TABLE `Maintenance` (
   `details` text NOT NULL,
   `cost` decimal(10,2) NOT NULL,
   `amount_paid` decimal(10,2) NOT NULL,
-  `Trader` varchar(50) NOT NULL,
+  `trader_id` int(11) NOT NULL,
   `spare_parts` text NOT NULL,
   `spare_parts_price` decimal(10,2) NOT NULL,
   `amount_paid_of_spare_parts` decimal(10,2) NOT NULL,
   `garage_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `Maintenance`
+--
+
+INSERT INTO `Maintenance` (`maintenance_id`, `vehicle_id`, `maintenance_date`, `details`, `cost`, `amount_paid`, `trader_id`, `spare_parts`, `spare_parts_price`, `amount_paid_of_spare_parts`, `garage_id`) VALUES
+(435, '11312-H', '2024-08-21', 'efw', 123.00, 12.00, 1213, 'ewr', 123.00, 21.00, 2);
 
 -- --------------------------------------------------------
 
@@ -245,6 +297,23 @@ CREATE TABLE `Traders` (
   `type` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `Traders`
+--
+
+INSERT INTO `Traders` (`trader_id`, `name`, `contact_info`, `type`) VALUES
+(1213, 'ahmad', '+771213123', 'قطع'),
+(1214, 'khalid', '908765', 'This '),
+(1224, ' ', '123', '132'),
+(1226, 'Ahmed', '19876543', 'zad'),
+(1227, 'fofof ', '243', 'ds'),
+(1228, 'fofof ', '243', 'ds'),
+(1229, 'fofof ', '243', 'ds'),
+(1231, 'Mujahed Abuali', '123', 'This '),
+(1232, 'Mujahed Abuali', '123', 'This '),
+(1233, 'joj', '123', 'This '),
+(1234, 'How ', 'This ', 'Maintenance ');
+
 -- --------------------------------------------------------
 
 --
@@ -342,6 +411,12 @@ ALTER TABLE `BankChecks`
   ADD PRIMARY KEY (`check_number`);
 
 --
+-- Indexes for table `Beneficiaries`
+--
+ALTER TABLE `Beneficiaries`
+  ADD PRIMARY KEY (`beneficiarie_id`);
+
+--
 -- Indexes for table `BlackListRenters`
 --
 ALTER TABLE `BlackListRenters`
@@ -353,6 +428,12 @@ ALTER TABLE `BlackListRenters`
 --
 ALTER TABLE `CompaniesMessages`
   ADD PRIMARY KEY (`message_id`);
+
+--
+-- Indexes for table `ExpensesType`
+--
+ALTER TABLE `ExpensesType`
+  ADD PRIMARY KEY (`expense_type_id`);
 
 --
 -- Indexes for table `Feedback`
@@ -373,7 +454,8 @@ ALTER TABLE `Garages`
 ALTER TABLE `Maintenance`
   ADD PRIMARY KEY (`maintenance_id`),
   ADD KEY `vehicle_maintenance_ibfk_1` (`vehicle_id`),
-  ADD KEY `fk_garage_id` (`garage_id`);
+  ADD KEY `fk_garage_id` (`garage_id`),
+  ADD KEY `fk_trader_id` (`trader_id`);
 
 --
 -- Indexes for table `Payments`
@@ -443,6 +525,12 @@ ALTER TABLE `Vehicles`
 --
 
 --
+-- AUTO_INCREMENT for table `Beneficiaries`
+--
+ALTER TABLE `Beneficiaries`
+  MODIFY `beneficiarie_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `BlackListRenters`
 --
 ALTER TABLE `BlackListRenters`
@@ -455,6 +543,12 @@ ALTER TABLE `CompaniesMessages`
   MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `ExpensesType`
+--
+ALTER TABLE `ExpensesType`
+  MODIFY `expense_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `Feedback`
 --
 ALTER TABLE `Feedback`
@@ -464,13 +558,13 @@ ALTER TABLE `Feedback`
 -- AUTO_INCREMENT for table `Garages`
 --
 ALTER TABLE `Garages`
-  MODIFY `garage_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `garage_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `Maintenance`
 --
 ALTER TABLE `Maintenance`
-  MODIFY `maintenance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `maintenance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=436;
 
 --
 -- AUTO_INCREMENT for table `Payments`
@@ -500,7 +594,7 @@ ALTER TABLE `tracking`
 -- AUTO_INCREMENT for table `Traders`
 --
 ALTER TABLE `Traders`
-  MODIFY `trader_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `trader_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1238;
 
 --
 -- AUTO_INCREMENT for table `Transactions`
@@ -535,6 +629,7 @@ ALTER TABLE `Feedback`
 --
 ALTER TABLE `Maintenance`
   ADD CONSTRAINT `fk_garage_id` FOREIGN KEY (`garage_id`) REFERENCES `Garages` (`garage_id`),
+  ADD CONSTRAINT `fk_trader_id` FOREIGN KEY (`trader_id`) REFERENCES `traders` (`trader_id`),
   ADD CONSTRAINT `maintenance_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`vehicle_id`) ON DELETE CASCADE;
 
 --
