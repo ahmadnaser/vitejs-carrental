@@ -26,7 +26,7 @@ const navLinks = [
       { path: "/expenses/general-expenses", display: "General expenses" },
       { path: "/expenses/garages", display: "Garages" },
       { path: "/expenses/beneficiaries", display: "Beneficiaries" },
-      { path: "/expenses/meerchants", display: "Meerchants" },
+      { path: "/expenses/traders", display: "Traders" },
       { path: "/expenses/types-of-expenses", display: "Types of expenses" }
     ],
   },
@@ -40,7 +40,7 @@ const navLinks = [
       { path: "/reports/customer-statement", display: "Customer statment" },
       { path: "/reports/full-account-statement", display: "Full account statement" },
       { path: "/reports/garage-account-statement", display: "Garage account statement" },
-      { path: "/reports/meerchants-account-statement", display: "Meerchant account statement" }
+      { path: "/reports/trader-account-statement", display: "Meerchant account statement" }
     ],
   },
   {

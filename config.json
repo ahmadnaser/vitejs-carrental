@@ -7,10 +7,20 @@
     "GetAvailableCars": "http://localhost/CarRentalSystem/get_available_cars.php",
     "GetAllCarsInMaintenance": "http://localhost/CarRentalSystem/get_all_cars_in_maintenance.php",
     "AddCar": "http://localhost/CarRentalSystem/add_car.php",
-    "AddMaintenance": "http://localhost/CarRentalSystem/add_maintenance.php",
     "AddTenant": "http://localhost/CarRentalSystem/add_tenant.php",
     "GetTenants": "http://localhost/CarRentalSystem/get_tenants.php",
     "GetTenantsById": "http://localhost/CarRentalSystem/get_tenants_by_id.php",
-    "GetReservations": "http://localhost/CarRentalSystem/get_reservations.php"
+    "GetReservations": "http://localhost/CarRentalSystem/get_reservations.php",
+    "GetGarages": "http://localhost/CarRentalSystem/get_garages.php",
+    "AddGarage": "http://localhost/CarRentalSystem/add_garage.php",
+    "GetTraders": "http://localhost/CarRentalSystem/get_traders.php",
+    "AddTrader": "http://localhost/CarRentalSystem/add_trader.php",
+    "GetBeneficiaries": "http://localhost/CarRentalSystem/get_beneficiaries.php",
+    "AddBeneficiary": "http://localhost/CarRentalSystem/add_beneficiary.php",
+    "GetExpensesTypes": "http://localhost/CarRentalSystem/get_expenses_type.php",
+    "AddExpenseType": "http://localhost/CarRentalSystem/add_expenses_type.php",
+    "AddMaintenance": "http://localhost/CarRentalSystem/add_maintenance.php",
+    "GetMaintenanceByVehicleId": "http://localhost/CarRentalSystem/get_maintenance_by_car_id.php",
+    "GetMaintenance": "http://localhost/CarRentalSystem/get_maintenance.php"
 }
 
