@@ -155,14 +155,20 @@ const AddRentalForm = () => {
       const from = new Date(formData.start_date);
       const to = new Date(formData.end_date);
 
-      if (to < from) return;
+      if (to < from) {
+        setNumDays(null);
+        return;
+      }
 
       const diffTime = Math.abs(to - from);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       setNumDays(diffDays);
-    } else if (formData.start_date && numDays) {
+    } else if (formData.start_date && numDays !== null) {
       const from = new Date(formData.start_date);
-      from.setDate(from.getDate() + parseInt(numDays));
+      if (isNaN(from.getTime())) return;
+      const daysToAdd = parseInt(numDays, 10);
+      if (isNaN(daysToAdd)) return;
+      from.setDate(from.getDate() + daysToAdd);
       const formattedDate = from.toISOString().split('T')[0];
       setFormData(prevFormData => ({
         ...prevFormData,

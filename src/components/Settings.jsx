@@ -101,13 +101,15 @@ const Settings = () => {
 
       <div>
         {activeSection === "general" && (
-          <div className="mt-10">
-            <h2 className="text-heading-color font-medium mb-1 text-xl">
-              {t("General Settings")}
-            </h2>
-            <p className="text-small-text-color mb-8">
-              {t("Manage your general preferences here.")}
-            </p>
+          <div className="mt-10 ">
+            <div className="bg-white p-3 rounded-lg">
+              <h2 className="text-black font-medium mb-1 text-xl">
+                {t("General Settings")}
+              </h2>
+              <p className="text-small-text-color mb-8">
+                {t("Manage your general preferences here.")}
+              </p>
+            </div>
             <div className="flex flex-col gap-y-4 mt-12">
               <label className="text-heading-color text-md">
                 {t("Select Language")}
@@ -145,7 +147,6 @@ const Settings = () => {
             <p className="text-small-text-color mb-8">
               {t("Update your personal information here.")}
             </p>
-            {/* Additional form fields can be added here */}
           </div>
         )}
 

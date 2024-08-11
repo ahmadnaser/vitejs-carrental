@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
             $transactionStmt->execute([
                 ':date' => $current_date,
-                ':description' => 'Rental Payment - ' . $tenant_name,
+                ':description' => 'المطلوب مقابل عقد الايجار - ' . $tenant_name,
                 ':debit' => $total_amount, 
                 ':credit' => 0,
                 ':payment_id' => $payment_id
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $transactionStmt->execute([
                 ':date' => $current_date,
-                ':description' => 'Rental Payment - ' . $tenant_name,
+                ':description' => 'دفعة مالية  - ' . $tenant_name,
                 ':debit' => 0,
                 ':credit' => $amount_paid, 
                 ':payment_id' => $payment_id

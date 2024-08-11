@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getTenantById, getTenants } from '../../controller/tenantController';
+import { getTenantById, getTenants,getAccountStatmentById } from '../../controller/tenantController';
 import Select from 'react-select';
+import AccountStatement from '../paper_documents/AccountStatement';
 
 const TenantsDetails = ({ tenantId }) => {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('Summary');
+  const [accountData, setaccountData] = useState([]);
   const [tenant, setTenant] = useState(null);
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [tenants, setTenants] = useState([]);
@@ -40,6 +42,8 @@ const TenantsDetails = ({ tenantId }) => {
         try {
           const tenantData = await getTenantById(selectedTenant.value);
           setTenant(tenantData);
+          const account = await getAccountStatmentById(selectedTenant.value, '2000-04-04', '2300-05-05');
+          setaccountData(account);
         } catch (error) {
           console.error('Error fetching tenant data:', error);
         }
@@ -58,8 +62,8 @@ const TenantsDetails = ({ tenantId }) => {
   };
 
   const tenantOptions = tenants.map(tenant => ({
-    value: tenant.idNumber,
-    label: `${tenant.tenantName} - ${tenant.idNumber}`
+    value: tenant.id_number,
+    label: `${tenant.tenant_name} - ${tenant.id_number}`
   }));
 
   const customStyles = {
@@ -105,7 +109,7 @@ const TenantsDetails = ({ tenantId }) => {
       <div className="flex flex-col items-center">
         <nav className="border-b border-gray-100 mb-8">
           <div className="flex flex-wrap justify-around sm:justify-start sm:space-x-8" aria-label="Tabs">
-            {['Summary', 'Profile', 'Contacts', 'Invoices', 'Transactions'].map(tab => (
+            {['Summary', 'Contacts','Profile', 'Invoices', 'Transactions'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -159,56 +163,98 @@ const TenantsDetails = ({ tenantId }) => {
           <div className='bg-white p-4 rounded-xl flex-1'>
             <h3 className="text-lg font-bold mb-2">Products/Services</h3>
             <div className="space-y-2">
-              {/* Add product/service details here */}
+             
             </div>
           </div>
         </div>
       </div>
     )}
+    
 
-      {activeTab === 'Profile' && (
+      {activeTab === 'Transactions' && (
         <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black">
-          <div className="flex flex-col sm:flex-row gap-6">
-            <div className="bg-white p-4 rounded-xl flex-1">
-              <h3 className="text-lg font-bold mb-2">Client Information</h3>
-              <div className="space-y-2">
-                <div><strong>First Name:</strong> Belal</div>
-                <div><strong>Last Name:</strong> Hammad</div>
-                <div><strong>Email Address:</strong> belalhammad1998@gmail.com</div>
-                <div><strong>Address 1:</strong> Silwad Ramallah</div>
-                <div><strong>City:</strong> Ramallah</div>
-                <div><strong>State/Region:</strong> Westbank</div>
-                <div><strong>Country:</strong> PS - Palestine, State Of</div>
-                <div><strong>Phone Number:</strong> +970.568198950</div>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-xl flex-1">
-              <h3 className="text-lg font-bold mb-2">Invoices/Billing</h3>
-              <div className="space-y-2">
-                <div><strong>Paid:</strong> 1 ($900.00 USD)</div>
-                <div><strong>Draft:</strong> 0 ($0.00 USD)</div>
-                <div><strong>Unpaid/Due:</strong> 0 ($0.00 USD)</div>
-                <div><strong>Cancelled:</strong> 0 ($0.00 USD)</div>
-                <div><strong>Refunded:</strong> 0 ($0.00 USD)</div>
-                <div><strong>Collections:</strong> 0 ($0.00 USD)</div>
-                <div><strong>Gross Revenue:</strong> $0.00 USD</div>
-                <div><strong>Client Expenses:</strong> $0.00 USD</div>
-                <div><strong>Net Income:</strong> $0.00 USD</div>
-                <div><strong>Credit Balance:</strong> $0.00 USD</div>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-xl flex-1">
-              <h3 className="text-lg font-bold mb-2">Products/Services</h3>
-              <div className="space-y-2">
-                <div><strong>Shared Hosting:</strong> 1 (1 Total)</div>
-                <div><strong>Reseller Hosting:</strong> 0 (0 Total)</div>
-                <div><strong>VPS/Server:</strong> 0 (0 Total)</div>
-                <div><strong>Domains:</strong> 1 (1 Total)</div>
-              </div>
-            </div>
+        
+          <div className="relative overflow-x-auto shadow-md w-full max-w-7xl px-4 sm:px-5 lg:px-8 md:px-8 mb-10 rounded-lg mt-1">
+            <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-left text-gray-800 dark:text-gray-100 rounded-lg bg-white">
+              <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" className="px-3 py-3 text-center">{t('Description')}</th>
+                  <th scope="col" className="px-3 py-3 text-center">{t('Reservation Id')}</th>
+                  <th scope="col" className="px-5 py-3 text-center">{t('Date')}</th>
+                  <th scope="col" className="px-2 py-3 text-center">{t('Debit')}</th>
+                  <th scope="col" className="px-5 py-3 text-center">{t('Credit')}</th>
+                  <th scope="col" className="px-4 py-3 text-center">{t('Payment Method')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accountData.length === 0 ? (
+                  <tr>
+                    <td colSpan="13" className="text-center py-4 text-white">{t('No records found')}</td>
+                  </tr>
+                ) : (
+                  accountData.map((item, index) => (
+                    <tr
+                      key={index}
+                    
+                    >
+                      <td className="px-1 py-4 text-center">{item.description}</td>
+                      <td className="px-1 py-4 text-center">{item.reservation_id}</td>
+                      <td className="px-2 py-4 text-center">{item.date}</td>
+                      <td className="px-1 py-4 text-center text-red-500">{item.debit}</td>
+                      <td className="px-2 py-4 text-center text-green-500">{item.credit}</td>
+                      <td className="px-1 py-4 text-center">{item.payment_method}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        </div>
+            </div>
       )}
+
+    {activeTab === 'Profile' && (
+            <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black">
+              <div className="flex flex-col sm:flex-row gap-6">
+                <div className="bg-white p-4 rounded-xl flex-1">
+                  <h3 className="text-lg font-bold mb-2">Client Information</h3>
+                  <div className="space-y-2">
+                    <div><strong>First Name:</strong> Belal</div>
+                    <div><strong>Last Name:</strong> Hammad</div>
+                    <div><strong>Email Address:</strong> belalhammad1998@gmail.com</div>
+                    <div><strong>Address 1:</strong> Silwad Ramallah</div>
+                    <div><strong>City:</strong> Ramallah</div>
+                    <div><strong>State/Region:</strong> Westbank</div>
+                    <div><strong>Country:</strong> PS - Palestine, State Of</div>
+                    <div><strong>Phone Number:</strong> +970.568198950</div>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-xl flex-1">
+                  <h3 className="text-lg font-bold mb-2">Invoices/Billing</h3>
+                  <div className="space-y-2">
+                    <div><strong>Paid:</strong> 1 ($900.00 USD)</div>
+                    <div><strong>Draft:</strong> 0 ($0.00 USD)</div>
+                    <div><strong>Unpaid/Due:</strong> 0 ($0.00 USD)</div>
+                    <div><strong>Cancelled:</strong> 0 ($0.00 USD)</div>
+                    <div><strong>Refunded:</strong> 0 ($0.00 USD)</div>
+                    <div><strong>Collections:</strong> 0 ($0.00 USD)</div>
+                    <div><strong>Gross Revenue:</strong> $0.00 USD</div>
+                    <div><strong>Client Expenses:</strong> $0.00 USD</div>
+                    <div><strong>Net Income:</strong> $0.00 USD</div>
+                    <div><strong>Credit Balance:</strong> $0.00 USD</div>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-xl flex-1">
+                  <h3 className="text-lg font-bold mb-2">Products/Services</h3>
+                  <div className="space-y-2">
+                    <div><strong>Shared Hosting:</strong> 1 (1 Total)</div>
+                    <div><strong>Reseller Hosting:</strong> 0 (0 Total)</div>
+                    <div><strong>VPS/Server:</strong> 0 (0 Total)</div>
+                    <div><strong>Domains:</strong> 1 (1 Total)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
     {activeTab === 'Contacts' && (
             <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black">

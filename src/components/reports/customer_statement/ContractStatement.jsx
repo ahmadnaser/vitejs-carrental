@@ -4,19 +4,22 @@ import { useTranslation } from 'react-i18next';
 import { getTenantById } from '../../../controller/tenantController'; // Ensure these functions are correctly imported
 import { getContractsByTenantId } from '../../../controller/RentedCarController';
 import PrintIcon from "../../../assets/images/print.png";
+import {pdf} from '@react-pdf/renderer';
+import ContractStatement from '../../paper_documents/ContractStatement';
 
 const ContractStatementTable = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const formData = location.state || {};
-  const { t, i18n } = useTranslation();
-  const { tenant_id, start_date, end_date } = formData;
-  const [status, setStatus] = useState(null);
+  const { tenant_id, start_date, end_date } = location.state || {};
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
   const [tenantName, setTenantName] = useState('');
+  const [rentedCarData, setRentedCarData] = useState([]);
+  const [status, setStatus] = useState(null);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [filterTerm, setFilterTerm] = useState('');
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [rentedCarData, setRentedCarData] = useState([]);
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     if (!tenant_id || !start_date || !end_date) {
@@ -26,31 +29,22 @@ const ContractStatementTable = () => {
     }
 
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const data = await getContractsByTenantId(tenant_id,start_date, end_date); 
-        setRentedCarData(data);
+        const tenant = await getTenantById(tenant_id);
+        const contracts = await getContractsByTenantId(tenant_id, start_date, end_date);
+        console.log('Fetched tenant:', contracts);
+        setTenantName(tenant.tenant_name);
+        setRentedCarData(contracts);
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching contracts:', error);
+        console.error('Error fetching data:', error);
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [tenant_id, start_date, end_date, navigate]);
-
-  useEffect(() => {
-    const fetchTenantName = async () => {
-      try {
-        const tenant = await getTenantById(tenant_id); 
-        setTenantName(tenant.tenant_name);
-      } catch (error) {
-        console.error('Error fetching tenant name:', error);
-      }
-    };
-
-    if (tenant_id) {
-      fetchTenantName();
-    }
-  }, [tenant_id]);
 
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -108,8 +102,25 @@ const ContractStatementTable = () => {
     navigate(-1);
   };
 
-  const handlePrintClick = (item) => {
-   
+  const handlePrintClick = async () => {
+    setLoading(true);
+    try {
+     
+      const blob = await pdf(<ContractStatement data={rentedCarData} startDate={start_date} endDate={end_date} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contract_statement_${tenantName}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Printing error:', err);
+      setStatus('error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -124,7 +135,7 @@ const ContractStatementTable = () => {
           <span className="text-secondary-color">{t('To')}:</span> {end_date}
         </h3>
         <div className="mb-1 mt-10">
-          <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <button type="button" onClick={handlePrintClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Printing...') : t('Print')}
           </button>
           <button type="button" className="bg-gray-500 text-white m-5 rounded-md opacity-100 font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center" onClick={handleGoBack}>{t('Go Back')}</button>
@@ -145,7 +156,7 @@ const ContractStatementTable = () => {
         <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-left text-gray-800 dark:text-gray-100 rounded-lg">
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-1 py-3 text-center">{t('Select')}</th>
+              
               <th scope="col" className="px-1 py-3 cursor-pointer text-center" onClick={() => requestSort('rentalId')}>
                 <div className="flex items-center">
                   {t('Number')}
@@ -234,23 +245,16 @@ const ContractStatementTable = () => {
                   key={index}
                   className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${selectedRows.includes(index) ? 'bg-gray-200 dark:bg-gray-600' : ''}`}
                 >
-                  <td className="px-6 py-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.includes(index)}
-                      onChange={() => handleRowSelect(index)}
-                      className="cursor-pointer"
-                    />
-                  </td>
-                  <td className="px-1 py-4 text-center">{item.rentalId}</td>
+                  
+                  <td className="px-1 py-4 text-center">{item.rental_id}</td>
                   <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">{item.make} {item.model}</td>
                   <td className="px-4 py-4 text-blue-500 cursor-pointer text-center" onClick={() => handleCustomerClick(item.tenantID)}>{item.customer}</td>
-                  <td className="px-1 py-4 text-center">{item.startDate}</td>
+                  <td className="px-1 py-4 text-center">{item.start_date}</td>
                   <td className="px-2 py-4 text-center">{item.dayNum}</td>
-                  <td className="px-1 py-4 text-center">{item.endDate}</td>
-                  <td className="px-2 py-4 text-center">{item.pricePerDay}</td>
-                  <td className="px-1 py-4 text-center">{item.totalAmount}</td>
-                  <td className="px-1 py-4 text-center">{item.remainingAmount}</td>
+                  <td className="px-1 py-4 text-center">{item.end_date}</td>
+                  <td className="px-2 py-4 text-center">{item.price_perday}</td>
+                  <td className="px-1 py-4 text-center">{item.total_amount}</td>
+                  <td className="px-1 py-4 text-center">{item.total_amount - item.amount_paid}</td>
                   <td className="px-4 py-4 text-center">{item.hasReturned ? t('Yes') : t('No')}</td>
                   <td className="px-4 py-4 text-center" onClick={() => handlePrintClick(item)}>
                   <img src={PrintIcon} alt="Generate PDF" className="w-13 h-8 cursor-pointer" />

@@ -35,17 +35,24 @@ const RentedCarTable = () => {
   const handlePrintClick = async (form) => {
     setLoading(true);
     try {
+      // console.log("Form Data:");
+    // for (const [key, value] of Object.entries(form)) {
+    //   console.log(`${key}: ${value}`);
+    // }
       const tenantData = await getTenantById(form.tenantID);
       const CarData = await getCarById(form.vehicle_id);
       setTenant(tenantData);
       setCar(CarData);
       setContract(form);
 
+      // console.log("xxx:",tenantData);
+      // console.log("xxx:",CarData);
+
       const blob = await pdf(<Contract formData={form} tenant={tenantData} car={CarData} />).toBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `contract_${tenantData.name}.pdf`;
+      a.download = `contract_${tenantData.tenant_name}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

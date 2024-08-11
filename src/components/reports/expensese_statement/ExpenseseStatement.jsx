@@ -6,7 +6,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
 import { getTenants } from '../../../controller/tenantController';
 
-const CustomerAccountStatementForm = () => {
+const ExpemseseAccountStatementForm = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -106,7 +106,7 @@ const CustomerAccountStatementForm = () => {
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
-        <h1 className="text-3xl font-bold text-secondary-color">{t('Customer Statement')}</h1>
+        <h1 className="text-3xl font-bold text-secondary-color">{t('Expensese Statement')}</h1>
       </div>
 
       <form className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-15 mb-10 max-w-md mx-auto`}>
@@ -203,4 +203,4 @@ const CustomerAccountStatementForm = () => {
   );
 };
 
-export default CustomerAccountStatementForm;
+export default ExpemseseAccountStatementForm;

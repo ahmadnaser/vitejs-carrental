@@ -39,8 +39,8 @@ const navLinks = [
       { path: "/reports/expensese-statement", display: "Expensese statment" },
       { path: "/reports/customer-statement", display: "Customer statment" },
       { path: "/reports/full-account-statement", display: "Full account statement" },
-      { path: "/reports/garage-account-statement", display: "Garage account statement" },
-      { path: "/reports/trader-account-statement", display: "Meerchant account statement" }
+      { path: "/reports/garage-statement", display: "Garage account statement" },
+      { path: "/reports/trader-statement", display: "Meerchant account statement" }
     ],
   },
   {

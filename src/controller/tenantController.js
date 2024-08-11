@@ -64,3 +64,24 @@ export const getTenantById = async (idNumber) => {
     throw error;
   }
 };
+
+export const getAccountStatmentById = async(tenantId, startDate, endDate) => {
+  try {
+    const response = await axios.get(config.GetAccountStatment, {
+      params: {
+        tenant_id: tenantId,
+        start_date: startDate,
+        end_date: endDate,
+      },
+    });
+    if (response.data.message === "No contracts found") {
+      console.warn("No contracts found for the given criteria.");
+      return []; 
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error("There was an error fetching the contracts by tenant ID!", error);
+    throw error;
+  }
+};

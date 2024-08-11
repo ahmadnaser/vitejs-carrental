@@ -39,7 +39,7 @@ export const getContracts = async () => {
 
 export const getContractsByTenantId = async (tenantId, startDate, endDate) => {
   try {
-    const response = await axios.get(`${config.FetchRentedCarByIdURL}`, {
+    const response = await axios.get(config.FetchRentedCarById, {
       params: {
         tenant_id: tenantId,
         start_date: startDate,
@@ -51,25 +51,7 @@ export const getContractsByTenantId = async (tenantId, startDate, endDate) => {
       return []; 
     }
     
-    return response.data.map(contract => 
-      new ContractView(
-        contract.rental_id,
-        contract.vehicle_id,
-        contract.make,
-        contract.model,
-        contract.customer,
-        contract.tenantID,
-        contract.start_date,
-        contract.end_date,
-        contract.end_date_agreed,
-        contract.price_perday,
-        contract.dayNum,
-        contract.total_amount,
-        contract.note,
-        contract.remainingAmount,
-        contract.timeReturned,
-      )
-    );
+    return response.data;
   } catch (error) {
     console.error("There was an error fetching the contracts by tenant ID!", error);
     throw error;

@@ -38,6 +38,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Cairo',
     textAlign: 'center',
   },
+  headerText2: {
+    fontSize: 9,
+    fontFamily: 'Cairo',
+    textAlign: 'center',
+  },
   title: {
     fontSize: 24,
     marginBottom: 10,
@@ -78,66 +83,76 @@ const styles = StyleSheet.create({
   },
 });
 
-const Contract = ({ formData, tenant, car }) => (
-<Document>
-    <Page size="A4" style={styles.page}>
+const Contract = ({ formData, tenant, car }) => {
+  // Log the received data to the console
+  console.log("Contract Component Data:");
+  console.log("Form Data:", formData);
+  console.log("Tenant Data:", tenant);
+  console.log("Car Data:", car);
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerText}>شركة العاصور لتأجير السيارات</Text>
-          <Text style={styles.headerText}>سلواد - رام الله</Text>
-          <Text style={styles.headerText}>جوال: 0595555555</Text>
+          <Text style={styles.headerText}> العاصور لتأجير السيارات</Text>
+          <Text style={styles.headerText2}>سلواد - رام الله</Text>
+          <Text style={styles.headerText2}>asour.rental.car@gmail.com </Text>
+          <Text style={styles.headerText2}>0595383860 / 0598236606 </Text>
         </View>
         <Image style={styles.logo} src={image} />
         <View>
-          <Text style={styles.headerText}>Al-Asoor Rent a Car Co.</Text>
-          <Text style={styles.headerText}>Silwad - Ramallah</Text>
-          <Text style={styles.headerText}>Mobile: 0595555555</Text>
+          <Text style={styles.headerText}>Al-Asour Rent a Car</Text>
+          <Text style={styles.headerText2}>Silwad - Ramallah</Text>
+          <Text style={styles.headerText2}>asour.rental.car@gmail.com </Text>
+          <Text style={styles.headerText2}>0595383860 / 0598236606 </Text>
         </View>
       </View>
-      <View style={styles.section}>
-        <Text style={styles.title}>اتفاقية تأجير السيارات</Text>
-        <Text style={styles.text}>تاريخ العقد: {moment().format('YYYY/MM/DD')}</Text>
-        <Text style={styles.text}>اسم المستأجر: {formData.customer}</Text>
-        <Text style={styles.text}>عنوان: {tenant.address}</Text>
-        <Text style={styles.text}>الهاتف: {tenant.phoneNumber}</Text>
-        <Text style={styles.text}>رقم الهوية: {tenant.idNumber}</Text>
-        <Text style={styles.text}>تاريخ الميلاد: {tenant.birthDate}</Text>
-        <Text style={styles.text}>رخصة القيادة: {tenant.licenseNumber}</Text>
-        <Text style={styles.text}>تاريخ الإصدار: {tenant.licenseStartDate}</Text>
-        <Text style={styles.text}>تاريخ الانتهاء: {tenant.licenseEndDate}</Text>
-        <Text style={styles.text}>إجمالي المبلغ: {formData.totalAmount} شيكل</Text>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.title}>تفاصيل السيارة</Text>
-        <Text style={styles.text}>نوع السيارة: {car.make} {car.model}</Text>
-        <Text style={styles.text}>رقم اللوحة: {car.vehicle_id}</Text>
-        <Text style={styles.text}>عدد الأيام: {formData.dayNum}</Text>
-        <Text style={styles.text}>تاريخ الاستلام: {formData.formData}</Text>
-        <Text style={styles.text}>تاريخ الإرجاع: {formData.end_date}</Text>
-        <Text style={styles.text}>الأجرة اليومية: {formData.pricePerDay} شيكل</Text>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.title}>شروط الاتفاقية</Text>
-        <Text style={styles.text}>
-          1. يتعهد المستأجر بالحفاظ على السيارة وقيادتها وفق القوانين.
-        </Text>
-        <Text style={styles.text}>
-          2. يتحمل المستأجر كافة المسؤولية عن الأضرار الناجمة.
-        </Text>
-        <Text style={styles.text}>
-          3. لا يجوز للمستأجر إعادة تأجير السيارة.
-        </Text>
-        <Text style={styles.text}>
-          4. يجب إعادة السيارة في الوقت المحدد.
-        </Text>
-        <Text style={styles.text}>... إلخ</Text>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.text}>توقيع المستأجر: ______________</Text>
-        <Text style={styles.text}>التاريخ: ______________</Text>
-      </View>
-    </Page>
-  </Document>
-);
+         <View style={styles.section}>
+          <Text style={styles.title}>اتفاقية تأجير السيارات</Text>
+          <Text style={styles.text}>تاريخ العقد: {moment().format('YYYY/MM/DD')}</Text>
+          <Text style={styles.text}>اسم المستأجر: {formData.customer}</Text>
+          <Text style={styles.text}>عنوان: {tenant.address}</Text>
+          <Text style={styles.text}>الهاتف: {tenant.phone_number}</Text>
+          <Text style={styles.text}>رقم الهوية: {tenant.id_number}</Text>
+          <Text style={styles.text}>تاريخ الميلاد: {tenant.birth_date}</Text>
+          <Text style={styles.text}>رخصة القيادة: {tenant.license_number}</Text>
+          <Text style={styles.text}>تاريخ الإصدار: {tenant.license_start_date}</Text>
+          <Text style={styles.text}>تاريخ الانتهاء: {tenant.license_end_date}</Text>
+          <Text style={styles.text}>إجمالي المبلغ: {formData.totalAmount} شيكل</Text>
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.title}>تفاصيل السيارة</Text>
+          <Text style={styles.text}>نوع السيارة: {car.make} {car.model}</Text>
+          <Text style={styles.text}>رقم اللوحة: {car.vehicle_id}</Text>
+          <Text style={styles.text}>عدد الأيام: {formData.dayNum}</Text>
+          <Text style={styles.text}>تاريخ الاستلام: {formData.start_date}</Text>
+          <Text style={styles.text}>تاريخ الإرجاع: {formData.end_date}</Text>
+          <Text style={styles.text}>الأجرة اليومية: {formData.pricePerDay} شيكل</Text>
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.title}>شروط الاتفاقية</Text>
+          <Text style={styles.text}>
+            1. يتعهد المستأجر بالحفاظ على السيارة وقيادتها وفق القوانين.
+          </Text>
+          <Text style={styles.text}>
+            2. يتحمل المستأجر كافة المسؤولية عن الأضرار الناجمة.
+          </Text>
+          <Text style={styles.text}>
+            3. لا يجوز للمستأجر إعادة تأجير السيارة.
+          </Text>
+          <Text style={styles.text}>
+            4. يجب إعادة السيارة في الوقت المحدد.
+          </Text>
+          <Text style={styles.text}>... إلخ</Text>
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.text}>توقيع المستأجر: ______________</Text>
+          <Text style={styles.text}>التاريخ: ______________</Text>
+        </View> 
+      </Page>
+    </Document>
+  );
+};
 
 export default Contract;

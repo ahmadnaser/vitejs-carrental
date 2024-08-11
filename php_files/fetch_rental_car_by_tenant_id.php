@@ -20,15 +20,15 @@ if ($startDate === null || $endDate === null) {
     exit;
 }
 
-$sql = "SELECT Rentals.rental_id, Vehicles.vehicle_id, Vehicles.make, Vehicles.model, Tenants.tenant_name AS customer, Tenants.id_number AS tenantID,
- Rentals.start_date, Rentals.end_date, Reservations.end_date AS end_date_agreed, Reservations.price_perday, Reservations.total_amount, 
- DATEDIFF(Rentals.end_date, Rentals.start_date) AS dayNum, Rentals.note AS note, payments.amount AS remainingAmount, payments.payment_date AS timeReturned
+$sql = "SELECT Rentals.*, Vehicles.*, Tenants.tenant_name AS customer, Tenants.id_number AS tenantID,
+ Rentals.start_date, Rentals.end_date, Reservations.end_date AS end_date_agreed, Reservations.price_perday, Reservations.total_amount, Reservations.amount_paid, 
+ DATEDIFF(Rentals.end_date, Rentals.start_date) AS dayNum, Rentals.note AS note, payments.payment_date
  FROM Rentals
  INNER JOIN Reservations ON Rentals.reservation_id = Reservations.reservation_id
  INNER JOIN Vehicles ON Reservations.vehicle_id = Vehicles.vehicle_id
  INNER JOIN Tenants ON Reservations.tenant_id = Tenants.id_number
  LEFT JOIN payments ON Rentals.reservation_id = payments.reservation_id
- WHERE Tenants.id_number = :tenantId AND Rentals.start_date >= :startDate AND Rentals.end_date <= :endDate";
+ WHERE Tenants.id_number = :tenantId AND Rentals.start_date >= :startDate AND Rentals.start_date <= :endDate";
 
 try {
     $stmt = $conn->prepare($sql);

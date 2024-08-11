@@ -8,17 +8,21 @@ import RentedCar from './components/rental_management/RentedCar';
 import RentalContract from './components/rental_management/RentalContracta'; 
 import AddRentalForm from './components/rental_management/AddRentalContract';
 import EditRentalForm from './components/rental_management/EditRentalContract';  
-import AddTenants from './components/Tenants-Management/AddTenants';
+import AddTenants from './components/tenants_management/AddTenants';
 import Reservation from './components/reservation_managment/Reservations';
 import AddReservationForm from './components/reservation_managment/AddReservations';
-import Tenants from './components/Tenants-Management/Tenants';
-import TenantsDetalis from './components/Tenants-Management/TenantsDetails';
+import Tenants from './components/tenants_management/Tenants';
+import TenantsDetalis from './components/tenants_management/TenantsDetails';
 import Cars from './components/cars_managemnt/Cars';
 import AddCarForm from './components/cars_managemnt/AddCar';
 import CarsMaintenanceTable from './components/cars_maintenance/CarsMaintenance';
 import AddMaintenanceForm from './components/cars_maintenance/AddCarMaintenance';
 import CustomerAccountStatementForm from './components/reports/customer_statement/CustomerStatement';
 import ContractStatmentTable from './components/reports/customer_statement/ContractStatement';
+import AccountStatementTable from './components/reports/customer_statement/AccountStatement';
+import CarAccountStatementForm from './components/reports/car_statement/CarStatement';
+import ExpemseseAccountStatementForm from './components/reports/expensese_statement/ExpenseseStatement';
+import GarageStatementForm from './components/reports/garage_statement/GarageStatement';
 import GarageTable from './components/garage_management/Garage';
 import AddGarageForm from './components/garage_management/AddGarage';
 import TraderTable from './components/trader_management/Traders';
@@ -29,6 +33,7 @@ import BeneficiaryTable from './components/beneficiaries_management/Beneficiarie
 import AddBeneficiaryForm from './components/beneficiaries_management/AddBeneficiary';
 import SellCar from './components/SellCar'; 
 import Settings from './components/Settings'; 
+AccountStatementTable
 
 
 const App = () => {
@@ -68,6 +73,12 @@ const App = () => {
       <Route path="/expenses/types-of-expenses/add-expenses-type" element={isLoggedIn ? <Layout><AddExpenseTypeForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/customer-statement" element={isLoggedIn ? <Layout><CustomerAccountStatementForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/customer-statement/contract" element={isLoggedIn ? <Layout><ContractStatmentTable /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/customer-statement/account" element={isLoggedIn ? <Layout><AccountStatementTable /></Layout> : <Layout><AccountStatementTable /></Layout>} />
+      <Route path="/reports/car-statement" element={isLoggedIn ? <Layout><CarAccountStatementForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/expensese-statement" element={isLoggedIn ? <Layout><ExpemseseAccountStatementForm /></Layout> : <Navigate to="/login" />} />
+      {/*<Route path="/reports/full-account-statement" element={isLoggedIn ? <Layout><CustomerAccountStatementForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/meerchant-statement" element={isLoggedIn ? <Layout><CustomerAccountStatementForm /></Layout> : <Navigate to="/login" />}*/}
+      <Route path="/reports/garage-statement" element={isLoggedIn ? <Layout><GarageStatementForm /></Layout> : <Navigate to="/login" />} /> 
       <Route path="/car-tracking" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
       <Route path="/traffic-violations" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
       <Route path="/messages" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />

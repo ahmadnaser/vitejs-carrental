@@ -4,31 +4,32 @@ import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
-import { getTenants } from '../../../controller/tenantController';
 
-const CustomerAccountStatementForm = () => {
+const GarageStatementForm = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    tenant_id: '',
+    vehicle_id: '',
     start_date: '',
     end_date: '',
   });
   const [status, setStatus] = useState(null);
-  const [tenants, setTenants] = useState([]);
-  const [selectedTenant, setSelectedTenant] = useState(null);
+  const [vehicles, setVehicles] = useState([]);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const fetchTenants = async () => {
+    // Fetch vehicles data here, assuming there's a similar function for vehicles
+    const fetchVehicles = async () => {
       try {
-        const tenantsList = await getTenants();
-        setTenants(tenantsList);
+        // Replace with your vehicle fetching logic
+        const vehiclesList = await getVehicles(); 
+        setVehicles(vehiclesList);
       } catch (error) {
-        console.error('Error fetching tenants:', error);
+        console.error('Error fetching vehicles:', error);
       }
     };
-    fetchTenants();
+    fetchVehicles();
 
     const today = new Date().toISOString().split('T')[0];
 
@@ -53,22 +54,22 @@ const CustomerAccountStatementForm = () => {
     });
   }, []);
 
-  const tenantOptions = tenants.map(tenant => ({
-    value: tenant.id_number,
-    label: `${tenant.tenant_name} - ${tenant.id_number}`
+  const vehicleOptions = vehicles.map(vehicle => ({
+    value: vehicle.id,
+    label: `${vehicle.model} - ${vehicle.id}`
   }));
 
-  const handleTenantChange = (selectedOption) => {
-    setSelectedTenant(selectedOption);
+  const handleVehicleChange = (selectedOption) => {
+    setSelectedVehicle(selectedOption);
     setFormData(prevFormData => ({
       ...prevFormData,
-      tenant_id: selectedOption.value
+      vehicle_id: selectedOption.value
     }));
   };
 
   const handleNavigation = (path) => {
     const validationErrors = {};
-    if (!formData.tenant_id) validationErrors.tenant_id = t('Tenant is required.');
+    if (!formData.vehicle_id) validationErrors.vehicle_id = t('Vehicle is required.');
     if (!formData.start_date) validationErrors.start_date = t('Start date is required.');
     if (!formData.end_date) validationErrors.end_date = t('End date is required.');
 
@@ -106,25 +107,25 @@ const CustomerAccountStatementForm = () => {
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
-        <h1 className="text-3xl font-bold text-secondary-color">{t('Customer Statement')}</h1>
+        <h1 className="text-3xl font-bold text-secondary-color">{t('Garage Statement')}</h1>
       </div>
 
       <form className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-15 mb-10 max-w-md mx-auto`}>
         <div className="mb-5">
-          <label htmlFor="tenant" className="block mb-2 text-sm font-medium">{t('Tenants')}</label>
+          <label htmlFor="vehicle" className="block mb-2 text-sm font-medium">{t('Vehicles')}</label>
           <div className="relative max-w-sm">
             <Select
-              id="tenants"
-              value={selectedTenant}
-              onChange={handleTenantChange}
-              options={tenantOptions}
-              placeholder={t('Name of Tenants or ID Number')}
+              id="vehicles"
+              value={selectedVehicle}
+              onChange={handleVehicleChange}
+              options={vehicleOptions}
+              placeholder={t('Select Vehicle or ID')}
               className="rounded-none text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               isDisabled={false}
               styles={customStyles}
               required
             />
-            {errors.tenant_id && <span className="text-red-500 mt-2 text-sm">{errors.tenant_id}</span>}
+            {errors.vehicle_id && <span className="text-red-500 mt-2 text-sm">{errors.vehicle_id}</span>}
           </div>
         </div>
        
@@ -141,8 +142,6 @@ const CustomerAccountStatementForm = () => {
           </div>
         </div>
 
-       
-
         <div className="mb-5">
           <label htmlFor="to-date" className="block mb-2 text-sm font-medium">{t('To Date')}</label>
           <div className="relative max-w-sm">
@@ -151,13 +150,10 @@ const CustomerAccountStatementForm = () => {
                 <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
               </svg>
             </div>
-            <input id="to-date" name="end_date" value={formData.end_date} data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text"  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
+            <input id="to-date" name="end_date" value={formData.end_date} type="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} readOnly />
             {errors.end_date && <span className="text-red-500 mt-2 text-sm">{errors.end_date}</span>}
           </div>
         </div>
-          
-        
-        
 
         <div className="mb-5">
           <label htmlFor="code" className="block mb-2 text-sm font-medium">{t('Code')}</label>
@@ -167,30 +163,23 @@ const CustomerAccountStatementForm = () => {
         <div className="mb-5 mt-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
           <button
             type="button"
-            onClick={() => handleNavigation('/reports/customer-statement/account')}
+            onClick={() => handleNavigation('/reports/garage-statement/maintenance')}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            {status === 'loading' ? t('Submitting...') : t('Account Statement')}
+            {status === 'loading' ? t('Submitting...') : t('Maintenance Statement')}
           </button>
           <button
             type="button"
-            onClick={() => handleNavigation('/reports/customer-statement/contract')}
+            onClick={() => handleNavigation('/reports/garage-statement/repairs')}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            {status === 'loading' ? t('Submitting...') : t('Contracts Statement')}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleNavigation('/reports/customer-statement/movements')}
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            {status === 'loading' ? t('Submitting...') : t('Movements Statement')}
+            {status === 'loading' ? t('Submitting...') : t('Repairs Statement')}
           </button>
         </div>
 
         {status === 'success' && (
           <div className="text-green-500">
-            {t('Rental Contract added successfully! Redirecting...')}
+            {t('Garage statement added successfully! Redirecting...')}
           </div>
         )}
         {status === 'error' && (
@@ -203,4 +192,4 @@ const CustomerAccountStatementForm = () => {
   );
 };
 
-export default CustomerAccountStatementForm;
+export default GarageStatementForm;
