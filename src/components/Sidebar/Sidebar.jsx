@@ -76,7 +76,7 @@ const Sidebar = ({ isSidebarOpen }) => {
       </div>
 
       <div className="mt-auto flex items-center gap-2.5 cursor-pointer text-small-text-color transition-colors duration-300 hover:text-white mb-10" onClick={handleLogout}>
-        <i className="ri-logout-circle-r-line"></i> Logout
+        <i className="ri-logout-circle-r-line"></i> {t("Logout")}
       </div>
     </div>
   );

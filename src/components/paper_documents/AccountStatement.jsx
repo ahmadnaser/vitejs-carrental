@@ -66,9 +66,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 2, 
+    marginTop: 2,
   },
-
+  centeredRow2: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+  },
   table: {
     marginTop: 10,
     display: 'flex',
@@ -108,20 +113,47 @@ const styles = StyleSheet.create({
     borderRightWidth: 0,
   },
   redText: {
-    color: 'red', 
+    color: 'red',
   },
   greenText: {
-    color: 'green', 
+    color: 'green',
   },
   logo: {
     width: '200px',
     height: 100,
   },
+  totalsRow: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: '#000',
+    borderTopStyle: 'solid',
+    backgroundColor: '#f5f5f5',
+    marginTop: 10,
+  },
+  totalsCol: {
+    width: '20%',
+    padding: 2,
+    fontSize: 7,
+    textAlign: 'center',
+    borderRightWidth: 1,
+    borderRightColor: '#000',
+    borderRightStyle: 'solid',
+  },
 });
 
 const AccountStatement = ({ data, startDate, endDate }) => {
-  const contractData = data[0];
-  console.log(contractData);
+  const totals = data.reduce(
+    (acc, item) => {
+      acc.debit += parseFloat(item.debit) || 0;
+      acc.credit += parseFloat(item.credit) || 0;
+      return acc;
+    },
+    { debit: 0, credit: 0 }
+  );
+  
+  const netTotal = totals.debit - totals.credit;
+  let runningTotal = 0;
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -145,7 +177,7 @@ const AccountStatement = ({ data, startDate, endDate }) => {
             <Text style={styles.text}>التاريخ: {moment().format('YYYY/MM/DD')}</Text>
             <Text style={styles.text}>اصلية</Text>
           </View>
-          <Text style={styles.title}>كشف حساب  - {contractData.customer}</Text>   
+          <Text style={styles.title}>كشف حساب  - {data[0]?.customer || ''}</Text>   
         </View>
         <View style={styles.centeredRow}>
           <Text style={styles.text2}> {endDate} حتى</Text>
@@ -154,23 +186,37 @@ const AccountStatement = ({ data, startDate, endDate }) => {
         </View>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-          <Text style={styles.tableColHeader}>المحموع</Text>
+            <Text style={styles.tableColHeader}>المجموع</Text>
             <Text style={styles.tableColHeader}>مدين</Text>
             <Text style={styles.tableColHeader}>دائن</Text>
             <Text style={styles.tableColHeader}>التاريخ</Text>
             <Text style={styles.tableColHeader}>البيان</Text>
             <Text style={[styles.tableColHeader, styles.lastCol]}>#</Text>
           </View>
-          {data.map((contractData, index) => (
-            <View key={index} style={styles.tableRow}>
-              <Text style={[styles.tableCol,styles.redText]}>0.00</Text>
-              <Text style={[styles.tableCol,styles.redText]}>{contractData.debit}</Text>
-              <Text style={[styles.tableCol,styles.greenText]}>{contractData.credit}</Text>
-              <Text style={styles.tableCol}>{contractData.date}</Text>
-              <Text style={styles.tableCol}>{contractData.description}</Text>
-              <Text style={[styles.tableCol, styles.lastCol]}>{index + 1}</Text>
-            </View>
-          ))}
+          {data.map((contractData, index) => {
+            runningTotal += parseFloat(contractData.debit) - parseFloat(contractData.credit);
+            return (
+              <View key={index} style={styles.tableRow}>
+                <Text style={[styles.tableCol]}>{runningTotal.toFixed(2)}</Text>
+                <Text style={[styles.tableCol, styles.redText]}>{contractData.debit}</Text>
+                <Text style={[styles.tableCol, styles.greenText]}>{contractData.credit}</Text>
+                <Text style={styles.tableCol}>{contractData.date}</Text>
+                <Text style={styles.tableCol}>{contractData.description}</Text>
+                <Text style={[styles.tableCol, styles.lastCol]}>{index + 1}</Text>
+              </View>
+            );
+          })}
+          <View style={styles.totalsRow}>
+            <Text style={[styles.totalsCol]}>{netTotal.toFixed(2)}</Text>
+            <Text style={[styles.totalsCol, styles.redText]}> {totals.debit.toFixed(2)} </Text>
+            <Text style={[styles.totalsCol, styles.greenText]}> {totals.credit.toFixed(2)} </Text>
+            <Text style={[styles.totalsCol]}></Text>
+            <Text style={[styles.totalsCol]}></Text>
+            <Text style={[styles.totalsCol]}></Text>
+          </View>
+        </View>
+        <View style={[styles.centeredRow2, styles.redText]}>
+          <Text style={styles.text2}>الرصيد: {netTotal.toFixed(2)} شيكل</Text>
         </View>
       </Page>
     </Document>

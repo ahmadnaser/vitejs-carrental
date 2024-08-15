@@ -5,6 +5,7 @@ import Select from 'react-select';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
 import { getTenants } from '../../../controller/tenantController';
+import { getConfigCode } from '../../../controller/CodeController';
 
 const CustomerAccountStatementForm = () => {
   const { t, i18n } = useTranslation();
@@ -18,6 +19,8 @@ const CustomerAccountStatementForm = () => {
   const [tenants, setTenants] = useState([]);
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [errors, setErrors] = useState({});
+  const [retrievedCode, setRetrievedCode] = useState(''); 
+  const [enteredCode, setEnteredCode] = useState('');
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -29,6 +32,16 @@ const CustomerAccountStatementForm = () => {
       }
     };
     fetchTenants();
+
+    const fetchConfigCode = async () => {
+      try {
+        const [config] = await getConfigCode();
+        setRetrievedCode(config.code);
+      } catch (error) {
+        console.error('Error fetching config code:', error);
+      }
+    };
+    fetchConfigCode();
 
     const today = new Date().toISOString().split('T')[0];
 
@@ -66,11 +79,16 @@ const CustomerAccountStatementForm = () => {
     }));
   };
 
+  const handleCodeChange = (event) => {
+    setEnteredCode(event.target.value);
+  };
+
   const handleNavigation = (path) => {
     const validationErrors = {};
-    if (!formData.tenant_id) validationErrors.tenant_id = t('Tenant is required.');
-    if (!formData.start_date) validationErrors.start_date = t('Start date is required.');
-    if (!formData.end_date) validationErrors.end_date = t('End date is required.');
+    if (!formData.tenant_id.trim()) validationErrors.tenant_id = t('Tenant is required.');
+    if (!formData.start_date.trim()) validationErrors.start_date = t('Start date is required.');
+    if (!formData.end_date.trim()) validationErrors.end_date = t('End date is required.');
+    if (enteredCode !== retrievedCode) validationErrors.code = t('The code you entered is incorrect.');
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -141,8 +159,6 @@ const CustomerAccountStatementForm = () => {
           </div>
         </div>
 
-       
-
         <div className="mb-5">
           <label htmlFor="to-date" className="block mb-2 text-sm font-medium">{t('To Date')}</label>
           <div className="relative max-w-sm">
@@ -155,13 +171,19 @@ const CustomerAccountStatementForm = () => {
             {errors.end_date && <span className="text-red-500 mt-2 text-sm">{errors.end_date}</span>}
           </div>
         </div>
-          
-        
-        
 
         <div className="mb-5">
           <label htmlFor="code" className="block mb-2 text-sm font-medium">{t('Code')}</label>
-          <input type="text" id="code" className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Code')} required />
+          <input
+            type="password"
+            id="code"
+            value={enteredCode}
+            onChange={handleCodeChange}
+            className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            placeholder={t('Code')}
+            required
+          />
+          {errors.code && <span className="text-red-500 mt-2 text-sm">{errors.code}</span>}
         </div>
 
         <div className="mb-5 mt-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
@@ -181,7 +203,7 @@ const CustomerAccountStatementForm = () => {
           </button>
           <button
             type="button"
-            onClick={() => handleNavigation('/reports/customer-statement/movements')}
+            onClick={() => handleNavigation()}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             {status === 'loading' ? t('Submitting...') : t('Movements Statement')}

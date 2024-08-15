@@ -8,7 +8,16 @@ async function loadConfig() {
   return config.default;
 }
 
-const config = await loadConfig();
+let config;
+
+async function initializeConfig() {
+  config = await loadConfig();
+}
+
+initializeConfig().catch(error => {
+  console.error("Failed to load configuration:", error);
+});
+
 
 export const getTraders = async () => {
   try {
@@ -21,6 +30,21 @@ export const getTraders = async () => {
     throw error;
   }
 };
+
+
+export const getTraderById = async (trader_id) => {
+  try {
+    const response = await axios.get(config.GetTraderById,{
+      params: { trader_id }
+    });
+    const trader = response.data;
+    return new Trader(trader.trader_id, trader.name, trader.contact_info, trader.type);
+  } catch (error) {
+    console.error('Error fetching trader by ID:', error);
+    throw error;
+  }
+};
+
 
 export const addTrader = async (traderData) => {
   try {

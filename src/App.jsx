@@ -2,38 +2,43 @@
 import React, { useState } from 'react';
 import Layout from './components/Layout/Layout';  
 import Login from './components/Login'; 
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'; 
+import {Routes, Route, Navigate, useLocation } from 'react-router-dom'; 
 import Dashboard from './components/Dashboard'; 
-import RentedCar from './components/rental_management/RentedCar'; 
-import RentalContract from './components/rental_management/RentalContracta'; 
-import AddRentalForm from './components/rental_management/AddRentalContract';
-import EditRentalForm from './components/rental_management/EditRentalContract';  
-import AddTenants from './components/tenants_management/AddTenants';
-import Reservation from './components/reservation_managment/Reservations';
-import AddReservationForm from './components/reservation_managment/AddReservations';
-import Tenants from './components/tenants_management/Tenants';
-import TenantsDetalis from './components/tenants_management/TenantsDetails';
-import Cars from './components/cars_managemnt/Cars';
-import AddCarForm from './components/cars_managemnt/AddCar';
-import CarsMaintenanceTable from './components/cars_maintenance/CarsMaintenance';
-import AddMaintenanceForm from './components/cars_maintenance/AddCarMaintenance';
+import RentedCar from './components/rental/rental_management/RentedCar'; 
+import RentalContract from './components/rental/rental_management/RentalContracta'; 
+import AddRentalForm from './components/rental/rental_management/AddRentalContract';
+import EditRentalForm from './components/rental/rental_management/EditRentalContract';  
+import AddTenants from './components/rental/tenants_management/AddTenants';
+import Reservation from './components/rental/reservation_managment/Reservations';
+import AddReservationForm from './components/rental/reservation_managment/AddReservations';
+import Tenants from './components/rental/tenants_management/Tenants';
+import TenantsDetalis from './components/rental/tenants_management/TenantsDetails';
+import Cars from './components/rental/cars_managemnt/Cars';
+import AddCarForm from './components/rental/cars_managemnt/AddCar';
+import CarsMaintenanceTable from './components/expensese/cars_maintenance/CarsMaintenance';
+import AddMaintenanceForm from './components/expensese/cars_maintenance/AddCarMaintenance';
 import CustomerAccountStatementForm from './components/reports/customer_statement/CustomerStatement';
 import ContractStatmentTable from './components/reports/customer_statement/ContractStatement';
 import AccountStatementTable from './components/reports/customer_statement/AccountStatement';
 import CarAccountStatementForm from './components/reports/car_statement/CarStatement';
-import ExpemseseAccountStatementForm from './components/reports/expensese_statement/ExpenseseStatement';
+import CarAccountStatementTable from './components/reports/car_statement/CarAccountStatementTable';
+import CarExpenseTable from './components/reports/car_statement/CarExpenseTable';
+import ExpensesAccountStatementForm from './components/reports/expensese_statement/ExpensesStatement';
+import ExpenseseStatementTable from './components/reports/expensese_statement/ExpensesStatementTable';
 import GarageStatementForm from './components/reports/garage_statement/GarageStatement';
-import GarageTable from './components/garage_management/Garage';
-import AddGarageForm from './components/garage_management/AddGarage';
-import TraderTable from './components/trader_management/Traders';
-import AddTraderForm from './components/trader_management/AddTrader';
-import ExpenseTypeTable from './components/expenses_type_management/Expenses';
-import AddExpenseTypeForm from './components/expenses_type_management/AddExpenses';
-import BeneficiaryTable from './components/beneficiaries_management/Beneficiaries';
-import AddBeneficiaryForm from './components/beneficiaries_management/AddBeneficiary';
-import SellCar from './components/SellCar'; 
+import GarageStatementTable from './components/reports/garage_statement/GarageStatementTable';
+import GarageTable from './components/expensese/garage_management/Garage';
+import TraderStatementTable from './components/reports/trader_statement/TraderStatementTable';
+import TraderStatementForm from './components/reports/trader_statement/TraderStatement';
+import AddGarageForm from './components/expensese/garage_management/AddGarage';
+import TraderTable from './components/expensese/trader_management/Traders';
+import AddTraderForm from './components/expensese/trader_management/AddTrader';
+import ExpenseTypeTable from './components/expensese/expenses_type_management/Expenses';
+import GeneralExpenseseForm from './components/expensese/GeneralExpenses';
+import AddExpenseTypeForm from './components/expensese/expenses_type_management/AddExpenses';
+import BeneficiaryTable from './components/expensese/beneficiaries_management/Beneficiaries';
+import AddBeneficiaryForm from './components/expensese/beneficiaries_management/AddBeneficiary';
 import Settings from './components/Settings'; 
-AccountStatementTable
 
 
 const App = () => {
@@ -62,6 +67,7 @@ const App = () => {
       <Route path="/cars" element={isLoggedIn ? <Layout><Cars /></Layout> : <Navigate to="/login" />} />
       <Route path="/cars/add-car" element={isLoggedIn ? <Layout><AddCarForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses/car-maintenance" element={isLoggedIn ? <Layout><CarsMaintenanceTable /></Layout> : <Navigate to="/login" />} />
+      <Route path="/expenses/general-expenses" element={isLoggedIn ? <Layout><GeneralExpenseseForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses/car-maintenance/add-maintenance" element={isLoggedIn ? <Layout><AddMaintenanceForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses/garages" element={isLoggedIn ? <Layout><GarageTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses/garages/add-garage" element={isLoggedIn ? <Layout><AddGarageForm /></Layout> : <Navigate to="/login" />} />
@@ -73,15 +79,17 @@ const App = () => {
       <Route path="/expenses/types-of-expenses/add-expenses-type" element={isLoggedIn ? <Layout><AddExpenseTypeForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/customer-statement" element={isLoggedIn ? <Layout><CustomerAccountStatementForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/customer-statement/contract" element={isLoggedIn ? <Layout><ContractStatmentTable /></Layout> : <Navigate to="/login" />} />
-      <Route path="/reports/customer-statement/account" element={isLoggedIn ? <Layout><AccountStatementTable /></Layout> : <Layout><AccountStatementTable /></Layout>} />
+      <Route path="/reports/customer-statement/account" element={isLoggedIn ? <Layout><AccountStatementTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/car-statement" element={isLoggedIn ? <Layout><CarAccountStatementForm /></Layout> : <Navigate to="/login" />} />
-      <Route path="/reports/expensese-statement" element={isLoggedIn ? <Layout><ExpemseseAccountStatementForm /></Layout> : <Navigate to="/login" />} />
-      {/*<Route path="/reports/full-account-statement" element={isLoggedIn ? <Layout><CustomerAccountStatementForm /></Layout> : <Navigate to="/login" />} />
-      <Route path="/reports/meerchant-statement" element={isLoggedIn ? <Layout><CustomerAccountStatementForm /></Layout> : <Navigate to="/login" />}*/}
+      <Route path="/reports/car-statement/account-statement" element={isLoggedIn ? <Layout><CarAccountStatementTable /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/car-statement/expenses-statement" element={isLoggedIn ? <Layout><CarExpenseTable /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/expensese-statement" element={isLoggedIn ? <Layout><ExpensesAccountStatementForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/expensese-statement/statement" element={isLoggedIn ? <Layout><ExpenseseStatementTable /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/full-account-statement" element={isLoggedIn ? <Layout><CustomerAccountStatementForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/trader-statement" element={isLoggedIn ? <Layout><TraderStatementForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/trader-statement/statement" element={isLoggedIn ? <Layout><TraderStatementTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/garage-statement" element={isLoggedIn ? <Layout><GarageStatementForm /></Layout> : <Navigate to="/login" />} /> 
-      <Route path="/car-tracking" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
-      <Route path="/traffic-violations" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
-      <Route path="/messages" element={isLoggedIn ? <Layout><SellCar /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/garage-statement/statement" element={isLoggedIn ? <Layout><GarageStatementTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/settings" element={isLoggedIn ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
     </Routes>
   );

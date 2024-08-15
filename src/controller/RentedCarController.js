@@ -7,7 +7,17 @@ async function loadConfig() {
   });
   return config.default;
 }
-const config = await loadConfig(); 
+
+let config;
+
+async function initializeConfig() {
+  config = await loadConfig();
+}
+
+initializeConfig().catch(error => {
+  console.error("Failed to load configuration:", error);
+});
+
 
 export const getContracts = async () => {
   try {

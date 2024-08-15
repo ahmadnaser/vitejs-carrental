@@ -1,18 +1,60 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from "../assets/images/image.png";
 import { useNavigate } from 'react-router-dom';
 import GoogleSvg from "../assets/images/icons8-google.svg";
 import { useTranslation } from 'react-i18next';
-import '../styles/index.css';
+import { setLogin } from '../controller/LoginController';
 
 const Login = ({ onLogin }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleLoginClick = (e) => {
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('email');
+    const savedPassword = localStorage.getItem('password');
+    const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+
+    if (savedRememberMe) {
+      setEmail(savedEmail || '');
+      setPassword(savedPassword || '');
+      setRememberMe(savedRememberMe);
+    }
+  }, []);
+
+  const handleLoginClick = async (e) => {
     e.preventDefault();
-    onLogin();
-    navigate('/dashboard');
+
+    try {
+      const response = await setLogin(email, password);
+      if (response.success) {
+        if (rememberMe) {
+          localStorage.setItem('email', email);
+          localStorage.setItem('password', password);
+          localStorage.setItem('rememberMe', true);
+        } else {
+          localStorage.removeItem('email');
+          localStorage.removeItem('password');
+          localStorage.setItem('rememberMe', false);
+        }
+
+        const role = response.role;
+        if (role === 'administrator') {
+          onLogin();
+          navigate('/dashboard');
+        } else {
+          navigate(); 
+        }
+      } else {
+        setError(response.message);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred during login');
+    }
   };
 
   const toggleLanguage = () => {
@@ -21,7 +63,7 @@ const Login = ({ onLogin }) => {
     localStorage.setItem('language', newLanguage);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const storedLanguage = localStorage.getItem('language');
     if (storedLanguage) {
       i18n.changeLanguage(storedLanguage);
@@ -43,7 +85,7 @@ const Login = ({ onLogin }) => {
             <div className="mb-5 flex justify-center">
               <img src={Image} alt="" className="w-[70%] mb-5 rounded-lg" />
             </div>
-            <button className="mt-5 py-2.5 px-5 bg-white text-black rounded-full cursor-pointer text-md" onClick={handleLoginClick}>
+            <button className="mt-5 py-2.5 px-5 bg-white text-black rounded-full cursor-pointer text-md" >
               {t('go_as_guest')}<span className="inline-flex items-center justify-center mx-2"><i className="ri-glasses-2-line"></i></span>
             </button>
           </div>
@@ -74,23 +116,32 @@ const Login = ({ onLogin }) => {
             <h2 className="mb-5 text-4xl">{t('welcome_back')}</h2>
             <form onSubmit={handleLoginClick} className="flex flex-col mt-10">
               <div className='flex flex-col items-center'>
-                <input 
-                  type="email" 
-                  placeholder={t('email')} 
-                  required 
-                  className="text-black font-arabic font-light w-4/5 py-3 px-4 mb-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-50" 
+                <input
+                  type="email"
+                  placeholder={t('email')}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="text-black font-arabic font-light w-4/5 py-3 px-4 mb-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-50"
                 />
-                <input 
-                  type="password" 
-                  placeholder={t('password')} 
-                  required 
-                  className="text-black font-arabic font-light w-4/5 py-3 px-4 mb-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-50" 
+                <input
+                  type="password"
+                  placeholder={t('password')}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="text-black font-arabic font-light w-4/5 py-3 px-4 mb-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-50"
                 />
               </div>
 
               <div className="flex justify-between items-center w-4/5 mx-auto gap-10">
                 <div className="flex items-center gap-1.5">
-                  <input type="checkbox" id="remember-checkbox" />
+                  <input
+                    type="checkbox"
+                    id="remember-checkbox"
+                    checked={rememberMe}
+                    onChange={() => setRememberMe(!rememberMe)}
+                  />
                   <label htmlFor="remember-checkbox" className="text-sm mx-0 cursor-pointer mt-0.2">{t('remember_me')}</label>
                 </div>
                 <a href="#" className="text-sm no-underline hover:underline">{t('forgot_password')}</a>
@@ -113,12 +164,14 @@ const Login = ({ onLogin }) => {
                 </button>
               </div>
 
+              {error && <p className="text-red-500 mt-5">{error}</p>}
+
             </form>
           </div>
 
           <p className="font-arabic font-light text-center text-2xl py-10 text-gray-100">{t('no_account')} <a href="#" className="font-semibold no-underline hover:underline">{t('sign_up')}</a></p>
           <div className="flex lg:hidden md:hidden justify-center mt-0 mb-10">
-            <button className="font-arabic font-light text-lg bg-transparent text-white transition-colors duration-300 hover:bg-secondary-color rounded-full cursor-pointer py-2.5 px-5" onClick={handleLoginClick}>
+            <button className="font-arabic font-light text-lg bg-transparent text-white transition-colors duration-300 hover:bg-secondary-color rounded-full cursor-pointer py-2.5 px-5" onClick={() => navigate('/dashboard')}>
               {t('go_as_guest')}<span className="mx-2 inline-flex items-center justify-center"><i className="ri-glasses-2-line"></i></span>
             </button>
           </div>

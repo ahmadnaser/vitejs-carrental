@@ -23,7 +23,7 @@ const TopNav = ({ isSidebarOpen, onToggleSidebar }) => {
           <div className="flex items-center justify-between bg-[#0b0c28] px-[10px] rounded-md cursor-pointer h-[40px] w-full max-w-[300px]">
             <input
               type="text"
-              placeholder="search or type"
+              placeholder={t('Search')}
               className="bg-transparent border-none outline-none text-small-text-color placeholder-small-text-color w-full"
             />
             <span>

@@ -23,40 +23,40 @@ const navLinks = [
     display: "Expenses",
     submenu: [
       { path: "/expenses/car-maintenance", display: "Car maintenance" },
-      { path: "/expenses/general-expenses", display: "General expenses" },
+      { path: "/expenses/general-expenses", display: "General Expenses" },
       { path: "/expenses/garages", display: "Garages" },
       { path: "/expenses/beneficiaries", display: "Beneficiaries" },
       { path: "/expenses/traders", display: "Traders" },
-      { path: "/expenses/types-of-expenses", display: "Types of expenses" }
+      { path: "/expenses/types-of-expenses", display: "Types of Expenses" }
     ],
   },
   {
     path: "/reports",
     icon: "ri-file-pdf-2-line",
     display: "Reports",
-    submenu: [ { path: "/reports/car-maintenance", display: "Cars tracking" },
-      { path: "/reports/car-statement", display: "Car statment" },
-      { path: "/reports/expensese-statement", display: "Expensese statment" },
-      { path: "/reports/customer-statement", display: "Customer statment" },
-      { path: "/reports/full-account-statement", display: "Full account statement" },
-      { path: "/reports/garage-statement", display: "Garage account statement" },
-      { path: "/reports/trader-statement", display: "Meerchant account statement" }
+    submenu: [ { path: "", display: "Cars tracking" },
+      { path: "/reports/car-statement", display: "Car Statement" },
+      { path: "/reports/expensese-statement", display: "Expensese Statement" },
+      { path: "/reports/customer-statement", display: "Customer Statement" },
+      { path: "/reports/full-account-statement", display: "Full Account Statement" },
+      { path: "/reports/garage-statement", display: "Garage account Statement" },
+      { path: "/reports/trader-statement", display: "Trader account Statement" }
     ],
   },
   {
-    path: "/car-tracking",
+    path: "/",
     icon: "ri-bubble-chart-line",
     display: "Car tracking",
     submenu: [],
   },
   {
-    path: "/traffic-violations",
+    path: "/",
     icon: "ri-alarm-warning-line",
     display: "Traffic violations",
     submenu: [],
   },
   {
-    path: "/messages",
+    path: "/",
     icon: "ri-message-3-line",
     display: "Messages",
     submenu: [],

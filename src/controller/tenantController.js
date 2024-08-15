@@ -7,7 +7,17 @@ async function loadConfig() {
   });
   return config.default;
 }
-const config = await loadConfig();
+
+let config;
+
+async function initializeConfig() {
+  config = await loadConfig();
+}
+
+initializeConfig().catch(error => {
+  console.error("Failed to load configuration:", error);
+});
+
 
 export const addTenants = async (formData) => {
   const tenant = new Tenant(formData);
@@ -65,6 +75,7 @@ export const getTenantById = async (idNumber) => {
   }
 };
 
+
 export const getAccountStatmentById = async(tenantId, startDate, endDate) => {
   try {
     const response = await axios.get(config.GetAccountStatment, {
@@ -75,7 +86,24 @@ export const getAccountStatmentById = async(tenantId, startDate, endDate) => {
       },
     });
     if (response.data.message === "No contracts found") {
-      console.warn("No contracts found for the given criteria.");
+      return []; 
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error("There was an error fetching the contracts by tenant ID!", error);
+    throw error;
+  }
+};
+
+export const getAccountBalanceById = async(tenantId) => {
+  try {
+    const response = await axios.get(config.GetAccountBalance, {
+      params: {
+        tenant_id: tenantId,
+      },
+    });
+    if (response.data.message === "No reservations found") {
       return []; 
     }
     

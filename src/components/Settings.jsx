@@ -85,7 +85,7 @@ const Settings = () => {
           } hover:bg-[#b7ffe913]`}
           onClick={() => setActiveSection("code")}
         >
-          {t("Admin Code ")} 
+          {t("Admin Code")} 
         </button>
         <button
           className={`border-none rounded-md text-heading-color text-lg cursor-pointer py-1.5 px-6 ${
@@ -133,7 +133,7 @@ const Settings = () => {
 
             <div className="flex w-full flex-wrap items-center text-xl justify-center gap-x-5 flex-col gap-y-4 mt-12">
               <div className=" cursor-pointer text-red-500 transition-colors duration-300 hover:text-white mb-10" onClick={handleLogout}>
-                <i className="ri-logout-circle-r-line"></i> Logout
+                <i className="ri-logout-circle-r-line"></i> {t("Logout")}
               </div>
             </div>
           </div>

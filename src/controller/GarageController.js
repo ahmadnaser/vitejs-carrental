@@ -1,4 +1,3 @@
-// services/GarageService.js
 import axios from 'axios';
 import { Garage } from '../models/GarageModel';
 
@@ -8,7 +7,16 @@ async function loadConfig() {
   });
   return config.default;
 }
-const config = await loadConfig();
+
+let config;
+
+async function initializeConfig() {
+  config = await loadConfig();
+}
+
+initializeConfig().catch(error => {
+  console.error("Failed to load configuration:", error);
+});
 
 export const getGarages = async () => {
   try {
@@ -31,7 +39,7 @@ export const getGarages = async () => {
 
 export const getGarageById = async (garage_id) => {
   try {
-    const response = await axios.get(config.GetGarageById, {
+    const response = await axios.get(config.GetGaragesById, {
       params: { garage_id }
     });
     const garage = response.data;

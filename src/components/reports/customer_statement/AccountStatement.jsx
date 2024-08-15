@@ -12,9 +12,9 @@ const AccountStatementTable = () => {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [tenantName, setTenantName] = useState('');
-  const [accountData, setaccountData] = useState([]);
+
+  const [accountData, setAccountData] = useState([]);
   const [status, setStatus] = useState(null);
-  const [selectedRows, setSelectedRows] = useState([]);
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const AccountStatementTable = () => {
         const tenant = await getTenantById(tenant_id);
         const account = await getAccountStatmentById(tenant_id, start_date, end_date);
         setTenantName(tenant.tenant_name);
-        setaccountData(account);
+        setAccountData(account);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -70,6 +70,24 @@ const AccountStatementTable = () => {
     }
   };
 
+  const calculateTotals = () => {
+    return accountData.reduce(
+      (totals, item) => {
+        const debit = parseFloat(item.debit) || 0;
+        const credit = parseFloat(item.credit) || 0;
+        totals.debit += debit;
+        totals.credit += credit;
+        return totals;
+      },
+      { debit: 0, credit: 0 }
+    );
+  };
+
+  const { debit: totalDebit, credit: totalCredit } = calculateTotals();
+  const totalAmount = totalDebit - totalCredit;
+
+  let runningTotal = 0;
+
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
@@ -100,11 +118,10 @@ const AccountStatementTable = () => {
       </div>
 
       <div className="relative overflow-x-auto shadow-md w-full max-w-7xl px-4 sm:px-5 lg:px-8 md:px-8 mb-10 rounded-lg mt-1">
-      <h3 className="font-bold text-l mt-3 align-middle text-center text-white-400">
-          <span className="text-secondary-color">{t('Balance')}:</span> {400}{' Shekels'}
-         
+        <h3 className="font-bold text-l mt-3 align-middle text-center text-white-400">
+          {t('Balance: ')} <span className='text-red-500'>{totalAmount} {t('Shekels')}</span>
         </h3>
-        <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-left mt-5 text-gray-800 dark:text-gray-100 rounded-lg">
+        <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-left mt-5 text-gray-800 dark:text-gray-100 rounded-lg bg-white">
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-3 py-3 text-center">{t('Description')}</th>
@@ -112,6 +129,7 @@ const AccountStatementTable = () => {
               <th scope="col" className="px-5 py-3 text-center">{t('Date')}</th>
               <th scope="col" className="px-2 py-3 text-center">{t('Debit')}</th>
               <th scope="col" className="px-5 py-3 text-center">{t('Credit')}</th>
+              <th scope="col" className="px-5 py-3 text-center">{t('Total')}</th>
             </tr>
           </thead>
           <tbody>
@@ -120,20 +138,31 @@ const AccountStatementTable = () => {
                 <td colSpan="13" className="text-center py-4 text-white">{t('No records found')}</td>
               </tr>
             ) : (
-              accountData.map((item, index) => (
-                <tr
-                  key={index}
-                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${selectedRows.includes(index) ? 'bg-gray-200 dark:bg-gray-600' : ''}`}
-                >
-                  <td className="px-1 py-4 text-center">{item.description}</td>
-                  <td className="px-1 py-4 text-center">{item.reservation_id}</td>
-                  <td className="px-2 py-4 text-center">{item.date}</td>
-                  <td className="px-1 py-4 text-center text-red-500">{item.debit}</td>
-                  <td className="px-2 py-4 text-center text-green-500">{item.credit}</td>
-                </tr>
-              ))
+              accountData.map((item, index) => {
+                const debit = parseFloat(item.debit) || 0;
+                const credit = parseFloat(item.credit) || 0;
+                runningTotal += debit - credit;
+                return (
+                  <tr key={index}>
+                    <td className="px-1 py-4 text-center">{item.description}</td>
+                    <td className="px-1 py-4 text-center">{item.reservation_id}</td>
+                    <td className="px-2 py-4 text-center">{item.date}</td>
+                    <td className="px-1 py-4 text-center text-red-500">{item.debit}</td>
+                    <td className="px-2 py-4 text-center text-green-500">{item.credit}</td>
+                    <td className="px-2 py-4 text-center">{runningTotal.toFixed(2)}</td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
+          <tfoot>
+            <tr>
+              <td colSpan="3" className="px-2 py-4 text-center font-bold">{t('Total')}</td>
+              <td className="px-2 py-4 text-center text-red-500 font-bold">{totalDebit}</td>
+              <td className="px-2 py-4 text-center text-green-500 font-bold">{totalCredit}</td>
+              <td className="px-2 py-4 text-center font-bold">{totalAmount}</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>

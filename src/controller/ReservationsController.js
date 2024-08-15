@@ -1,11 +1,26 @@
 import axios from 'axios';
 import { Reservation } from '../models/Reservation';
 
-const API_URL = 'http://localhost/CarRentalSystem/';
+async function loadConfig() {
+  const config = await import('../../config.json', {
+    assert: { type: 'json' }
+  });
+  return config.default;
+}
+
+let config;
+
+async function initializeConfig() {
+  config = await loadConfig();
+}
+
+initializeConfig().catch(error => {
+  console.error("Failed to load configuration:", error);
+});
 
 export const getReservations = async () => {
   try {
-    const response = await axios.get(`${API_URL}get_reservations.php`);
+    const response = await axios.get(config.GetReservations);
     const reservations = response.data.map(
       reservation =>
         new Reservation({
@@ -50,7 +65,7 @@ export const addReservation = async (formData) => {
   }
 
   try {
-    const response = await fetch(`${API_URL}add_reservation.php`, {
+    const response = await fetch(config.AddReservation, {
       method: 'POST',
       body: form,
       headers: {

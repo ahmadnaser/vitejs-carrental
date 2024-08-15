@@ -1,2 +1,0 @@
-# Rental Car System / GreenBackEnd
-
