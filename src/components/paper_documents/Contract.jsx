@@ -84,11 +84,7 @@ const styles = StyleSheet.create({
 });
 
 const Contract = ({ formData, tenant, car }) => {
-  // Log the received data to the console
-  console.log("Contract Component Data:");
-  console.log("Form Data:", formData);
-  console.log("Tenant Data:", tenant);
-  console.log("Car Data:", car);
+
 
   return (
     <Document>

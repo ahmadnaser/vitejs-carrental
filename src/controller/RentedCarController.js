@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { ContractView } from '../models/ContractViewModel';
 
 async function loadConfig() {
   const config = await import('../../config.json', {
@@ -21,26 +20,9 @@ initializeConfig().catch(error => {
 
 export const getContracts = async () => {
   try {
-    const response = await axios.get(config.FetchRentedCarURL);
-    return response.data.map(contract => 
-      new ContractView(
-        contract.rental_id,
-        contract.vehicle_id,
-        contract.make,
-        contract.model,
-        contract.customer,
-        contract.tenantID,
-        contract.start_date,
-        contract.end_date,
-        contract.end_date_agreed,
-        contract.price_perday,
-        contract.dayNum,
-        contract.total_amount,
-        contract.note,
-        contract.remainingAmount,
-        contract.timeReturned,
-      )
-    );
+    const response = await axios.get(config.Rental);
+    return response.data;
+  
   } catch (error) {
     console.error("There was an error fetching the contracts!", error);
     throw error;
@@ -49,7 +31,7 @@ export const getContracts = async () => {
 
 export const getContractsByTenantId = async (tenantId, startDate, endDate) => {
   try {
-    const response = await axios.get(config.FetchRentedCarById, {
+    const response = await axios.get(config.Rental, {
       params: {
         tenant_id: tenantId,
         start_date: startDate,
@@ -70,25 +52,29 @@ export const getContractsByTenantId = async (tenantId, startDate, endDate) => {
 
 export const addContract = async (formData) => {  
   try {
-    const response = await fetch(config.AdddRentalContract, {
+    const response = await fetch(config.Rental, {
       method: 'POST',
       body: formData,
       headers: {
         'Accept': 'application/json',
       },
     });
+    let responseData;
 
-    const responseText = await response.text();  
-    const responseData = JSON.parse(responseText);  
+    try {
+      responseData = await response.json();
+    } catch (jsonError) {
+      return { success: false, message: 'Invalid response format from server' };
+    }
 
     if (!response.ok) {
-      return { success: false, message: responseData.message };
+      const errorMessage = responseData?.message || 'An error occurred while processing the request.';
+      return { success: false, message: errorMessage };
     }
-  
+
     return { success: true, message: responseData.message };
-  
+
   } catch (error) {
-   
-    return { success: false, message: error.message };
+    return { success: false, message: `Network or server error: ${error.message}` };
   }
 };

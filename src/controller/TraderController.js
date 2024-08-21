@@ -21,7 +21,7 @@ initializeConfig().catch(error => {
 
 export const getTraders = async () => {
   try {
-    const response = await axios.get(config.GetTraders);
+    const response = await axios.get(config.Trader);
     return response.data.map(
       trader => new Trader(trader.trader_id, trader.name, trader.contact_info, trader.type)
     );
@@ -34,7 +34,7 @@ export const getTraders = async () => {
 
 export const getTraderById = async (trader_id) => {
   try {
-    const response = await axios.get(config.GetTraderById,{
+    const response = await axios.get(config.Trader,{
       params: { trader_id }
     });
     const trader = response.data;
@@ -55,7 +55,7 @@ export const addTrader = async (traderData) => {
       }
     }
   
-    const response = await axios.post(config.AddTrader, formData, {
+    const response = await axios.post(config.Trader, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

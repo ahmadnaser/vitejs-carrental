@@ -20,7 +20,7 @@ initializeConfig().catch(error => {
 
 export const getGarages = async () => {
   try {
-    const response = await axios.get(config.GetGarages);
+    const response = await axios.get(config.Garage);
     return response.data.map(garage => 
       new Garage(
         garage.garage_id,
@@ -39,7 +39,7 @@ export const getGarages = async () => {
 
 export const getGarageById = async (garage_id) => {
   try {
-    const response = await axios.get(config.GetGaragesById, {
+    const response = await axios.get(config.Garage, {
       params: { garage_id }
     });
     const garage = response.data;
@@ -64,7 +64,7 @@ export const addGarage = async (formData) => {
   }
 
   try {
-    const response = await fetch(config.AddGarage, {
+    const response = await fetch(config.Garage, {
       method: 'POST',
       body: form,
       headers: {

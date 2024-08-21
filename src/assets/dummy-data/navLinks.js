@@ -22,7 +22,7 @@ const navLinks = [
     icon: "ri-money-dollar-circle-line",
     display: "Expenses",
     submenu: [
-      { path: "/expenses/car-maintenance", display: "Car maintenance" },
+      { path: "/expenses/car-maintenance", display: "Car Maintenance" },
       { path: "/expenses/general-expenses", display: "General Expenses" },
       { path: "/expenses/garages", display: "Garages" },
       { path: "/expenses/beneficiaries", display: "Beneficiaries" },
@@ -39,8 +39,9 @@ const navLinks = [
       { path: "/reports/expensese-statement", display: "Expensese Statement" },
       { path: "/reports/customer-statement", display: "Customer Statement" },
       { path: "/reports/full-account-statement", display: "Full Account Statement" },
-      { path: "/reports/garage-statement", display: "Garage account Statement" },
-      { path: "/reports/trader-statement", display: "Trader account Statement" }
+      { path: "/reports/garage-statement", display: "Garage Account Statement" },
+      { path: "/reports/trader-statement", display: "Trader Account Statement" },
+      { path: "/reports/ledger-statement", display: "Ledger" }
     ],
   },
   {

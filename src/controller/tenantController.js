@@ -20,32 +20,39 @@ initializeConfig().catch(error => {
 
 
 export const addTenants = async (formData) => {
-  const tenant = new Tenant(formData);
-  
-  const form = new FormData();
-  for (const key in tenant) {
-    form.append(key, tenant[key]);
-  }
-
   try {
-    const response = await axios.post(config.AddTenant, form, {
+    const response = await fetch(config.Tenant, {
+      method: 'POST',
+      body: formData,
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
       },
     });
 
-    return { success: true, message: response.data.message };
+    let responseData;
+
+    try {
+      responseData = await response.json();
+    } catch (jsonError) {
+      return { success: false, message: 'Invalid response format from server' };
+    }
+
+    if (!response.ok) {
+      const errorMessage = responseData?.message || 'An error occurred while processing the request.';
+      return { success: false, message: errorMessage };
+    }
+
+    return { success: true, message: responseData.message };
 
   } catch (error) {
-    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
-    return { success: false, message: errorMessage };
+    return { success: false, message: `Network or server error: ${error.message}` };
   }
 };
 
+
 export const getTenants = async () => {
   try {
-    const response = await axios.get(config.GetTenants, {
+    const response = await axios.get(config.Tenant, {
       headers: {
         'Accept': 'application/json',
       },
@@ -61,7 +68,7 @@ export const getTenants = async () => {
 
 export const getTenantById = async (idNumber) => {
   try {
-    const response = await axios.get(`${config.GetTenantsById}?id_number=${idNumber}`, {
+    const response = await axios.get(`${config.Tenant}?id_number=${idNumber}`, {
       headers: {
         'Accept': 'application/json',
       },
@@ -78,7 +85,7 @@ export const getTenantById = async (idNumber) => {
 
 export const getAccountStatmentById = async(tenantId, startDate, endDate) => {
   try {
-    const response = await axios.get(config.GetAccountStatment, {
+    const response = await axios.get(config.Tenant, {
       params: {
         tenant_id: tenantId,
         start_date: startDate,
@@ -96,20 +103,25 @@ export const getAccountStatmentById = async(tenantId, startDate, endDate) => {
   }
 };
 
-export const getAccountBalanceById = async(tenantId) => {
+export const deleteTenantById = async (tenantId) => {
   try {
-    const response = await axios.get(config.GetAccountBalance, {
+    const response = await axios.delete(`${config.Tenant}`, {
       params: {
         tenant_id: tenantId,
       },
+      headers: {
+        'Accept': 'application/json',
+      },
     });
-    if (response.data.message === "No reservations found") {
-      return []; 
+
+    if (!response.status === 200) {
+      throw new Error('Failed to delete the tenant');
     }
-    
-    return response.data;
+
+    return { success: true, message: 'Tenant deleted successfully' };
+
   } catch (error) {
-    console.error("There was an error fetching the contracts by tenant ID!", error);
-    throw error;
+    console.error('There was an error deleting the tenant!', error);
+    return { success: false, message: `Error: ${error.message}` };
   }
 };

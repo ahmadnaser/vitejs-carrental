@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getTenantById, getTenants,getAccountStatmentById } from '../../../controller/tenantController';
+import { getTenantById, getTenants, getAccountStatmentById } from '../../../controller/TenantController';
 import Select from 'react-select';
-import AccountStatement from '../../paper_documents/AccountStatement';
+
+async function loadConfig() {
+  const config = await import('../../../../config.json', {
+    assert: { type: 'json' }
+  });
+  return config.default;
+}
+
+let config;
+
+async function initializeConfig() {
+  config = await loadConfig();
+}
+
+initializeConfig().catch(error => {
+  console.error(t("Failed to load configuration:"), error);
+});
 
 const TenantsDetails = ({ tenantId }) => {
   const { t, i18n } = useTranslation();
-  const [activeTab, setActiveTab] = useState('Summary');
+  const [activeTab, setActiveTab] = useState(t('Summary'));
   const [accountData, setaccountData] = useState([]);
   const [tenant, setTenant] = useState(null);
   const [selectedTenant, setSelectedTenant] = useState(null);
@@ -19,17 +34,16 @@ const TenantsDetails = ({ tenantId }) => {
         const tenantsList = await getTenants();
         setTenants(tenantsList);
 
-     
         const initialTenant = tenantsList.find(tenant => tenant.id_number === tenantId);
         if (initialTenant) {
           setSelectedTenant({
             value: initialTenant.id_number,
             label: `${initialTenant.tenant_name} - ${initialTenant.id_number}`
           });
-          setTenant(initialTenant); 
+          setTenant(initialTenant);
         }
       } catch (error) {
-        console.error('Error fetching tenants:', error);
+        console.error(t('Error fetching tenants:'), error);
       }
     };
 
@@ -42,10 +56,10 @@ const TenantsDetails = ({ tenantId }) => {
         try {
           const tenantData = await getTenantById(selectedTenant.value);
           setTenant(tenantData);
-          const account = await getAccountStatmentById(selectedTenant.value, '2000-04-04', '2300-05-05');
+          const account = await getAccountStatmentById(selectedTenant.value, '', '');
           setaccountData(account);
         } catch (error) {
-          console.error('Error fetching tenant data:', error);
+          console.error(t('Error fetching tenant data:'), error);
         }
       }
     };
@@ -54,7 +68,7 @@ const TenantsDetails = ({ tenantId }) => {
   }, [selectedTenant]);
 
   if (!tenant) {
-    return <div>Loading...</div>;
+    return <div>{t('Loading...')}</div>;
   }
 
   const handleTenantChange = (selectedOption) => {
@@ -87,29 +101,30 @@ const TenantsDetails = ({ tenantId }) => {
       color: '#000000',
     }),
   };
+
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20`}>
         <h1 className="text-3xl font-bold text-secondary-color">{t('Tenant Profile')}</h1>
         <div className="mb-1 mt-5 max-w-[250px]">
-        <Select
-              id="tenants"
-              value={selectedTenant}
-              onChange={handleTenantChange}
-              options={tenantOptions}
-              placeholder={t('Name of Tenants or ID Number')}
-              className=" rounded-none text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              isDisabled={false}
-              styles={customStyles}
-              required
-            />
+          <Select
+            id="tenants"
+            value={selectedTenant}
+            onChange={handleTenantChange}
+            options={tenantOptions}
+            placeholder={t('Name of Tenants or ID Number')}
+            className=" rounded-none text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            isDisabled={false}
+            styles={customStyles}
+            required
+          />
         </div>
       </div>
 
       <div className="flex flex-col items-center">
         <nav className="border-b border-gray-100 mb-8">
           <div className="flex flex-wrap justify-around sm:justify-start sm:space-x-8" aria-label="Tabs">
-            {['Summary', 'Contacts','Profile', 'Invoices', 'Transactions'].map(tab => (
+            {[t('Summary'), t('Transactions'), t('Id Image'), t('License Image')].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -122,58 +137,55 @@ const TenantsDetails = ({ tenantId }) => {
         </nav>
       </div>
 
-      {activeTab === 'Summary' && (
-      <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 text-black">
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Account Status</label>
-          <div className="mt-1 p-2 border border-yellow-500 rounded-md bg-yellow-100">
-            The owner of this account has not yet sign up with email address
+      {activeTab === t('Summary') && (
+        <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 text-black">
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700">{t('Account Status')}</label>
+            <div className="mt-1 p-2 border border-yellow-500 rounded-md bg-yellow-100">
+              {t('The owner of this account has not yet signed up with an email address')}
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-6">
+            <div className='bg-white p-4 rounded-xl flex-1'>
+              <h3 className="text-lg font-bold mb-2">{t('Client Information')}</h3>
+              <div className="space-y-2">
+                <div><strong>{t('Id Number')}:</strong> {tenant.id_number}</div>
+                <div><strong>{t('Name')}:</strong> {tenant.tenant_name}</div>
+                <div><strong>{t('Address')}:</strong> {tenant.address}</div>
+                <div><strong>{t('Blood Type')}:</strong> {tenant.blood_type}</div>
+                <div><strong>{t('Birth Date')}:</strong> {tenant.birth_date}</div>
+                <div><strong>{t('License Start Date')}:</strong> {tenant.license_start_date}</div>
+                <div><strong>{t('License End Date')}:</strong> {tenant.license_end_date}</div>
+              </div>
+            </div>
+            <div className='bg-white p-4 rounded-xl flex-1'>
+              <h3 className="text-lg font-bold mb-2">{t('Invoices/Billing')}</h3>
+              <div className="space-y-2">
+                <div><strong>{t('Number of invoices')}:</strong> {accountData?.billingSummary?.num_invoices ?? 0} ({(parseFloat(accountData?.billingSummary?.total_bills) || 0).toFixed(2)} {t('Shekel')})</div>
+                <div>
+                  <strong>{t('Paid')}: </strong>
+                  <span className="text-green-500">
+                    {(parseFloat(accountData?.billingSummary?.total_paid) || 0).toFixed(2)} {t('Shekel')}
+                  </span>
+                </div>
+                <div>
+                  <strong>{t('Unpaid/Due')}: </strong>
+                  <span className="text-red-500">
+                    {(parseFloat(accountData?.billingSummary?.unpaid_due) || 0).toFixed(2)} {t('Shekel')}
+                  </span>
+                </div>
+                <div><strong>{t('Collections')}:</strong> {(parseFloat(accountData?.billingSummary?.collections) || 0).toFixed(2)} {t('Shekel')}</div>
+                <div><strong>{t('Gross Revenue')}:</strong> {(parseFloat(accountData?.billingSummary?.gross_revenue) || 0).toFixed(2)} {t('Shekel')}</div>
+                <div><strong>{t('Credit Balance')}:</strong> {(parseFloat(accountData?.billingSummary?.credit_balance) || 0).toFixed(2)} {t('Shekel')}</div>
+              </div>
+            </div>
           </div>
         </div>
+      )}
 
-        <div className="flex flex-col sm:flex-row gap-6">
-          <div className='bg-white p-4 rounded-xl flex-1'>
-            <h3 className="text-lg font-bold mb-2">Client Information</h3>
-            <div className="space-y-2">
-              <div><strong>Id Number:</strong> {tenant.id_number}</div>
-              <div><strong>Name:</strong> {tenant.tenant_name}</div>
-              <div><strong>Address :</strong> {tenant.address}</div>
-              <div><strong>Blood Type:</strong> {tenant.blood_type}</div>
-              <div><strong>Birth Date:</strong> {tenant.birth_date}</div>
-              <div><strong>License Start Date:</strong> {tenant.license_start_date}</div>
-              <div><strong>License End Date:</strong> {tenant.license_end_date}</div>
-            </div>
-          </div>
-          <div className='bg-white p-4 rounded-xl flex-1'>
-            <h3 className="text-lg font-bold mb-2">Invoices/Billing</h3>
-            <div className="space-y-2">
-              <div><strong>Number of invoices:</strong> 1 ($900.00 USD)</div>
-              <div><strong>Total Bills:</strong> 1 ($900.00 USD)</div>
-              <div><strong>Paid:</strong> 0 ($0.00 USD)</div>
-              <div><strong>Unpaid/Due:</strong> 0 ($0.00 USD)</div>
-              <div><strong>Cancelled:</strong> 0 ($0.00 USD)</div>
-              <div><strong>Refunded:</strong> 0 ($0.00 USD)</div>
-              <div><strong>Collections:</strong> 0 ($0.00 USD)</div>
-              <div><strong>Gross Revenue:</strong> $0.00 USD</div>
-              <div><strong>Client Expenses:</strong> $0.00 USD</div>
-              <div><strong>Net Income:</strong> $0.00 USD</div>
-              <div><strong>Credit Balance:</strong> $0.00 USD</div>
-            </div>
-          </div>
-          <div className='bg-white p-4 rounded-xl flex-1'>
-            <h3 className="text-lg font-bold mb-2">Products/Services</h3>
-            <div className="space-y-2">
-             
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-    
-
-      {activeTab === 'Transactions' && (
+      {activeTab === t('Transactions') && (
         <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black">
-        
           <div className="relative overflow-x-auto shadow-md w-full max-w-7xl px-4 sm:px-5 lg:px-8 md:px-8 mb-10 rounded-lg mt-1">
             <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-left text-gray-800 dark:text-gray-100 rounded-lg bg-white">
               <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -187,15 +199,15 @@ const TenantsDetails = ({ tenantId }) => {
                 </tr>
               </thead>
               <tbody>
-                {accountData.length === 0 ? (
+                {accountData?.accountStatement?.length === 0 ? (
                   <tr>
                     <td colSpan="13" className="text-center py-4 text-white">{t('No records found')}</td>
                   </tr>
                 ) : (
-                  accountData.map((item, index) => (
+                  accountData?.accountStatement?.map((item, index) => (
                     <tr
                       key={index}
-                    
+                      className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}
                     >
                       <td className="px-1 py-4 text-center">{item.description}</td>
                       <td className="px-1 py-4 text-center">{item.reservation_id}</td>
@@ -209,74 +221,28 @@ const TenantsDetails = ({ tenantId }) => {
               </tbody>
             </table>
           </div>
-            </div>
+        </div>
       )}
 
-    {activeTab === 'Profile' && (
-            <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black">
-              <div className="flex flex-col sm:flex-row gap-6">
-                <div className="bg-white p-4 rounded-xl flex-1">
-                  <h3 className="text-lg font-bold mb-2">Client Information</h3>
-                  <div className="space-y-2">
-                    <div><strong>First Name:</strong> Belal</div>
-                    <div><strong>Last Name:</strong> Hammad</div>
-                    <div><strong>Email Address:</strong> belalhammad1998@gmail.com</div>
-                    <div><strong>Address 1:</strong> Silwad Ramallah</div>
-                    <div><strong>City:</strong> Ramallah</div>
-                    <div><strong>State/Region:</strong> Westbank</div>
-                    <div><strong>Country:</strong> PS - Palestine, State Of</div>
-                    <div><strong>Phone Number:</strong> +970.568198950</div>
-                  </div>
-                </div>
-                <div className="bg-white p-4 rounded-xl flex-1">
-                  <h3 className="text-lg font-bold mb-2">Invoices/Billing</h3>
-                  <div className="space-y-2">
-                    <div><strong>Paid:</strong> 1 ($900.00 USD)</div>
-                    <div><strong>Draft:</strong> 0 ($0.00 USD)</div>
-                    <div><strong>Unpaid/Due:</strong> 0 ($0.00 USD)</div>
-                    <div><strong>Cancelled:</strong> 0 ($0.00 USD)</div>
-                    <div><strong>Refunded:</strong> 0 ($0.00 USD)</div>
-                    <div><strong>Collections:</strong> 0 ($0.00 USD)</div>
-                    <div><strong>Gross Revenue:</strong> $0.00 USD</div>
-                    <div><strong>Client Expenses:</strong> $0.00 USD</div>
-                    <div><strong>Net Income:</strong> $0.00 USD</div>
-                    <div><strong>Credit Balance:</strong> $0.00 USD</div>
-                  </div>
-                </div>
-                <div className="bg-white p-4 rounded-xl flex-1">
-                  <h3 className="text-lg font-bold mb-2">Products/Services</h3>
-                  <div className="space-y-2">
-                    <div><strong>Shared Hosting:</strong> 1 (1 Total)</div>
-                    <div><strong>Reseller Hosting:</strong> 0 (0 Total)</div>
-                    <div><strong>VPS/Server:</strong> 0 (0 Total)</div>
-                    <div><strong>Domains:</strong> 1 (1 Total)</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      {activeTab === t('Id Image') && (
+        <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black flex items-center justify-center" style={{ height: '100%' }}>
+          {tenant.id_image_path ? (
+            <img src={`${config.BaseURL}${tenant.id_image_path}`} alt={t('Tenant ID')} className="max-w-full h-auto" />
+          ) : (
+            <p className="text-white text-2xl text-center">{t('No ID image available')}</p>
           )}
+        </div>
+      )}
 
-    {activeTab === 'Contacts' && (
-            <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black">
-              <div className="flex flex-col sm:flex-row gap-6">
-                <div className="bg-white p-4 rounded-xl flex-1">
-                  <h3 className="text-lg font-bold mb-2">Contact Information</h3>
-                  <div className="space-y-2">
-                    <div><strong>First Name:</strong> Belal</div>
-                    <div><strong>Last Name:</strong> Hammad</div>
-                    <div><strong>Email Address:</strong> belalhammad1998@gmail.com</div>
-                    <div><strong>Address 1:</strong> Silwad Ramallah</div>
-                    <div><strong>City:</strong> Ramallah</div>
-                    <div><strong>State/Region:</strong> Westbank</div>
-                    <div><strong>Country:</strong> PS - Palestine, State Of</div>
-                    <div><strong>Phone Number:</strong> +970.568198950</div>
-                  </div>
-                </div>
-               
-              </div>
-            </div>
+      {activeTab === t('License Image') && (
+        <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black flex items-center justify-center" style={{ height: '100%' }}>
+          {tenant.license_image_path ? (
+            <img src={`${config.BaseURL}${tenant.license_image_path}`} alt={t('Tenant License')} className="max-w-full h-auto" />
+          ) : (
+            <p className="text-white text-2xl text-center">{t('No license image available')}</p>
           )}
-
+        </div>
+      )}
     </div>
   );
 };

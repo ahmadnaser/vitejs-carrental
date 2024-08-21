@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getTenantById } from '../../../controller/tenantController'; // Ensure these functions are correctly imported
+import { getTenantById } from '../../../controller/TenantController';
 import { getContractsByTenantId } from '../../../controller/RentedCarController';
 import PrintIcon from "../../../assets/images/print.png";
 import {pdf} from '@react-pdf/renderer';
@@ -22,12 +22,7 @@ const ContractStatementTable = () => {
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
-    if (!tenant_id || !start_date || !end_date) {
-      console.error('Required data is missing!');
-      navigate(-1);
-      return;
-    }
-
+   
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -130,10 +125,12 @@ const ContractStatementTable = () => {
         <h3 className="font-bold text-l text-white-400 mt-10">
           {tenantName || t('Loading tenant name...')}
         </h3>
-        <h3 className="font-bold text-l mt-3 text-white-400">
-          <span className="text-secondary-color">{t('From')}:</span> {start_date}{' '}
-          <span className="text-secondary-color">{t('To')}:</span> {end_date}
-        </h3>
+        {start_date && end_date && (
+          <h3 className="font-bold text-l mt-3 text-white-400">
+            <span className="text-secondary-color">{t('From')}:</span> {start_date}{' '}
+            <span className="text-secondary-color">{t('To')}:</span> {end_date}
+          </h3>
+        )}
         <div className="mb-1 mt-10">
           <button type="button" onClick={handlePrintClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Printing...') : t('Print')}

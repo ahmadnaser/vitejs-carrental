@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getTenantById, getAccountStatmentById } from '../../../controller/tenantController';
+import { getTenantById, getAccountStatmentById } from '../../../controller/TenantController';
 import { pdf } from '@react-pdf/renderer';
 import AccountStatement from '../../paper_documents/AccountStatement';
 
@@ -18,12 +18,7 @@ const AccountStatementTable = () => {
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
-    if (!tenant_id || !start_date || !end_date) {
-      console.error('Required data is missing!');
-      navigate(-1);
-      return;
-    }
-
+   
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -41,9 +36,6 @@ const AccountStatementTable = () => {
     fetchData();
   }, [tenant_id, start_date, end_date, navigate]);
 
-  const handleCustomerClick = (tenantId) => {
-    navigate('/tenants/details', { state: { tenantId } });
-  };
 
   const handleGoBack = () => {
     navigate(-1);
@@ -52,7 +44,7 @@ const AccountStatementTable = () => {
   const handlePrintClick = async () => {
     setLoading(true);
     try {
-      const blob = await pdf(<AccountStatement data={accountData} startDate={start_date} endDate={end_date} />).toBlob();
+      const blob = await pdf(<AccountStatement data={accountData?.accountStatement} startDate={start_date} endDate={end_date} />).toBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -71,7 +63,11 @@ const AccountStatementTable = () => {
   };
 
   const calculateTotals = () => {
-    return accountData.reduce(
+    if (!accountData?.accountStatement) {
+      return { debit: 0, credit: 0 };
+    }
+  
+    return accountData.accountStatement.reduce(
       (totals, item) => {
         const debit = parseFloat(item.debit) || 0;
         const credit = parseFloat(item.credit) || 0;
@@ -82,24 +78,27 @@ const AccountStatementTable = () => {
       { debit: 0, credit: 0 }
     );
   };
-
-  const { debit: totalDebit, credit: totalCredit } = calculateTotals();
+  
+  const { debit: totalDebit = 0, credit: totalCredit = 0 } = calculateTotals();
   const totalAmount = totalDebit - totalCredit;
-
+  
   let runningTotal = 0;
+  
 
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
         <h1 className="text-3xl font-bold text-secondary-color">{t('Account Statement')}</h1>
-        <h3 className="font-bold text-l text-white-400 mt-10">
+        <h3 className="font-bold text-2xl text-white-400 mt-10">
           {tenantName || t('Loading tenant name...')}
         </h3>
-        <h3 className="font-bold text-l mt-3 text-white-400">
-          <span className="text-secondary-color">{t('From')}:</span> {start_date}{' '}
-          <span className="text-secondary-color">{t('To')}:</span> {end_date}
-        </h3>
-        <div className="mb-1 mt-10">
+        {start_date && end_date && (
+          <h3 className="font-bold text-l mt-3 text-white-400">
+            <span className="text-secondary-color">{t('From')}:</span> {start_date}{' '}
+            <span className="text-secondary-color">{t('To')}:</span> {end_date}
+          </h3>
+        )}
+         <div className="flex items-center h-5 mt-8 mb-5">
           <button type="button" onClick={handlePrintClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Printing...') : t('Print')}
           </button>
@@ -129,26 +128,30 @@ const AccountStatementTable = () => {
               <th scope="col" className="px-5 py-3 text-center">{t('Date')}</th>
               <th scope="col" className="px-2 py-3 text-center">{t('Debit')}</th>
               <th scope="col" className="px-5 py-3 text-center">{t('Credit')}</th>
+              <th scope="col" className="px-5 py-3 text-center">{t('Payment Method')}</th>
               <th scope="col" className="px-5 py-3 text-center">{t('Total')}</th>
             </tr>
           </thead>
           <tbody>
-            {accountData.length === 0 ? (
+            {accountData?.accountStatement?.length === 0 ? (
               <tr>
                 <td colSpan="13" className="text-center py-4 text-white">{t('No records found')}</td>
               </tr>
             ) : (
-              accountData.map((item, index) => {
+              accountData?.accountStatement?.map((item, index) => {
                 const debit = parseFloat(item.debit) || 0;
                 const credit = parseFloat(item.credit) || 0;
                 runningTotal += debit - credit;
                 return (
-                  <tr key={index}>
+                  <tr 
+                  key={index}
+                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}>
                     <td className="px-1 py-4 text-center">{item.description}</td>
                     <td className="px-1 py-4 text-center">{item.reservation_id}</td>
                     <td className="px-2 py-4 text-center">{item.date}</td>
                     <td className="px-1 py-4 text-center text-red-500">{item.debit}</td>
                     <td className="px-2 py-4 text-center text-green-500">{item.credit}</td>
+                    <td className="px-1 py-4 text-center">{item.payment_method}</td>
                     <td className="px-2 py-4 text-center">{runningTotal.toFixed(2)}</td>
                   </tr>
                 );
@@ -156,10 +159,11 @@ const AccountStatementTable = () => {
             )}
           </tbody>
           <tfoot>
-            <tr>
+            <tr className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700  dark:bg-gray-900' : ''}`}>
               <td colSpan="3" className="px-2 py-4 text-center font-bold">{t('Total')}</td>
               <td className="px-2 py-4 text-center text-red-500 font-bold">{totalDebit}</td>
               <td className="px-2 py-4 text-center text-green-500 font-bold">{totalCredit}</td>
+              <td className="px-2 py-4 text-center font-bold"></td>
               <td className="px-2 py-4 text-center font-bold">{totalAmount}</td>
             </tr>
           </tfoot>

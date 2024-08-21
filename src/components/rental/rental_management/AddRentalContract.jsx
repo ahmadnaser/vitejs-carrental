@@ -5,9 +5,9 @@ import 'flowbite';
 import Select from 'react-select';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
-import { getAvailableCars } from '../../../controller/carController';
+import { getAvailableCars } from '../../../controller/CarController';
 import { addContract } from '../../../controller/RentedCarController';
-import { getTenants } from '../../../controller/tenantController';
+import { getTenants } from '../../../controller/TenantController';
 
 const AddRentalForm = () => {
   const { t, i18n } = useTranslation();
@@ -18,13 +18,11 @@ const AddRentalForm = () => {
     vehicle_id: '',
     start_date: '',
     end_date: '',
-    start_timestamp: '',
-    end_timestamp: '',
     price_perday: '',
     total_amount: '',
     amount_paid: '',
     car_mileage: '',
-    note: ''
+    note: '',
   });
   const [status, setStatus] = useState(null);
   const [errors, setErrors] = useState({});
@@ -38,11 +36,14 @@ const AddRentalForm = () => {
   const [secondDriverId, setSecondDriverId] = useState(null);
   const [numDays, setNumDays] = useState('');
   const [isBankCheck, setIsBankCheck] = useState(false);
+  const [paymentDate, setPaymentDate] = useState('');
   const [bankDetails, setBankDetails] = useState({
     check_number: '',
     bank_name: '',
-    check_amount: '',
-    check_date: ''
+    check_holder: '',
+    account_number: '',
+    check_date: '',
+    check_image: null,
   });
   const [isCarState, setIsCarState] = useState(false);
   const [carCondition, setCarCondition] = useState({
@@ -54,13 +55,13 @@ const AddRentalForm = () => {
   useEffect(() => {
     if (location.state && location.state.tenantName && location.state.idNumber) {
       const selectedTenantOption = {
-        value: location.state.id_number,
+        value: location.state.idNumber,
         label: `${location.state.tenantName} - ${location.state.idNumber}`
       };
       setSelectedTenant(selectedTenantOption);
       setFormData(prevFormData => ({
         ...prevFormData,
-        tenant_id: location.state.id_number
+        tenant_id: location.state.idNumber
       }));
     }
 
@@ -151,45 +152,104 @@ const AddRentalForm = () => {
   }));
 
   useEffect(() => {
+    const arabicToEnglishMap = {
+        '٠': '0',
+        '١': '1',
+        '٢': '2',
+        '٣': '3',
+        '٤': '4',
+        '٥': '5',
+        '٦': '6',
+        '٧': '7',
+        '٨': '8',
+        '٩': '9'
+    };
+
+    const convertArabicNumbers = (input) => {
+        if (typeof input !== 'string') {
+            input = String(input);
+        }
+        return input.replace(/[٠-٩]/g, (match) => arabicToEnglishMap[match]);
+    };
+
+    const isValidDate = (date) => !isNaN(Date.parse(date));
+
     if (formData.start_date && formData.end_date) {
-      const from = new Date(formData.start_date);
-      const to = new Date(formData.end_date);
+        const startDate = convertArabicNumbers(formData.start_date);
+        const endDate = convertArabicNumbers(formData.end_date);
 
-      if (to < from) {
-        setNumDays(null);
-        return;
-      }
+        if (!isValidDate(startDate) || !isValidDate(endDate)) {
+            console.error("Invalid date values detected");
+            return;
+        }
 
-      const diffTime = Math.abs(to - from);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      setNumDays(diffDays);
-    } else if (formData.start_date && numDays !== null) {
-      const from = new Date(formData.start_date);
-      if (isNaN(from.getTime())) return;
-      const daysToAdd = parseInt(numDays, 10);
-      if (isNaN(daysToAdd)) return;
-      from.setDate(from.getDate() + daysToAdd);
-      const formattedDate = from.toISOString().split('T')[0];
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        end_date: formattedDate
-      }));
+        const from = new Date(startDate);
+        const to = new Date(endDate);
+
+        if (to < from) return;
+
+        const diffTime = Math.abs(to - from);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        setNumDays(diffDays);
+    } else if (formData.start_date && numDays) {
+        const startDate = convertArabicNumbers(formData.start_date);
+
+        if (!isValidDate(startDate)) {
+            console.error("Invalid start date value detected");
+            return;
+        }
+
+        const from = new Date(startDate);
+        const parsedNumDays = parseInt(convertArabicNumbers(numDays), 10);
+
+        if (isNaN(parsedNumDays)) {
+            console.error("Invalid number of days");
+            return;
+        }
+
+        from.setDate(from.getDate() + parsedNumDays);
+        const formattedDate = from.toISOString().split('T')[0];
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            end_date: formattedDate
+        }));
     }
+  }, [formData.start_date, formData.end_date, numDays]);
 
-    if (formData.start_date && time) {
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        start_timestamp: `${formData.start_date}T${time}`
-      }));
-    }
+  useEffect(() => {
+    const arabicToEnglishMap = {
+        '٠': '0',
+        '١': '1',
+        '٢': '2',
+        '٣': '3',
+        '٤': '4',
+        '٥': '5',
+        '٦': '6',
+        '٧': '7',
+        '٨': '8',
+        '٩': '9'
+    };
 
-    if (formData.end_date && returnTime) {
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        end_timestamp: `${formData.end_date}T${returnTime}`
-      }));
+    const convertArabicNumbers = (input) => {
+        if (typeof input !== 'string') {
+            input = String(input);
+        }
+        return input.replace(/[٠-٩]/g, (match) => arabicToEnglishMap[match]);
+    };
+
+    if (formData.price_perday && numDays) {
+        const pricePerDay = parseFloat(convertArabicNumbers(formData.price_perday));
+        const days = parseInt(convertArabicNumbers(numDays), 10);
+
+        if (!isNaN(pricePerDay) && !isNaN(days)) {
+            const totalAmount = pricePerDay * days;
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                total_amount: totalAmount
+            }));
+        }
     }
-  }, [formData.start_date, formData.end_date, numDays, time, returnTime]);
+  }, [formData.price_perday, numDays]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -207,13 +267,20 @@ const AddRentalForm = () => {
     }));
   };
 
-  const handleCarChange = async (selectedOption) => {
+  const handleTenantChange2 = (selectedOption) => {
+    setSecondDriverId(selectedOption);
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      secondDriverId: selectedOption.value
+    }));
+  };
+
+  const handleCarChange = (selectedOption) => {
     setSelectedCar(selectedOption);
     setFormData(prevFormData => ({
       ...prevFormData,
       vehicle_id: selectedOption.value,
     }));
-   
   };
 
   const handleInputChange = (e) => {
@@ -225,10 +292,10 @@ const AddRentalForm = () => {
   };
 
   const handleBankDetailsChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
     setBankDetails(prevDetails => ({
       ...prevDetails,
-      [name]: value
+      [name]: files ? files[0] : value
     }));
   };
 
@@ -242,35 +309,62 @@ const AddRentalForm = () => {
 
   const validateForm = () => {
     const errors = {};
+    const arabicNumberRegex = /[٠-٩]/g;
+    const onlyNumbersRegex = /^[0-9]+$/;
+
+    const convertArabicNumbers = (input) => {
+        if (typeof input !== 'string') {
+            input = String(input);
+        }
+
+        const arabicToEnglishMap = {
+            '٠': '0',
+            '١': '1',
+            '٢': '2',
+            '٣': '3',
+            '٤': '4',
+            '٥': '5',
+            '٦': '6',
+            '٧': '7',
+            '٨': '8',
+            '٩': '9'
+        };
+
+        return input.replace(arabicNumberRegex, (match) => arabicToEnglishMap[match]);
+    };
+
+    const validateNumericField = (fieldValue, fieldName, errorMessage) => {
+        const convertedValue = convertArabicNumbers(fieldValue);
+
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            [fieldName]: convertedValue
+        }));
+
+        if (!onlyNumbersRegex.test(convertedValue)) {
+            errors[fieldName] = t(`${errorMessage} must be a valid number`);
+        } else if (convertedValue.trim() === '') {
+            errors[fieldName] = t(`${errorMessage} is required`);
+        }
+    };
+
     if (!formData.start_date.trim()) errors.start_date = t('Start date is required');
     if (!formData.end_date.trim()) errors.end_date = t('End date is required');
     if (!formData.vehicle_id.trim()) errors.vehicle_id = t('Vehicle is required');
-    if (!formData.price_perday.trim()) errors.price_perday = t('Price per day is required');
-    if (!formData.total_amount.trim()) errors.total_amount = t('Total amount is required');
-    if (!formData.amount_paid.trim()) errors.amount_paid = t('Amount paid is required');
-    if (!formData.car_mileage.trim()) errors.car_mileage = t('Car mileage is required');
-    if (!formData.note.trim()) errors.note = t('Note is required');
+
+    validateNumericField(formData.price_perday, 'price_perday', 'Price per day');
+    validateNumericField(formData.total_amount, 'total_amount', 'Total amount');
+    validateNumericField(formData.amount_paid, 'amount_paid', 'Amount paid');
 
     if (isBankCheck) {
-      if (!bankDetails.check_number.trim()) errors.check_number = t('Check number is required');
-      if (!bankDetails.check_amount.trim()) errors.check_amount = t('Check amount is required');
-      if (!bankDetails.bank_name.trim()) errors.bank_name = t('Bank name is required');
-      if (!bankDetails.check_date.trim()) errors.check_date = t('Check date is required');
+        validateNumericField(bankDetails.check_number, 'check_number', 'Check number');
+        if (!bankDetails.bank_name.trim()) errors.bank_name = t('Bank name is required');
+        if (!paymentDate.trim()) errors.check_date = t('Check date is required');
     }
 
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
-  useEffect(() => {
-    if (formData.price_perday && numDays) {
-      const totalAmount = formData.price_perday * numDays;
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        total_amount: totalAmount
-      }));
-    }
-  }, [formData.price_perday, numDays]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -279,35 +373,41 @@ const AddRentalForm = () => {
       setErrors({ form: 'Invalid Form, please fill in all required fields' });
       return;
     }
-  
-    const submissionData = new FormData();
-  
 
-    for (const key in formData) {
-      if (formData[key] !== undefined && formData[key] !== null) {
+    const startTimestamp = `${formData.start_date}T${time}:00`;
+    const endTimestamp = `${formData.end_date}T${returnTime}:00`;
+
+    const submissionData = new FormData();
+
+    submissionData.append('start_timestamp', startTimestamp);
+    submissionData.append('end_timestamp', endTimestamp);
+
+    Object.keys(formData).forEach((key) => {
+      if (key !== 'start_date' && key !== 'end_date') {
         submissionData.append(key, formData[key]);
       }
-    }
-  
-    if (isAlternativeDriver && secondDriverId) {
-      submissionData.append('second_driver_id', secondDriverId);
-    }
-  
+    });
+
     if (isBankCheck) {
-      for (const key in bankDetails) {
-        if (bankDetails[key] !== undefined && bankDetails[key] !== null) {
+      Object.keys(bankDetails).forEach((key) => {
+        if (key === 'check_image') {
+          if (bankDetails[key]) {
+            submissionData.append(key, bankDetails[key]);
+          }
+        } else {
           submissionData.append(key, bankDetails[key]);
+          submissionData.append('check_date', paymentDate);
         }
-      }
+      });
     }
-  
+
+    
     if (isCarState) {
-      for (const key in carCondition) {
-        if (carCondition[key] !== undefined && carCondition[key] !== null) {
-          submissionData.append(key, carCondition[key]);
-        }
-      }
-    }  
+      Object.keys(carCondition).forEach((key) => {
+        submissionData.append(key, carCondition[key]);
+      });
+    }
+    
     setStatus('loading');
     try {
       const response = await addContract(submissionData);
@@ -317,9 +417,9 @@ const AddRentalForm = () => {
       } else {
         setStatus('error');
         if (response.message) {
-          setErrors(response.message);
+          setErrors({form:response.message});
         } else {
-          setErrors(response.message);
+          setErrors({ form: response.message });
         }
       }
     } catch (error) {
@@ -327,7 +427,7 @@ const AddRentalForm = () => {
       setErrors(error.message);
     }
   };
-  
+
   const customStyles = {
     control: (provided) => ({
       ...provided,
@@ -388,7 +488,7 @@ const AddRentalForm = () => {
               <Select
                 id="tenant2"
                 value={secondDriverId}
-                onChange={(option) => setSecondDriverId(option.value)}
+                onChange={handleTenantChange2}
                 options={tenantOptions}
                 placeholder={t('Name of Tenants or ID Number')}
                 className="rounded-none rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -505,25 +605,41 @@ const AddRentalForm = () => {
             </div>
 
             <div className="mb-5">
-              <label htmlFor="check_amount" className="block mb-2 text-sm font-medium">{t('Check Amount')}</label>
-              <input type="text" id="check_amount" name="check_amount" value={bankDetails.check_amount} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter check amount')} required />
-            </div>
-
-            <div className="mb-5">
               <label htmlFor="bank_name" className="block mb-2 text-sm font-medium">{t('Bank Name')}</label>
               <input type="text" id="bank_name" name="bank_name" value={bankDetails.bank_name} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter bank name')} required />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="check_date" className="block mb-2 text-sm font-medium">{t('Check Date')}</label>
-              <div className="relative max-w-sm">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                  </svg>
-                </div>
-                <input id="check_date" data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text" name="check_date" value={bankDetails.check_date} onChange={handleBankDetailsChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
-              </div>
+              <label htmlFor="account_number" className="block mb-2 text-sm font-medium">{t('Account Number')}</label>
+              <input type="text" id="account_number" name="account_number" value={bankDetails.account_number} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Account Number')} required />
+            </div>
+
+            <div className="mb-5">
+              <label htmlFor="check_holder" className="block mb-2 text-sm font-medium">{t('Check Holder')}</label>
+              <input type="text" id="check_holder" name="check_holder" value={bankDetails.check_holder} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Check holder')} required />
+            </div>
+
+            <div className="mb-5">
+              <label htmlFor="check_date" className="block mb-2 text-sm font-medium">{t('Due Date')}</label>
+              <input
+                type="date"
+                id="check_date"
+                name="check_date"
+                value={paymentDate}
+                onChange={(e) => setPaymentDate(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
+            </div>
+
+            <div className="mb-5">
+            <label htmlFor="check_image" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
+                <input
+                  name="check_image"
+                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                  type="file"
+                  onChange={handleBankDetailsChange}
+                />
             </div>
           </div>
         )}
@@ -552,12 +668,7 @@ const AddRentalForm = () => {
           <input type="text" id="note" name="note" value={formData.note} onChange={handleInputChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter note')} required />
         </div>
 
-        <div className="flex items-center h-5 mt-5 mb-5">
-          <input id="print" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
-          <label htmlFor="print" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Print')}</label>
-        </div>
-
-        <div className="mb-5">
+        <div className="flex items-center h-5 mt-8 mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Submitting...') : t('Submit')}
           </button>

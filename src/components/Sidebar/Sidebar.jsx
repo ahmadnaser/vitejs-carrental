@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import navLinks from "../../assets/dummy-data/navLinks";
 import { useTranslation } from 'react-i18next';
+import LogoImage from '../../assets/images/logo.png';
 
 const Sidebar = ({ isSidebarOpen }) => {
   const { t, i18n } = useTranslation();
@@ -32,7 +33,7 @@ const Sidebar = ({ isSidebarOpen }) => {
         <div className="flex items-center">
           <h2 className="text-lg mx-1.5 font-arabic font-light text-heading-color">{t('name')}</h2>
           <div className="flex items-center justify-center w-10 h-10 bg-secondary-color rounded-full overflow-hidden border-2 border-secondary-color">
-            <img src="src/assets/images/logo.png" alt="Logo" className="w-full h-auto object-cover" />
+            <img src={LogoImage} alt="Logo" className="w-full h-auto object-cover" />
           </div>
         </div>
       </div>

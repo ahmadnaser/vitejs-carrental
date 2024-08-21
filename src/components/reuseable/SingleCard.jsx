@@ -5,7 +5,7 @@ const SingleCard = ({ item }) => {
     "ri-police-car-line": "bg-gradient-to-r from-orange-500 to-red-500",
     "ri-steering-2-line": "bg-gradient-to-r from-green-500 to-green-300",
     "ri-user-line": "bg-purple-600",
-    "ri-timer-flash-line": "bg-blue-600"
+    "ri-car-washing-line": "bg-blue-600"
   };
 
   return (

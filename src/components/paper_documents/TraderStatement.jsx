@@ -180,11 +180,12 @@ const TraderStatement = ({ data, startDate, endDate, traderName }) => {
           </View>
           <Text style={styles.title}>كشف حساب التاجر - {traderName}</Text>
         </View>
-        <View style={styles.centeredRow}>
-          <Text style={styles.text2}> {endDate} حتى</Text>
-          <Text style={styles.text2}> </Text>
-          <Text style={styles.text2}> من {startDate} </Text>
-        </View>
+        {startDate && endDate && (
+          <View style={styles.centeredRow}>
+            <Text style={styles.text2}>{endDate} حتى</Text>
+            <Text style={styles.text2}> من {startDate} </Text>
+          </View>
+        )}
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <Text style={[styles.tableColHeader]}>التاريخ</Text>

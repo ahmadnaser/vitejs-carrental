@@ -179,11 +179,12 @@ const AccountStatement = ({ data, startDate, endDate }) => {
           </View>
           <Text style={styles.title}>كشف حساب  - {data[0]?.customer || ''}</Text>   
         </View>
-        <View style={styles.centeredRow}>
-          <Text style={styles.text2}> {endDate} حتى</Text>
-          <Text style={styles.text2}> </Text>
-          <Text style={styles.text2}> من {startDate} </Text>
-        </View>
+        {startDate && endDate && (
+          <View style={styles.centeredRow}>
+            <Text style={styles.text2}>{endDate} حتى</Text>
+            <Text style={styles.text2}> من {startDate} </Text>
+          </View>
+        )}
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <Text style={styles.tableColHeader}>المجموع</Text>

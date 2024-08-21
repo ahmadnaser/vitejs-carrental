@@ -21,7 +21,7 @@ initializeConfig().catch(error => {
 
 export const getBeneficiaries = async () => {
   try {
-    const response = await axios.get(config.GetBeneficiaries);
+    const response = await axios.get(config.Beneficiary);
     return response.data.map(
       beneficiary => new Beneficiary(
         beneficiary.beneficiary_id, 
@@ -45,7 +45,7 @@ export const addBeneficiary = async (beneficiaryData) => {
       }
     }
   
-    const response = await axios.post(config.AddBeneficiary, formData, {
+    const response = await axios.post(config.Beneficiary, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

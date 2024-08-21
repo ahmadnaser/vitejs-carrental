@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import 'flowbite';
 import Select from 'react-select';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
-import { getCars } from '../../../controller/carController'; 
+import { getCars } from '../../../controller/CarController'; 
 import { getGarages } from '../../../controller/GarageController'; 
 import { getTraders } from '../../../controller/TraderController'; 
 import { addMaintenance } from '../../../controller/MaintenanceController'; 
@@ -20,10 +19,25 @@ const AddMaintenanceForm = () => {
     cost: '',
     amount_paid: '',
     trader_id: '',
+    trader_name: '',
     spare_parts: '',
     spare_parts_price: '',
     amount_paid_of_spare_parts: '',
     garage_id: '',
+    garage_name: '',
+    car_mileage: '',
+    check_number: '',
+    bank_name: '',
+    check_holder: '',
+    account_number: '',
+    check_date: '',
+    check_image: null,
+    check_number2: '',
+    bank_name2: '',
+    check_holder2: '',
+    account_number2: '',
+    check_date2: '',
+    check_image2: null,
   });
   const [status, setStatus] = useState(null);
   const [errors, setErrors] = useState({});
@@ -34,19 +48,11 @@ const AddMaintenanceForm = () => {
   const [selectedGarage, setSelectedGarage] = useState(null);
   const [selectedTrader, setSelectedTrader] = useState(null);
   const [isBankCheck, setIsBankCheck] = useState(false);
-  const [bankDetails, setBankDetails] = useState({
-    check_number: '',
-    bank_name: '',
-    check_amount: '',
-    check_date: ''
-  });
+  const [isBankCheck2, setIsBankCheck2] = useState(false);
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-
     flatpickr('#maintenance-date', {
       dateFormat: 'Y-m-d',
-      minDate: today,
       onChange: (selectedDates, dateStr) => {
         setFormData((prevFormData) => ({
           ...prevFormData,
@@ -95,12 +101,12 @@ const AddMaintenanceForm = () => {
   }));
 
   const garageOptions = garages.map((garage) => ({
-    value: garage.id,
+    value: garage.garage_id,
     label: garage.name,
   }));
 
   const traderOptions = traders.map((trader) => ({
-    value: trader.id,
+    value: trader.trader_id,
     label: trader.name,
   }));
 
@@ -129,6 +135,7 @@ const AddMaintenanceForm = () => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       garage_id: selectedOption.value,
+      garage_name: selectedOption.label,
     }));
   };
 
@@ -137,21 +144,30 @@ const AddMaintenanceForm = () => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       trader_id: selectedOption.value,
+      trader_name: selectedOption.label,
     }));
+  };
+
+  const convertToEnglishNumbers = (str) => {
+    return str.replace(/[\u0660-\u0669\u06F0-\u06F9]/g, (c) => {
+      return c.charCodeAt(0) & 0xF;
+    });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const englishValue = convertToEnglishNumbers(value);
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: englishValue,
     }));
   };
-  const handleBankDetailsChange = (e) => {
-    const { name, value } = e.target;
-    setBankDetails(prevDetails => ({
-      ...prevDetails,
-      [name]: value
+
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: files[0],
     }));
   };
 
@@ -162,11 +178,11 @@ const AddMaintenanceForm = () => {
     if (!formData.details.trim()) errors.details = t('Details are required');
     if (!formData.cost.trim()) errors.cost = t('Cost is required');
     if (!formData.amount_paid.trim()) errors.amount_paid = t('Amount paid is required');
-    if (!formData.trader_id.trim()) errors.trader_id = t('Trader is required');
+    if (!formData.trader_id) errors.trader_id = t('Trader is required');
     if (!formData.spare_parts.trim()) errors.spare_parts = t('Spare parts details are required');
     if (!formData.spare_parts_price.trim()) errors.spare_parts_price = t('Spare parts price is required');
     if (!formData.amount_paid_of_spare_parts.trim()) errors.amount_paid_of_spare_parts = t('Amount paid for spare parts is required');
-    if (!formData.garage_id.trim()) errors.garage_id = t('Garage ID is required');
+    if (!formData.garage_id) errors.garage_id = t('Garage ID is required');
 
     setErrors(errors);
     return Object.keys(errors).length === 0;
@@ -186,6 +202,13 @@ const AddMaintenanceForm = () => {
       if (formData[key] !== undefined && formData[key] !== null) {
         submissionData.append(key, formData[key]);
       }
+    }
+
+    submissionData.append('trader_name', selectedTrader ? selectedTrader.label : '');
+    submissionData.append('garage_name', selectedGarage ? selectedGarage.label : '');
+
+    for (const [key, value] of submissionData.entries()) {
+      console.log(`${key}: ${value}`);
     }
 
     setStatus('loading');
@@ -297,53 +320,96 @@ const AddMaintenanceForm = () => {
         </div>
 
         <div className="flex items-center h-5 mt-8 mb-5">
-          <input id="bankCheck" type="checkbox" checked={isBankCheck} onChange={(e) => setIsBankCheck(e.target.checked)} className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
+          <input
+            id="bankCheck"
+            type="checkbox"
+            checked={isBankCheck}
+            onChange={(e) => setIsBankCheck(e.target.checked)}
+            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
+          />
           <label htmlFor="bankCheck" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Bank Check?')}</label>
         </div>
 
         {isBankCheck && (
           <div className="mb-10 mt-10">
-            <div className=" mb-5">
+            <div className="mb-5">
               <label htmlFor="check_number" className="block mb-2 text-sm font-medium">{t('Check Number')}</label>
-              <input type="text" id="check_number" name="check_number" value={bankDetails.check_number} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter check number')} required />
+              <input
+                type="text"
+                id="check_number"
+                name="check_number"
+                value={formData.check_number}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Enter check number')}
+                required
+              />
             </div>
 
             <div className="mb-5">
               <label htmlFor="bank_name" className="block mb-2 text-sm font-medium">{t('Bank Name')}</label>
-              <input type="text" id="bank_name" name="bank_name" value={bankDetails.bank_name} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter bank name')} required />
+              <input
+                type="text"
+                id="bank_name"
+                name="bank_name"
+                value={formData.bank_name}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Enter bank name')}
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="bank_name" className="block mb-2 text-sm font-medium">{t('Bank Name')}</label>
-              <input type="text" id="bank_name" name="bank_name" value={bankDetails.bank_name} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Account Number')} required />
+              <label htmlFor="account_number" className="block mb-2 text-sm font-medium">{t('Account Number')}</label>
+              <input
+                type="text"
+                id="account_number"
+                name="account_number"
+                value={formData.account_number}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Account Number')}
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="bank_name" className="block mb-2 text-sm font-medium">{t('Bank Name')}</label>
-              <input type="text" id="bank_name" name="bank_name" value={bankDetails.bank_name} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Check holder')} required />
+              <label htmlFor="check_holder" className="block mb-2 text-sm font-medium">{t('Check Holder')}</label>
+              <input
+                type="text"
+                id="check_holder"
+                name="check_holder"
+                value={formData.check_holder}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Check holder')}
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="check_amount" className="block mb-2 text-sm font-medium">{t('Check Amount')}</label>
-              <input type="text" id="check_amount" name="check_amount" value={bankDetails.check_amount} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter check amount')} required />
+              <label htmlFor="check_date" className="block mb-2 text-sm font-medium">{t('Due Date')}</label>
+              <input
+                type="date"
+                id="check_date"
+                name="check_date"
+                value={formData.check_date}
+                onChange={handleInputChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="check_date" className="block mb-2 text-sm font-medium">{t('Check Date')}</label>
-              <div className="relative max-w-sm">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                  </svg>
-                </div>
-                <input id="check_date" data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text" name="check_date" value={bankDetails.check_date} onChange={handleBankDetailsChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
-              </div>
+              <label htmlFor="check_image" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
+              <input
+                name="check_image"
+                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                type="file"
+                onChange={handleFileChange}
+              />
             </div>
-
-            <div className="mb-5">
-                <label htmlFor="license_image_path" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
-                <input name="license_image_path"  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
-              </div>
           </div>
         )}
 
@@ -380,73 +446,100 @@ const AddMaintenanceForm = () => {
           <input type="text" id="amount_paid_of_spare_parts" name="amount_paid_of_spare_parts" value={formData.amount_paid_of_spare_parts} onChange={handleInputChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter amount paid for spare parts')} required />
         </div>
 
-
         <div className="flex items-center h-5 mt-8 mb-5">
-          <input id="bankCheck" type="checkbox" checked={isBankCheck} onChange={(e) => setIsBankCheck(e.target.checked)} className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
-          <label htmlFor="bankCheck" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Bank Check?')}</label>
+          <input
+            id="bankCheck2"
+            type="checkbox"
+            checked={isBankCheck2}
+            onChange={(e) => setIsBankCheck2(e.target.checked)}
+            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
+          />
+          <label htmlFor="bankCheck2" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Bank Check?')}</label>
         </div>
 
-        {isBankCheck && (
+        {isBankCheck2 && (
           <div className="mb-10 mt-10">
-            <div className=" mb-5">
-              <label htmlFor="check_number" className="block mb-2 text-sm font-medium">{t('Check Number')}</label>
-              <input type="text" id="check_number" name="check_number" value={bankDetails.check_number} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter check number')} required />
+            <div className="mb-5">
+              <label htmlFor="check_number2" className="block mb-2 text-sm font-medium">{t('Check Number')}</label>
+              <input
+                type="text"
+                id="check_number2"
+                name="check_number2"
+                value={formData.check_number2}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Enter check number')}
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="bank_name" className="block mb-2 text-sm font-medium">{t('Bank Name')}</label>
-              <input type="text" id="bank_name" name="bank_name" value={bankDetails.bank_name} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter bank name')} required />
+              <label htmlFor="bank_name2" className="block mb-2 text-sm font-medium">{t('Bank Name')}</label>
+              <input
+                type="text"
+                id="bank_name2"
+                name="bank_name2"
+                value={formData.bank_name2}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Enter bank name')}
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="bank_name" className="block mb-2 text-sm font-medium">{t('Bank Name')}</label>
-              <input type="text" id="bank_name" name="bank_name" value={bankDetails.bank_name} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Account Number')} required />
+              <label htmlFor="account_number2" className="block mb-2 text-sm font-medium">{t('Account Number')}</label>
+              <input
+                type="text"
+                id="account_number2"
+                name="account_number2"
+                value={formData.account_number2}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Account Number')}
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="bank_name" className="block mb-2 text-sm font-medium">{t('Bank Name')}</label>
-              <input type="text" id="bank_name" name="bank_name" value={bankDetails.bank_name} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Check holder')} required />
+              <label htmlFor="check_holder2" className="block mb-2 text-sm font-medium">{t('Check Holder')}</label>
+              <input
+                type="text"
+                id="check_holder2"
+                name="check_holder2"
+                value={formData.check_holder2}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Check holder')}
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="check_amount" className="block mb-2 text-sm font-medium">{t('Check Amount')}</label>
-              <input type="text" id="check_amount" name="check_amount" value={bankDetails.check_amount} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter check amount')} required />
+              <label htmlFor="check_date2" className="block mb-2 text-sm font-medium">{t('Due Date')}</label>
+              <input
+                type="date"
+                id="check_date2"
+                name="check_date2"
+                value={formData.check_date2}
+                onChange={handleInputChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
             </div>
 
             <div className="mb-5">
-              <label htmlFor="check_date" className="block mb-2 text-sm font-medium">{t('Check Date')}</label>
-              <div className="relative max-w-sm">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                  </svg>
-                </div>
-                <input id="check_date" data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text" name="check_date" value={bankDetails.check_date} onChange={handleBankDetailsChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
-              </div>
+              <label htmlFor="check_image2" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
+              <input
+                name="check_image2"
+                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                type="file"
+                onChange={handleFileChange}
+              />
             </div>
-
-            <div className="mb-5">
-                <label htmlFor="license_image_path" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
-                <input name="license_image_path"  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
-              </div>
           </div>
         )}
-
         <div className="flex items-center h-5 mt-8 mb-5">
-                  <input id="oilChange" type="checkbox" checked={isBankCheck} onChange={(e) => setIsBankCheck(e.target.checked)} className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
-                  <label htmlFor="oilChange" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Oil Change?')}</label>
-        </div>
-
-        {isBankCheck && (
-          <div className="mb-10 mt-5">
-            <div className=" mb-5">
-              <label htmlFor="car_milage" className="block mb-2 text-sm font-medium">{t('Car Mialge')}</label>
-              <input type="text" id="car_milage" name="check_number" value={bankDetails.check_number} onChange={handleBankDetailsChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter check number')} required />
-            </div>
-          </div>
-        )}
-
-        <div className="mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Submitting...') : t('Submit')}
           </button>
@@ -454,7 +547,7 @@ const AddMaintenanceForm = () => {
         </div>
         {status === 'success' && (
           <div className="text-green-500">
-            {t('Maintenance record added successfully! Redirecting...')}
+            {t('Maintenance Record added successfully! Redirecting...')}
           </div>
         )}
         {status === 'error' && (

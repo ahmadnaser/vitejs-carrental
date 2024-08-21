@@ -7,8 +7,6 @@ const BeneficiaryTable = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [beneficiaryData, setBeneficiaryData] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,44 +29,13 @@ const BeneficiaryTable = () => {
     navigate('/expenses/beneficiaries/add-beneficiary');
   };
 
-  const handleRowSelect = (index) => {
-    setSelectedRows((prevSelectedRows) =>
-      prevSelectedRows.includes(index)
-        ? prevSelectedRows.filter((i) => i !== index)
-        : [...prevSelectedRows, index]
-    );
-  };
-
-  const requestSort = (key) => {
-    setSortConfig((prevSortConfig) => {
-      const direction =
-        prevSortConfig.key === key && prevSortConfig.direction === 'ascending'
-          ? 'descending'
-          : 'ascending';
-      return { key, direction };
-    });
-  };
-
-  const sortedItems = useMemo(() => {
-    if (!sortConfig.key) return beneficiaryData;
-
-    const sortedData = [...beneficiaryData].sort((a, b) => {
-      if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
-      if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
-      return 0;
-    });
-    return sortedData;
-  }, [beneficiaryData, sortConfig]);
-
   const filteredItems = useMemo(() => {
-    return sortedItems.filter(
+    return beneficiaryData.filter(
       (item) =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.type.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm, sortedItems]);
-
-  const getClassNamesFor = (name) => (sortConfig.key === name ? sortConfig.direction : undefined);
+  }, [searchTerm, beneficiaryData]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -128,30 +95,15 @@ const BeneficiaryTable = () => {
         >
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-1 py-3">
-                {t('Select')}
+              <th scope="col" className="px-3 py-3">
+                {t('Name')}
               </th>
-              {['name', 'type', 'contact_info'].map((field) => (
-                <th
-                  key={field}
-                  scope="col"
-                  className="px-3 py-3 cursor-pointer"
-                  onClick={() => requestSort(field)}
-                >
-                  <div className="flex items-center justify-center">
-                    {t(field.charAt(0).toUpperCase() + field.slice(1).replace('_', ' '))}
-                    <svg
-                      className={`w-3 h-3 ms-1.5 ${getClassNamesFor(field)}`}
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                    </svg>
-                  </div>
-                </th>
-              ))}
+              <th scope="col" className="px-3 py-3">
+                {t('Type')}
+              </th>
+              <th scope="col" className="px-3 py-3">
+                {t('Contact Info')}
+              </th>
               <th scope="col" className="px-3 py-3">
                 <span className="sr-only">{t('Action')}</span>
               </th>
@@ -160,7 +112,7 @@ const BeneficiaryTable = () => {
           <tbody>
             {filteredItems.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center py-4">
+                <td colSpan="4" className="text-center py-4">
                   {t('No records found')}
                 </td>
               </tr>
@@ -168,19 +120,8 @@ const BeneficiaryTable = () => {
               filteredItems.map((item, index) => (
                 <tr
                   key={index}
-                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${
-                    selectedRows.includes(index) ? 'bg-gray-200 dark:bg-gray-600' : ''
-                  }`}
-                  onClick={() => handleRowSelect(index)}
+                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}
                 >
-                  <td className="px-6 py-4 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.includes(index)}
-                      onChange={() => handleRowSelect(index)}
-                      className="cursor-pointer"
-                    />
-                  </td>
                   <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
                     {item.name}
                   </td>

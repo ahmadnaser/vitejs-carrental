@@ -20,7 +20,7 @@ initializeConfig().catch(error => {
 
 export const getMaintenanceRecords = async () => {
   try {
-    const response = await axios.get(config.GetMaintenance);
+    const response = await axios.get(config.Maintenance);
 
     return response.data.map((maintenance) => new CarMaintenance({
       maintenance_id: maintenance.maintenance_id,
@@ -46,7 +46,7 @@ export const getMaintenanceRecords = async () => {
 
 export const getMaintenanceByVehicleId = async (vehicleId) => {
   try {
-    const response = await axios.get(`${config.GetMaintenanceByVehicleId}`, {
+    const response = await axios.get(`${config.Maintenance}`, {
       params: { vehicle_id: vehicleId },
     });
 
@@ -78,7 +78,7 @@ export const getMaintenanceByVehicleId = async (vehicleId) => {
 
 export const getMaintenanceByGarageId = async (garageId, startDate, endDate) => {
   try {
-    const response = await axios.get(`${config.GetMaintenanceByGarageId}`, {
+    const response = await axios.get(`${config.Maintenance}`, {
       params: { 
         garage_id: garageId, 
         start_date: startDate,
@@ -114,7 +114,7 @@ export const getMaintenanceByGarageId = async (garageId, startDate, endDate) => 
 
 export const getMaintenanceByTraderId = async (traderId, startDate, endDate) => {
   try {
-    const response = await axios.get(`${config.GetMaintenanceByTraderId}`, {
+    const response = await axios.get(`${config.Maintenance}`, {
       params: { 
         trader_id: traderId, 
         start_date: startDate,
@@ -150,7 +150,7 @@ export const getMaintenanceByTraderId = async (traderId, startDate, endDate) => 
 
 export const addMaintenance = async (formData) => {
   try {
-    const response = await fetch(config.AddMaintenance, {
+    const response = await fetch(config.Maintenance, {
       method: 'POST',
       body: formData,
       headers: { Accept: 'application/json' },

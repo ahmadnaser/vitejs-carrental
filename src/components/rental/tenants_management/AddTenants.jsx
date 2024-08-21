@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
-import { addTenants } from '../../../controller/tenantController';
+import { addTenants } from '../../../controller/TenantController';
 
 const AddTenantsForm = () => {
   const { t, i18n } = useTranslation();
@@ -18,8 +18,8 @@ const AddTenantsForm = () => {
     license_number: '',
     license_start_date: '',
     license_end_date: '',
-    id_image_path: null,
-    license_image_path: null,
+    id_image: null,
+    license_image: null,
   });
   const [status, setStatus] = useState(null);
   const [errors, setErrors] = useState({});
@@ -76,10 +76,10 @@ const AddTenantsForm = () => {
     if (!formData.tenant_name.trim()) errors.tenant_name = t('Tenant Name is required');
     if (!formData.id_number.trim()) errors.id_number = t('ID Number is required');
     if (!formData.address.trim()) errors.address = t('Address is required');
-    if (!formData.phone_number.trim()) errors.phone_number = t('Phone Number is required');
+    if (!formData.phone_number) errors.phone_number = t('Phone Number is required');
     if (!formData.blood_type.trim()) errors.blood_type = t('Blood Type is required');
     if (!formData.birth_date.trim()) errors.birth_date = t('Date Of Birth is required');
-    if (!formData.license_number.trim()) errors.license_number = t('Driving license number is required');
+    if (!formData.license_number) errors.license_number = t('Driving license number is required');
     if (!formData.license_start_date.trim()) errors.license_start_date = t('License start date is required');
     if (!formData.license_end_date.trim()) errors.license_end_date = t('License end date is required');
 
@@ -92,15 +92,36 @@ const AddTenantsForm = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    const form = new FormData();
+  
+    form.append('tenant_name', formData.tenant_name);
+    form.append('id_number', formData.id_number);
+    form.append('address', formData.address);
+    form.append('phone_number', formData.phone_number);
+    form.append('blood_type', formData.blood_type);
+    form.append('birth_date', formData.birth_date);
+    form.append('license_number', formData.license_number);
+    form.append('license_start_date', formData.license_start_date);
+    form.append('license_end_date', formData.license_end_date);
+    
+    if (formData.id_image) {
+      form.append('id_image', formData.id_image);
+    }
+    
+    if (formData.license_image) {
+      form.append('license_image', formData.license_image);
+    }
+
     setStatus('loading');
     try {
-      const response = await addTenants(formData);
+      const response = await addTenants(form);
       if (response.success) {
         setStatus('success');
+        setTimeout(() => navigate(-1), 2000);
       } else {
         setStatus('error');
         if (response.message) {
-          setErrors(response.message);
+          setErrors({form:response.message});
         } else {
           setErrors({ form: 'An unexpected error occurred' });
         }
@@ -179,28 +200,28 @@ const AddTenantsForm = () => {
           {errors.license_end_date && <div className="text-red-500">{errors.license_end_date}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="id_image_path" className="block mb-2 text-sm font-medium">{t('Copy of personal ID')}</label>
-          <input name="id_image_path" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
+          <label htmlFor="id_image" className="block mb-2 text-sm font-medium">{t('Copy of personal ID')}</label>
+          <input name="id_image" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
           
         </div>
-        <div className="mb-5">
-          <label htmlFor="license_image_path" className="block mb-2 text-sm font-medium">{t('Copy of personal Driving licence')}</label>
-          <input name="license_image_path" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
+        <div className="flex items-center h-5 mt-8 mb-5">
+          <label htmlFor="license_image" className="block mb-2 text-sm font-medium">{t('Copy of personal Driving licence')}</label>
+          <input name="license_image" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
         </div>
-        <div className="mb-5">
+        <div className="flex items-center h-5 mt-8 mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Submitting...') : t('Submit')}
           </button>
-          <button type="button" className="bg-gray-500 text-white ml-5 mr-5 rounded-md opacity-100 font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center" onClick={handleGoBack}>{t('Go Back')}</button>
+          <button type="button" className="bg-gray-500 text-white m-5 rounded-md opacity-100 font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center" onClick={handleGoBack}>{t('Go Back')}</button>
         </div>
         {status === 'success' && (
           <div className="text-green-500">
-            {t('Tenant added successfully!')}
+            {t('Rental Contract added successfully! Redirecting...')}
           </div>
         )}
         {status === 'error' && (
           <div className="text-red-500">
-            {errors ? t(errors) : t('An error occurred. Please try again.')}
+            {errors.form ? t(errors.form) : t('An error occurred. Please try again.')}
           </div>
         )}
       </form>

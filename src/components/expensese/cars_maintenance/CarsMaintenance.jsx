@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getCars } from '../../../controller/carController';
+import { getCars } from '../../../controller/CarController';
 import { getMaintenanceRecords, getMaintenanceByVehicleId } from '../../../controller/MaintenanceController';
 import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
@@ -8,7 +8,6 @@ import Select from 'react-select';
 const CarsMaintenanceTable = () => {
   const { t, i18n } = useTranslation();
   const [maintenanceData, setMaintenanceData] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState({ value: 'all', label: t('All Cars') });
@@ -266,8 +265,8 @@ const CarsMaintenanceTable = () => {
               sortedItems.map((item, index) => (
                 <tr
                   key={index}
-                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${selectedRows.includes(index) ? 'bg-gray-200 dark:bg-gray-600' : ''}`}
-                  onClick={() => handleRowSelect(index)}
+                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}
+                 
                 >
                   <td className="px-4 py-4">{`${item.make} ${item.model}`}</td>
                   <td className="px-4 py-4">{item.garage_name}</td>

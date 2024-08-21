@@ -38,7 +38,7 @@ const AddTraderForm = () => {
       const response = await addTrader(formData);
       if (response.success) {
         setStatus('success');
-        setFormData({ name: '', type: '', contact_info: '' }); // Reset form fields
+        setTimeout(() => navigate(-1), 2000);
       } else {
         setStatus('error');
         if (response.message) {
@@ -80,19 +80,19 @@ const AddTraderForm = () => {
           <input type="text" name="contact_info" value={formData.contact_info} onChange={handleChange} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Contact Information')} required />
           {errors.contact_info && <div className="text-red-500">{errors.contact_info}</div>}
         </div>
-        <div className="mb-5">
+        <div className="flex items-center justify-center h-5 mt-8 mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Submitting...') : t('Submit')}
           </button>
           <button type="button" className="bg-gray-500 text-white ml-5 mr-5 rounded-md opacity-100 font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center" onClick={handleGoBack}>{t('Go Back')}</button>
         </div>
         {status === 'success' && (
-          <div className="text-green-500 mt-4">
+          <div className="text-green-500 mt-4 flex items-center justify-center h-5 ">
             {t('Trader added successfully!')}
           </div>
         )}
         {status === 'error' && (
-          <div className="text-red-500 mt-4">
+          <div className="text-red-500 flex items-center justify-center h-5 mt-٤">
             {errors.form ? t(errors.form) : t('An error occurred. Please try again.')}
           </div>
         )}

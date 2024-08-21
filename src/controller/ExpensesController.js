@@ -22,7 +22,7 @@ initializeConfig().catch(error => {
 export const getExpensesTypes = async () => {
   try {
    
-    const response = await axios.get(config.GetExpensesTypes);
+    const response = await axios.get(`${config.Expenses}?endpoint=list_expense_types`);
     return response.data.map(
       expense => new ExpenseType(
         expense.expense_type_id,
@@ -39,7 +39,7 @@ export const getExpensesTypes = async () => {
 export const getExpensesTypesById = async (expense_type_id) => {
   try {
    
-    const response = await axios.get(config.getExpensesTypesById,{
+    const response = await axios.get(`${config.Expenses}?endpoint=get_expense_type_by_id`,{
       params: { expense_type_id }
     });
     return response.data.map(
@@ -64,7 +64,7 @@ export const addExpenseType = async (expenseData) => {
       }
     }
   
-    const response = await axios.post(config.AddExpenseType, formData, {
+    const response = await axios.post(`${config.Expenses}?endpoint=add_expense_type`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -85,7 +85,7 @@ export const addExpense = async (expenseData) => {
         formData.append(key, expenseData[key]);
       }
     }
-    const response = await axios.post(config.AddExpense, formData, {
+    const response = await axios.post(`${config.Expenses}?endpoint=add_expense`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -100,7 +100,7 @@ export const addExpense = async (expenseData) => {
 
 export const getExpenses = async () => {
   try {
-    const response = await axios.get(config.GetExpenses);
+    const response = await axios.get(`${config.Expenses}?endpoint=list_expenses`);
     return response.data.map(
       expense => new Expense(
         expense.expenses_id,

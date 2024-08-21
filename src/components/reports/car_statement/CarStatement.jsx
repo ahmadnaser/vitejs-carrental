@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
-import { getCars } from '../../../controller/carController';
+import { getCars } from '../../../controller/CarController';
 import { getConfigCode } from '../../../controller/CodeController';
 
 const CarAccountStatementForm = () => {
@@ -171,7 +171,7 @@ const CarAccountStatementForm = () => {
         <div className="mb-5 mt-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
           <button
             type="button"
-            onClick={() => handleNavigation('/reports/customer-statement/account')}
+            onClick={() => handleNavigation('/reports/car-statement/expenses-statement')}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             {status === 'loading' ? t('Submitting...') : t('Car Expense')}

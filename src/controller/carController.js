@@ -20,7 +20,7 @@ initializeConfig().catch(error => {
 
 export const getCars = async () => {
   try {
-    const response = await axios.get(config.GetCars);
+    const response = await axios.get(`${config.Car}?endpoint=list_vehicles`);
     return response.data.map(car => 
       new Car(
         car.vehicle_id,
@@ -49,7 +49,7 @@ export const getCars = async () => {
 
 export const getCarById = async (vehicle_id) => {
   try {
-    const response = await axios.get(config.GetCarsById, {
+    const response = await axios.get(`${config.Car}?endpoint=get_vehicle_by_id`, {
       params: { vehicle_id }
     });
     const car = response.data;
@@ -79,7 +79,7 @@ export const getCarById = async (vehicle_id) => {
 
 export const getAvailableCars = async (startDate, endDate) => {
   try {
-    const response = await axios.get(config.GetAvailableCars, {
+    const response = await axios.get(`${config.Car}?endpoint=get_available_vehicles`, {
       params: { start_date: startDate, end_date: endDate }
     });
     return response.data.map(car => 
@@ -111,7 +111,7 @@ export const getAvailableCars = async (startDate, endDate) => {
 
 export const getAllCarsInMaintenance = async (startDate, endDate) => {
   try {
-    const response = await axios.get(config.GetAllCarsInMaintenance, {
+    const response = await axios.get(config.Car, {
       params: { start_date: startDate, end_date: endDate }
     });
     return response.data.map(car => 
@@ -140,31 +140,33 @@ export const getAllCarsInMaintenance = async (startDate, endDate) => {
   }
 };
 
-export const addCar = async (formData) => {
+export const AddCar = async (formData) => {
   
-  const form = new FormData();
-  for (const key in formData) {
-    form.append(key, formData[key]);
-  }
-
   try {
-    const response = await fetch(config.AddCar, {
+    const response = await fetch(`${config.Car}?endpoint=add_vehicle`, {
       method: 'POST',
-      body: form,
+      body: formData,
       headers: {
         'Accept': 'application/json',
       },
     });
 
-    const responseData = await response.json();
+    let responseData;
+
+    try {
+      responseData = await response.json();
+    } catch (jsonError) {
+      return { success: false, message: 'Invalid response format from server' };
+    }
 
     if (!response.ok) {
-      return { success: false, message: responseData.message };
+      const errorMessage = responseData?.message || 'An error occurred while processing the request.';
+      return { success: false, message: errorMessage };
     }
 
     return { success: true, message: responseData.message };
 
   } catch (error) {
-    return { success: false, message: 'An unexpected error occurred' };
+    return { success: false, message: `Network or server error: ${error.message}` };
   }
 };

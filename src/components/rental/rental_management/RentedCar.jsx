@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getContracts } from '../../../controller/RentedCarController';
-import { useNavigate,Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const RentedCarTable = () => {
@@ -43,13 +43,15 @@ const RentedCarTable = () => {
             ? aValue.localeCompare(bValue)
             : bValue.localeCompare(aValue);
         }
-        if (sortConfig.key === 'startDate' || sortConfig.key === 'endDate' || sortConfig.key === 'toDateExpected') {
-          aValue = new Date(aValue);
-          bValue = new Date(bValue);
+
+        if (sortConfig.key === 'customer') {
+          aValue = `${a.customer} `;
+          bValue = `${b.customer} `;
           return sortConfig.direction === 'ascending'
-            ? aValue - bValue
-            : bValue - aValue;
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
         }
+        
         if (aValue < bValue) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
         }
@@ -78,9 +80,6 @@ const RentedCarTable = () => {
         const lastMonth = new Date();
         lastMonth.setDate(lastMonth.getDate() - 30);
         items = items.filter(item => new Date(item.startDate) >= lastMonth);
-      } else if (filterTerm === 'lastmonth') {
-        const lastMonth = new Date();
-        lastMonth.setMonth(lastMonth.getMonth() - 1);
         items = items.filter(item => new Date(item.startDate) >= lastMonth);
       } else if (filterTerm === 'lastyear') {
         const lastYear = new Date();
@@ -161,12 +160,6 @@ const RentedCarTable = () => {
                   </li>
                   <li>
                     <div className="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                      <input id="filter-radio-example-4" type="radio" value="lastmonth" name="filter-radio" onChange={(e) => handleFilterChange(e.target.value, 'Last month')} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                      <label htmlFor="filter-radio-example-4" className="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">{t('Last month')}</label>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                       <input id="filter-radio-example-5" type="radio" value="lastyear" name="filter-radio" onChange={(e) => handleFilterChange(e.target.value, 'Last year')} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                       <label htmlFor="filter-radio-example-5" className="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">{t('Last year')}</label>
                     </div>
@@ -177,7 +170,7 @@ const RentedCarTable = () => {
           </div>
           <label htmlFor="table-search" className="sr-only">Search</label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
+          <div className="absolute inset-y-0 left-2 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
               <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path></svg>
             </div>
             <input 
@@ -209,68 +202,52 @@ const RentedCarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('fromDate')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('From Date')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('fromDate')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                  </svg>
+                 
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer text-center" onClick={() => requestSort('dayNum')}>
+              <th scope="col" className="px-2 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Days')}
-                  <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('dayNum')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                  </svg>
+                 
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('toDateExpected')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('To Date (Agreed)')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('toDateExpected')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                  </svg>
+                  
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('toDate')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('To Date')}
-                  <svg className={`w-4 h-3 ms-1.5 ${getClassNamesFor('toDate')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                  </svg>
+                 
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('timeReturned')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Time Returned')}
-                  <svg className={`w-4 h-3 ms-1.5 ${getClassNamesFor('timeReturned')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                  </svg>
+                
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer text-center" onClick={() => requestSort('pricePerDay')}>
+              <th scope="col" className="px-2 py-3 cursor-pointer text-center">
                 <div className="flex items-center">
                   {t('Price/Day')}
-                  <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('pricePerDay')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                  </svg>
+                 
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('totalAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Total Amount')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('totalAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                  </svg>
+                 
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('remainingAmount')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Remaining Amount')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('remainingAmount')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                  </svg>
+                
                 </div>
               </th>
               <th scope="col" className="px-4 py-3 text-center">{t('Note')}</th>
@@ -285,18 +262,18 @@ const RentedCarTable = () => {
               filteredItems.map((item, index) => (
                 <tr
                   key={index}
-                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${(index % 2 === 0) ? 'bg-gray-200 dark:bg-gray-600' : ''}`}
+                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}
                 >
                   <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{item.make} {item.model}</td>
                   <td className="px-4 py-4 text-blue-500 cursor-pointer text-center" onClick={() => handleCustomerClick(item.tenantID)}>{item.customer}</td>
-                  <td className="px-1 py-4 text-center">{item.startDate}</td>
+                  <td className="px-1 py-4 text-center">{item.start_date}</td>
                   <td className="px-2 py-4 text-center">{item.dayNum}</td>
-                  <td className="px-1 py-4 text-center">{item.endDateAgreed}</td>
-                  <td className="px-1 py-4 text-center">{item.endDate}</td>
-                  <td className="px-2 py-4 text-center">{item.timeReturned}</td>
-                  <td className="px-2 py-4 text-center">{item.pricePerDay}</td>
-                  <td className="px-1 py-4 text-center">{item.totalAmount}</td>
-                  <td className="px-4 py-4 text-center">{item.remainingAmount}</td>
+                  <td className="px-1 py-4 text-center">{item.end_date_agreed}</td>
+                  <td className="px-1 py-4 text-center">{item.end_date}</td>
+                  <td className="px-2 py-4 text-center">{item.end_date}</td>
+                  <td className="px-2 py-4 text-center">{item.price_perday}</td>
+                  <td className="px-1 py-4 text-center">{item.total_amount}</td>
+                  <td className="px-1 py-4 text-center">{(item.total_amount - item.amount_paid).toFixed(2)}</td>
                   <td className="px-4 py-4 text-center">{item.note}</td>
                 </tr>
               ))

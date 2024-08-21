@@ -18,7 +18,7 @@ const GarageStatementTable = () => {
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
-    if (!garage_id || !start_date || !end_date) {
+    if (!garage_id ) {
       console.error('Required data is missing!');
       navigate(-1);
       return;
@@ -114,10 +114,12 @@ const GarageStatementTable = () => {
         <h3 className="font-bold text-l text-white-400 mt-10">
           {garageName || t('Loading garage name...')}
         </h3>
-        <h3 className="font-bold text-l mt-3 text-white-400">
-          <span className="text-secondary-color">{t('From')}:</span> {start_date}{' '}
-          <span className="text-secondary-color">{t('To')}:</span> {end_date}
-        </h3>
+        {start_date && end_date && (
+          <h3 className="font-bold text-l mt-3 text-white-400">
+            <span className="text-secondary-color">{t('From')}:</span> {start_date}{' '}
+            <span className="text-secondary-color">{t('To')}:</span> {end_date}
+          </h3>
+        )}
         <div className="mb-1 mt-10">
           <button
             type="button"
@@ -166,7 +168,7 @@ const GarageStatementTable = () => {
           <tbody>
             {maintenanceData.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-white">
+                <td colSpan="7" className="text-center py-4 text-black">
                   {t('No records found')}
                 </td>
               </tr>
@@ -176,7 +178,8 @@ const GarageStatementTable = () => {
                 const amountPaid = parseFloat(item.amount_paid) || 0;
                 const remainAmount = totalAmount - amountPaid;
                 return (
-                  <tr key={index}>
+                  <tr key={index}
+                  className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}>
                     <td className="px-1 py-4 text-center">{item.make} {item.model}</td>
                     <td className="px-1 py-4 text-center">{item.vehicle_id}</td>
                     <td className="px-1 py-4 text-center">{item.details}</td>
@@ -190,7 +193,7 @@ const GarageStatementTable = () => {
             )}
           </tbody>
           <tfoot>
-            <tr>
+            <tr className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:bg-gray-900' : ''}`}>
               <td colSpan="3" className="px-2 py-4 text-center font-bold">{t('Total')}</td>
               <td className="px-2 py-4 text-center text-red-500 font-bold">{totalAmount.toFixed(2)}</td>
               <td className="px-2 py-4 text-center text-green-500 font-bold">{amountPaid.toFixed(2)}</td>

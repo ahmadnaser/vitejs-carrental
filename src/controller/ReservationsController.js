@@ -20,7 +20,7 @@ initializeConfig().catch(error => {
 
 export const getReservations = async () => {
   try {
-    const response = await axios.get(config.GetReservations);
+    const response = await axios.get(config.Reservation);
     const reservations = response.data.map(
       reservation =>
         new Reservation({
@@ -45,44 +45,36 @@ export const getReservations = async () => {
 };
 
 export const addReservation = async (formData) => {
-  formData.reservation_id = null;
-  formData.second_driver_id = null;
-  const data = Object.fromEntries(formData.entries());
-  const reservation = new Reservation(data);
-
-  console.log('Reservation object:', reservation);
-
-  const form = new FormData();
-  for (const key in reservation) {
-    if (reservation[key] !== undefined && reservation[key] !== null) {
-      form.append(key, reservation[key]);
-    }
-  }
-
-  console.log('Form data (FormData) to be sent:');
-  for (const [key, value] of form.entries()) {
-    console.log(`${key}: ${value}`);
-  }
-
   try {
-    const response = await fetch(config.AddReservation, {
+    const response = await fetch(config.Reservation, {
       method: 'POST',
-      body: form,
+      body: formData,
       headers: {
         'Accept': 'application/json',
       },
     });
     
-    const responseData = await response.json();
-    
-    if (!response.ok) {
-      console.log("mmm ",responseData.message);
-      return { success: false, message: responseData.message };
+    let responseData;
+
+    try {
+      responseData = await response.data;
+    } catch (jsonError) {
+      return { success: false, message: 'Invalid response format from server' };
     }
-    
+
+    if (response.status === 409) {
+      return { success: false, message: 'Car is not available for the selected dates' };
+    }
+
+    if (!response.ok) {
+      const errorMessage = responseData?.message || 'An error occurred while processing the request.';
+      return { success: false, message: errorMessage };
+    }
+
     return { success: true, message: responseData.message };
 
   } catch (error) {
-    return { success: false, message: 'An unexpected error occurred' };
+    return { success: false, message: `Network or server error: ${error.message}` };
   }
 };
+

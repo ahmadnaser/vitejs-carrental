@@ -1,0 +1,7 @@
+{
+    "name": "mujahedabuali/car-rental-system",
+    "description": "Mujahed",
+    "require": {
+        "firebase/php-jwt": "^6.10"
+    }
+}

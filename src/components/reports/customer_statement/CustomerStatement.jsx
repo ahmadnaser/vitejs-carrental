@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
-import { getTenants } from '../../../controller/tenantController';
+import { getTenants } from '../../../controller/TenantController';
 import { getConfigCode } from '../../../controller/CodeController';
 
 const CustomerAccountStatementForm = () => {
@@ -86,8 +86,6 @@ const CustomerAccountStatementForm = () => {
   const handleNavigation = (path) => {
     const validationErrors = {};
     if (!formData.tenant_id.trim()) validationErrors.tenant_id = t('Tenant is required.');
-    if (!formData.start_date.trim()) validationErrors.start_date = t('Start date is required.');
-    if (!formData.end_date.trim()) validationErrors.end_date = t('End date is required.');
     if (enteredCode !== retrievedCode) validationErrors.code = t('The code you entered is incorrect.');
 
     if (Object.keys(validationErrors).length > 0) {
@@ -154,7 +152,7 @@ const CustomerAccountStatementForm = () => {
                 <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
               </svg>
             </div>
-            <input id="from-date" name="start_date" type="text" value={formData.start_date} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} readOnly />
+            <input id="from-date" name="start_date" type="text" value={formData.start_date} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date or leave it blank')}  />
             {errors.start_date && <span className="text-red-500 mt-2 text-sm">{errors.start_date}</span>}
           </div>
         </div>
@@ -167,7 +165,7 @@ const CustomerAccountStatementForm = () => {
                 <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
               </svg>
             </div>
-            <input id="to-date" name="end_date" value={formData.end_date} data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text"  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
+            <input id="to-date" name="end_date" value={formData.end_date} data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text"  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date or leave it blank')} />
             {errors.end_date && <span className="text-red-500 mt-2 text-sm">{errors.end_date}</span>}
           </div>
         </div>

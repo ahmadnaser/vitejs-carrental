@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
-import { getExpensesTypes } from '../../controller/ExpensesController';
-import { addExpense } from '../../controller/ExpensesController'; // Import the addExpense function
+import { getExpensesTypes, addExpense } from '../../controller/ExpensesController'; 
 import { useTranslation } from 'react-i18next';
 
 const GeneralExpensesForm = () => {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const [status, setStatus] = useState(null);
   const [formData, setFormData] = useState({
     expense_type_id: '',
@@ -58,11 +56,19 @@ const GeneralExpensesForm = () => {
     }));
   };
 
+  const convertArabicNumeralsToEnglish = (input) => {
+    return input.replace(/[\u0660-\u0669]/g, (c) => c.charCodeAt(0) - 0x0660)
+                .replace(/[\u06f0-\u06f9]/g, (c) => c.charCodeAt(0) - 0x06f0);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    const updatedValue = name === 'amount' ? convertArabicNumeralsToEnglish(value) : value;
+
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: updatedValue,
     }));
   };
 
@@ -79,10 +85,15 @@ const GeneralExpensesForm = () => {
     setErrors({});
 
     try {
-      console.log('Adding expense:', formData);
       const response = await addExpense(formData); 
       if (response.success) {
         setStatus('success');
+        setFormData({
+          expense_type_id: '',
+          expense_date: new Date().toISOString().split('T')[0],
+          amount: '',
+          details: '',
+        });
       } else {
         setStatus('error');
       }

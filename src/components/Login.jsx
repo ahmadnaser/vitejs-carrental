@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import GoogleSvg from "../assets/images/icons8-google.svg";
 import { useTranslation } from 'react-i18next';
 import { setLogin } from '../controller/LoginController';
+import LogoImage from '../assets/images/logo.png';
+
 
 const Login = ({ onLogin }) => {
   const { t, i18n } = useTranslation();
@@ -108,7 +110,7 @@ const Login = ({ onLogin }) => {
           <div className="flex mt-0 items-center justify-center pt-2.5 mb-20">
             <h2 className="text-md flex m-2.5 font-arabic font-light text-headingColor">{t('name')}</h2>
             <div className="flex items-center justify-center w-10 h-10 bg-secondary-color rounded-full overflow-hidden border-2 border-secondary-color">
-              <img src="src/assets/images/logo.png" alt="Logo" className="w-full h-auto object-cover" />
+              <img src={LogoImage} alt="Logo" className="w-full h-auto object-cover" />
             </div>
           </div>
 
@@ -171,7 +173,7 @@ const Login = ({ onLogin }) => {
 
           <p className="font-arabic font-light text-center text-2xl py-10 text-gray-100">{t('no_account')} <a href="#" className="font-semibold no-underline hover:underline">{t('sign_up')}</a></p>
           <div className="flex lg:hidden md:hidden justify-center mt-0 mb-10">
-            <button className="font-arabic font-light text-lg bg-transparent text-white transition-colors duration-300 hover:bg-secondary-color rounded-full cursor-pointer py-2.5 px-5" onClick={() => navigate('/dashboard')}>
+            <button className="font-arabic font-light text-lg bg-transparent text-white transition-colors duration-300 hover:bg-secondary-color rounded-full cursor-pointer py-2.5 px-5" >
               {t('go_as_guest')}<span className="mx-2 inline-flex items-center justify-center"><i className="ri-glasses-2-line"></i></span>
             </button>
           </div>
