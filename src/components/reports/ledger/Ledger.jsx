@@ -9,13 +9,7 @@ import { getConfigCode } from '../../../controller/CodeController';
 const LedgerForm = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    start_date: '',
-    end_date: '',
-  });
   const [status, setStatus] = useState(null);
-  const [garages, setGarages] = useState([]);
-  const [selectedGarage, setSelectedGarage] = useState(null);
   const [errors, setErrors] = useState({});
   const [retrievedCode, setRetrievedCode] = useState(''); 
   const [enteredCode, setEnteredCode] = useState(''); 
@@ -31,26 +25,6 @@ const LedgerForm = () => {
       }
     };
     fetchConfigCode();
-
-    flatpickr('#from-date', {
-      dateFormat: 'Y-m-d',
-      onChange: (selectedDates, dateStr) => {
-        setFormData(prevFormData => ({
-          ...prevFormData,
-          start_date: dateStr
-        }));
-      }
-    });
-
-    flatpickr('#to-date', {
-      dateFormat: 'Y-m-d',
-      onChange: (selectedDates, dateStr) => {
-        setFormData(prevFormData => ({
-          ...prevFormData,
-          end_date: dateStr
-        }));
-      }
-    });
   }, []);
 
 
@@ -71,63 +45,24 @@ const LedgerForm = () => {
     navigate(path, { state: formData });
   };
 
-  const customStyles = {
-    control: (provided) => ({
-      ...provided,
-      backgroundColor: '#ffffff',
-      color: '#000000',
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      color: '#000000',
-    }),
-    menu: (provided) => ({
-      ...provided,
-      backgroundColor: '#ffffff',
-      color: '#000000',
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isSelected ? '#cccccc' : '#ffffff',
-      color: '#000000',
-    }),
-  };
-
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
         <h1 className="text-3xl font-bold text-secondary-color">{t('Ledger')}</h1>
       </div>
 
-      <form className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-15 mb-10 max-w-md mx-auto`}>
+      <form className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-15 mb-10 max-w-md mx-auto items-center align-middle `}>
         
-        <div className="mb-5">
-          <label htmlFor="from-date" className="block mb-2 text-sm font-medium">{t('From Date')}</label>
-          <div className="relative max-w-sm">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
+      <div className="bg-white p-3 rounded-md mb-5">
+              <h2 className="text-black font-medium mb-1 text-xl">
+                {t("Ledger Statment")}
+              </h2>
+              <p className="text-small-text-color mb-8">
+                {t("Here you are informed of all your store statements, including profits, expenses and costs.")}<span className='text-blue-500'>{t(" Go with admin code")}</span>
+              </p>
             </div>
-            <input id="from-date" name="start_date" type="text" value={formData.start_date} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date or leave it blank')} />
-            {errors.start_date && <span className="text-red-500 mt-2 text-sm">{errors.start_date}</span>}
-          </div>
-        </div>
 
-        <div className="mb-5">
-          <label htmlFor="to-date" className="block mb-2 text-sm font-medium">{t('To Date')}</label>
-          <div className="relative max-w-sm">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
-            </div>
-            <input id="to-date" name="end_date" value={formData.end_date} data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text"  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date or leave it blank')} />
-            {errors.end_date && <span className="text-red-500 mt-2 text-sm">{errors.end_date}</span>}
-          </div>
-        </div>
-
-        <div className="mb-5">
+        <div className="mt-10">
           <label htmlFor="code" className="block mb-2 text-sm font-medium">{t('Code')}</label>
           <input
             type="password"

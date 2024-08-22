@@ -99,8 +99,8 @@ const App = () => {
       <Route path="/reports/trader-statement/statement" element={isLoggedIn ? <Layout><TraderStatementTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/garage-statement" element={isLoggedIn ? <Layout><GarageStatementForm /></Layout> : <Navigate to="/login" />} /> 
       <Route path="/reports/garage-statement/statement" element={isLoggedIn ? <Layout><GarageStatementTable /></Layout> : <Navigate to="/login" />} />
-      <Route path="/reports/ledger" element={isLoggedIn ? <Layout><LedgerForm /></Layout> : <Navigate to="/login" />} />
-      <Route path="/reports/ledger/ledger-tables" element={isLoggedIn ? <Layout><LedgerTable /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/ledger" element={isLoggedIn ? <Layout><LedgerForm /></Layout> : <Layout><LedgerForm /></Layout> } />
+      <Route path="/reports/ledger/ledger-tables" element={isLoggedIn ? <Layout><LedgerTable /></Layout> : <Layout><LedgerTable /></Layout> } />
       <Route path="/settings" element={isLoggedIn ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
       <Route path="/settings/black-list" element={isLoggedIn ? <Layout><BlackListTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/settings/black-list/add-blacklist" element={isLoggedIn ? <Layout><AddBlackListForm /></Layout> : <Navigate to="/login" />} />

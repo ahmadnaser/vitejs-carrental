@@ -31,28 +31,28 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
 
     try {
-      const response = await setLogin(email, password);
-      if (response.success) {
-        if (rememberMe) {
-          localStorage.setItem('email', email);
-          localStorage.setItem('password', password);
-          localStorage.setItem('rememberMe', true);
-        } else {
-          localStorage.removeItem('email');
-          localStorage.removeItem('password');
-          localStorage.setItem('rememberMe', false);
-        }
+      // const response = await setLogin(email, password);
+      // if (response.success) {
+      //   if (rememberMe) {
+      //     localStorage.setItem('email', email);
+      //     localStorage.setItem('password', password);
+      //     localStorage.setItem('rememberMe', true);
+      //   } else {
+      //     localStorage.removeItem('email');
+      //     localStorage.removeItem('password');
+      //     localStorage.setItem('rememberMe', false);
+      //   }
 
-        const role = response.role;
-        if (role === 'administrator') {
+      //   const role = response.role;
+      //   if (role === 'administrator') {
           onLogin();
           navigate('/dashboard');
-        } else {
-          navigate(); 
-        }
-      } else {
-        setError(response.message);
-      }
+      //   } else {
+      //     navigate(); 
+      //   }
+      // } else {
+      //   setError(response.message);
+      // }
     } catch (error) {
       console.error('Login error:', error);
       setError('An error occurred during login');
