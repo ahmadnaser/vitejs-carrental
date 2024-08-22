@@ -34,6 +34,7 @@ import TraderStatementForm from './components/reports/trader_statement/TraderSta
 import FullAccountStatementForm from './components/reports/full_account_statement/FullAccountStatement';
 import FullAccountStatementTable from './components/reports/full_account_statement/FullAccountStatementTable';
 import LedgerForm from './components/reports/ledger/Ledger';
+import LedgerTable from './components/reports/ledger/LedgerTable';
 import AddGarageForm from './components/expensese/garage_management/AddGarage';
 import TraderTable from './components/expensese/trader_management/Traders';
 import AddTraderForm from './components/expensese/trader_management/AddTrader';
@@ -44,6 +45,7 @@ import BeneficiaryTable from './components/expensese/beneficiaries_management/Be
 import AddBeneficiaryForm from './components/expensese/beneficiaries_management/AddBeneficiary';
 import Settings from './components/settings/Settings'; 
 import BlackListTable from './components/settings/BlackList'; 
+import AddBlackListForm from './components/settings/AddBlackList'; 
 
 
 const App = () => {
@@ -97,9 +99,11 @@ const App = () => {
       <Route path="/reports/trader-statement/statement" element={isLoggedIn ? <Layout><TraderStatementTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/garage-statement" element={isLoggedIn ? <Layout><GarageStatementForm /></Layout> : <Navigate to="/login" />} /> 
       <Route path="/reports/garage-statement/statement" element={isLoggedIn ? <Layout><GarageStatementTable /></Layout> : <Navigate to="/login" />} />
-      <Route path="/reports/ledger-statement" element={isLoggedIn ? <Layout><LedgerForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/ledger" element={isLoggedIn ? <Layout><LedgerForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reports/ledger/ledger-tables" element={isLoggedIn ? <Layout><LedgerTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/settings" element={isLoggedIn ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
       <Route path="/settings/black-list" element={isLoggedIn ? <Layout><BlackListTable /></Layout> : <Navigate to="/login" />} />
+      <Route path="/settings/black-list/add-blacklist" element={isLoggedIn ? <Layout><AddBlackListForm /></Layout> : <Navigate to="/login" />} />
     </Routes>
   );
 };

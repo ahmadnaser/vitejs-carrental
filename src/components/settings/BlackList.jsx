@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { getTraders } from '../../controller/TraderController'; 
+import { useNavigate } from 'react-router-dom';
+import { getBlackList } from '../../controller/BlackListController'; 
 import { useTranslation } from 'react-i18next';
 
 const BlackListTable = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [traderData, setTraderData] = useState([]);
+  const [blacklistData, setBlacklistData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,8 +14,8 @@ const BlackListTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getTraders();
-        setTraderData(data);
+        const data = await getBlackList();
+        setBlacklistData(data);
       } catch (error) {
         setError(error);
       } finally {
@@ -26,17 +26,17 @@ const BlackListTable = () => {
   }, []);
 
   const handleAddNewClick = () => {
-    navigate('/expenses/traders/add-trader');
+    navigate('/settings/black-list/add-blacklist');
   };
 
   const filteredItems = useMemo(() => {
-    return traderData.filter(
+    return blacklistData.filter(
       (item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.contact_info.toLowerCase().includes(searchTerm.toLowerCase())
+        item.id_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.address.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm, traderData]);
+  }, [searchTerm, blacklistData]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -97,10 +97,7 @@ const BlackListTable = () => {
           <thead className="text-xs text-gray-900 uppercase bg-red-400 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-3 py-3">
-                {t('Customer Name')}
-              </th>
-              <th scope="col" className="px-3 py-3">
-                {t('Id Number')}
+                {t('ID Number')}
               </th>
               <th scope="col" className="px-3 py-3">
                 {t('Company')}
@@ -111,12 +108,13 @@ const BlackListTable = () => {
               <th scope="col" className="px-3 py-3">
                 {t('Note')}
               </th>
+              <th scope="col" className="px-3 py-3"><span className="sr-only">{t('Action')}</span></th>
             </tr>
           </thead>
           <tbody>
             {filteredItems.length === 0 ? (
               <tr>
-                <td colSpan="4" className="text-center py-4">
+                <td colSpan="5" className="text-center py-4">
                   {t('No records found')}
                 </td>
               </tr>
@@ -127,12 +125,15 @@ const BlackListTable = () => {
                   className={`bg-red-200 border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}
                 >
                   <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                    {item.name}
+                    {item.id_number}
                   </td>
-                  <td className="px-4 py-4 text-center">{item.type}</td>
-                  <td className="px-4 py-4 text-center">{item.contact_info}</td>
-                  <td className="px-4 py-4 text-center">{item.contact_info}</td>
-                  <td className="px-4 py-4 text-center">{item.contact_info}</td>
+                  <td className="px-4 py-4 text-center">{item.company}</td>
+                  <td className="px-4 py-4 text-center">{item.address}</td>
+                  <td className="px-4 py-4 text-center">{item.note}</td>
+                  <td className="px-4 py-4">
+                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Edit')}</a><br/>
+                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">{t('Delete')}</a>
+                  </td>
                 </tr>
               ))
             )}

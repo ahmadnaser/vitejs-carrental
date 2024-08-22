@@ -41,7 +41,7 @@ const navLinks = [
       { path: "/reports/full-account-statement", display: "Full Account Statement" },
       { path: "/reports/garage-statement", display: "Garage Account Statement" },
       { path: "/reports/trader-statement", display: "Trader Account Statement" },
-      { path: "/reports/ledger-statement", display: "Ledger" }
+      { path: "/reports/ledger", display: "Ledger" }
     ],
   },
   {

@@ -10,6 +10,7 @@
     "Rental": "http://localhost/CarRentalSystem/rental.php",
     "Payment": "http://localhost/CarRentalSystem/payment.php",
     "Financial": "http://localhost/CarRentalSystem/financial.php",
+    "BlackList": "http://localhost/CarRentalSystem/blackList.php",
     "Reservation": "http://localhost/CarRentalSystem/reservation.php",
     "ConfigCode": "http://localhost/CarRentalSystem/config_code.php",
     "Login": "http://localhost/CarRentalSystem/login.php"
