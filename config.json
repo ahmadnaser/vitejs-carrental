@@ -13,6 +13,7 @@
     "BlackList": "http://localhost/CarRentalSystem/blackList.php",
     "Reservation": "http://localhost/CarRentalSystem/reservation.php",
     "ConfigCode": "http://localhost/CarRentalSystem/config_code.php",
+    "User": "http://localhost/CarRentalSystem/user.php",
     "Login": "http://localhost/CarRentalSystem/login.php"
 
 }

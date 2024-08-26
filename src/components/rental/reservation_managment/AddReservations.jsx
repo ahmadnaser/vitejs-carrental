@@ -399,12 +399,12 @@ const AddReservationForm = () => {
         if (response.message) {
           setErrors({form:response.message});
         } else {
-          setErrors({ form: response.message });
+          setErrors({ form: response });
         }
       }
     } catch (error) {
       setStatus('error');
-      setErrors({ form: error.message });
+      setErrors({ form: error });
     }
   };
 

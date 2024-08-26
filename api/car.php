@@ -36,7 +36,6 @@ function addVehicle() {
     $insurance_start_date = $_POST['insurance_start_date'] ?? null;
     $change_oil_every_km = $_POST['change_oil_every_km'] ?? null;
     $change_oil_every_month = $_POST['change_oil_every_month'] ?? null;
-
     $active = isset($_POST['active']) ? $_POST['active'] : 0;
     $status = $active ? 'available' : 'maintenance';
 
@@ -72,75 +71,8 @@ function addVehicle() {
         exit();
     }
 
-    $insurance_image = null;
-    $license_image = null;
-    $target_insurance_dir = "car_insurance_uploads/";
-    $target_license_dir = "car_license_uploads/";
-    $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
-
-    if (isset($_FILES['insurance_image']) && $_FILES['insurance_image']['error'] == 0) {
-
-        if (!is_dir($target_insurance_dir)) {
-            $response['status'] = 'error';
-            $response['message'] = 'Upload directory does not exist.';
-            http_response_code(500);
-            echo json_encode($response);
-            exit();
-        }
-
-        if (!is_writable($target_insurance_dir)) {
-            $response['status'] = 'error';
-            $response['message'] = 'Upload directory is not writable.';
-            http_response_code(500);
-            echo json_encode($response);
-            exit();
-        }
-
-        $file_extension = pathinfo($_FILES['insurance_image']['name'], PATHINFO_EXTENSION);
-        if (!in_array(strtolower($file_extension), $allowed_extensions)) {
-            http_response_code(400);
-            echo json_encode(["status" => "error", "message" => "Invalid file extension for ID image. Only JPG, JPEG, PNG, and GIF are allowed."]);
-            exit();
-        }
-        $insurance_image = $target_insurance_dir . basename($_FILES['insurance_image']['name']);
-        if (!move_uploaded_file($_FILES['insurance_image']['tmp_name'], $insurance_image)) {
-            http_response_code(500);
-            echo json_encode(["status" => "error", "message" => "Failed to upload ID image."]);
-            exit();
-        }
-    }
-
-    if (isset($_FILES['license_image']) && $_FILES['license_image']['error'] == 0) {
-
-        if (!is_dir($target_license_dir)) {
-            $response['status'] = 'error';
-            $response['message'] = 'Upload directory does not exist.';
-            http_response_code(500);
-            echo json_encode($response);
-            exit();
-        }
-
-        if (!is_writable($target_license_dir)) {
-            $response['status'] = 'error';
-            $response['message'] = 'Upload directory is not writable.';
-            http_response_code(500);
-            echo json_encode($response);
-            exit();
-        }
-
-        $file_extension = pathinfo($_FILES['license_image']['name'], PATHINFO_EXTENSION);
-        if (!in_array(strtolower($file_extension), $allowed_extensions)) {
-            http_response_code(400);
-            echo json_encode(["status" => "error", "message" => "Invalid file extension for license image. Only JPG, JPEG, PNG, and GIF are allowed."]);
-            exit();
-        }
-        $license_image = $target_license_dir . basename($_FILES['license_image']['name']);
-        if (!move_uploaded_file($_FILES['license_image']['tmp_name'], $license_image)) {
-            http_response_code(500);
-            echo json_encode(["status" => "error", "message" => "Failed to upload license image."]);
-            exit();
-        }
-    }
+    $insurance_image = uploadImage('insurance_image', 'car_insurance_uploads/', $vehicle_id);
+    $license_image = uploadImage('license_image', 'car_license_uploads/', $vehicle_id);
 
     try {
         $sql = "INSERT INTO Vehicles (vehicle_id, make, model, year, color, status, mileage, last_oil_change_miles, last_oil_change_date, license_expiry_date, insurance_expiry_date, change_oil_every_km, change_oil_every_month, license_image, insurance_image,active)
@@ -250,7 +182,7 @@ function listVehicles() {
 }
 
 
-function uploadImage($inputName, $directory) {
+function uploadImage($inputName, $directory, $vehicle_id) {
     if (!empty($_FILES[$inputName]['name'])) {
         if (!is_dir($directory) && !mkdir($directory, 0755, true)) {
             http_response_code(500);
@@ -265,7 +197,7 @@ function uploadImage($inputName, $directory) {
         }
 
         $fileExt = strtolower(pathinfo($_FILES[$inputName]['name'], PATHINFO_EXTENSION));
-        $newFileName = uniqid($inputName . '_') . ".$fileExt";
+        $newFileName = $vehicle_id . '_' . uniqid($inputName . '_') . ".$fileExt";
         $fileDestination = $directory . $newFileName;
 
         if ($_FILES[$inputName]['error'] !== UPLOAD_ERR_OK) {

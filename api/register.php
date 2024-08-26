@@ -6,16 +6,16 @@ include 'dbconfig.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'] ?? null;
     $email = $_POST['email'] ?? null;
-    $password = $_POST['password'] ?? null;  // Get the plain password
+    $password = $_POST['password'] ?? null;  
     $phone = $_POST['phone'] ?? null;
     $address = $_POST['address'] ?? null;
-    $role = $_POST['role'] ?? 'customer'; // Default to 'customer' if not specified
+    $role = $_POST['role'] ?? 'customer'; 
 
     $missing_fields = [];
 
     if (empty($name)) $missing_fields[] = 'name';
     if (empty($email)) $missing_fields[] = 'email';
-    if (empty($password)) $missing_fields[] = 'password';  // Ensure password is provided
+    if (empty($password)) $missing_fields[] = 'password'; 
 
     if (!empty($missing_fields)) {
         $missing_fields_list = implode(', ', $missing_fields);
@@ -23,7 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Hash the password before storing it
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     try {
@@ -37,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $stmt->bindValue(':name', $name);
         $stmt->bindValue(':email', $email);
-        $stmt->bindValue(':password', $hashed_password);  // Store the hashed password
+        $stmt->bindValue(':password', $hashed_password);  
         $stmt->bindValue(':phone', $phone);
         $stmt->bindValue(':address', $address);
         $stmt->bindValue(':role', $role);

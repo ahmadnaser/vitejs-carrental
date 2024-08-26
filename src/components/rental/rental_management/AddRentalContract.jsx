@@ -8,6 +8,10 @@ import 'flatpickr/dist/themes/airbnb.css';
 import { getAvailableCars } from '../../../controller/CarController';
 import { addContract } from '../../../controller/RentedCarController';
 import { getTenants } from '../../../controller/TenantController';
+import { getTenantById } from '../../../controller/TenantController';
+import { getCarById } from '../../../controller/CarController';
+import {pdf} from '@react-pdf/renderer';
+import Contract from '../../paper_documents/Contract';
 
 const AddRentalForm = () => {
   const { t, i18n } = useTranslation();
@@ -37,6 +41,7 @@ const AddRentalForm = () => {
   const [numDays, setNumDays] = useState('');
   const [isBankCheck, setIsBankCheck] = useState(false);
   const [paymentDate, setPaymentDate] = useState('');
+  const [isPrintChecked, setIsPrintChecked] = useState(false);
   const [bankDetails, setBankDetails] = useState({
     check_number: '',
     bank_name: '',
@@ -306,6 +311,28 @@ const AddRentalForm = () => {
       [name]: value
     }));
   };
+  const handlePrintClick = async (form) => {
+    setStatus('loading');
+    console.log('Press',form);
+    try {
+      const tenantData = await getTenantById(form.tenant_id);
+      const carData = await getCarById(form.vehicle_id);
+  
+      const blob = await pdf(<Contract formData={form} tenant={tenantData} car={carData} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contract_${tenantData.tenant_name}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      setErrors({ form: err.message });
+    } finally {
+      setStatus(null);
+    }
+  };
+  
 
   const validateForm = () => {
     const errors = {};
@@ -413,6 +440,11 @@ const AddRentalForm = () => {
       const response = await addContract(submissionData);
       if (response.success) {
         setStatus('success');
+
+        if (isPrintChecked) {
+          await handlePrintClick(formData); 
+        }
+
         setTimeout(() => navigate(-1), 2000);
       } else {
         setStatus('error');
@@ -667,6 +699,20 @@ const AddRentalForm = () => {
           <label htmlFor="note" className="block mb-2 text-sm font-medium">{t('Note')}</label>
           <input type="text" id="note" name="note" value={formData.note} onChange={handleInputChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter note')} required />
         </div>
+
+        <div className="flex items-center h-5 mt-8 mb-5">
+          <input 
+            id="print" 
+            type="checkbox" 
+            checked={isPrintChecked} 
+            onChange={(e) => setIsPrintChecked(e.target.checked)} 
+            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" 
+          />
+          <label htmlFor="print" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">
+            {t('Print?')}
+          </label>
+        </div>
+
 
         <div className="flex items-center h-5 mt-8 mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

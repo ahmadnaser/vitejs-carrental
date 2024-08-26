@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Select from 'react-select';
-import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/airbnb.css';
 import { getConfigCode } from '../../../controller/CodeController';
 
@@ -34,6 +32,8 @@ const LedgerForm = () => {
 
   const handleNavigation = (path) => {
     const validationErrors = {};
+    console.log('Validation errors:', enteredCode);
+    console.log('Validation errors:', retrievedCode);
     if (enteredCode !== retrievedCode) validationErrors.code = t('The code you entered is incorrect.');
 
     if (Object.keys(validationErrors).length > 0) {
@@ -42,7 +42,7 @@ const LedgerForm = () => {
     }
 
     setErrors({});
-    navigate(path, { state: formData });
+    navigate(path);
   };
 
   return (

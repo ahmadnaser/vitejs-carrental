@@ -232,6 +232,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 Reservations
             INNER JOIN 
                 Invoices ON Reservations.invoice_id = Invoices.Invoice_id
+            WHERE 
+                Reservations.status = 'pending'
             ORDER BY 
                 Reservations.reservation_id DESC
         ");

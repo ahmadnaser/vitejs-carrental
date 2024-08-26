@@ -34,12 +34,12 @@ const TopNav = ({ isSidebarOpen, onToggleSidebar }) => {
 
         <div className="flex items-center gap-[2rem] justify-end">
           <span className="relative">
-            <i className="ri-notification-4-line text-small-text-color text-[1.2rem] cursor-pointer"></i>
-            <span className="absolute top-[25%] right-[-10%] w-[13px] h-[13px] flex items-center justify-center bg-secondary-color rounded-full text-white text-[0.8rem]">1</span>
+            <i className="ri-notification-4-line text-small-text-color text-[1.2rem]  md:text-[1.5rem]  lg:text-[1.8rem] cursor-pointer"></i>
+            <span className="absolute top-[25%] right-[-10%] w-[13px] h-[13px]  md:w-[16px] md:h-[16px]  lg:w-[18px] lg:h-[18px] flex items-center justify-center bg-secondary-color rounded-full text-white text-[0.8rem]">1</span>
           </span>
           <div className="flex items-center justify-end">
             <Link to="/settings">
-              <img src={profileImg} alt="" className="w-[40px] h-[40px] rounded-full object-cover" />
+            <img src={profileImg} alt="Profile" className="w-[25px] h-[25px] md:w-[30px] md:h-[30px]  lg:w-[40px] lg:h-[40px] rounded-full object-cover" />
             </Link>
           </div>
         </div>

@@ -71,7 +71,7 @@ export const addReservation = async (formData) => {
       return { success: false, message: errorMessage };
     }
 
-    return { success: true, message: responseData.message };
+    return { success: true, message: responseData?.message };
 
   } catch (error) {
     return { success: false, message: `Network or server error: ${error.message}` };

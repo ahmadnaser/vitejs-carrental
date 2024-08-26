@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sdb-65.hosting.stackcp.net
--- Generation Time: Aug 21, 2024 at 04:06 PM
+-- Generation Time: Aug 26, 2024 at 08:55 AM
 -- Server version: 10.6.18-MariaDB-log
 -- PHP Version: 7.4.33
 
@@ -185,8 +185,9 @@ CREATE TABLE `Invoices` (
 --
 
 INSERT INTO `Invoices` (`Invoice_id`, `price_perday`, `total_amount`, `amount_paid`) VALUES
-(36, '100.00', '100.00', '100.00'),
-(37, '80.00', '80.00', '20.00');
+(36, '100.00', '100.00', '200.00'),
+(37, '80.00', '80.00', '20.00'),
+(38, '130.00', '1170.00', '1000.00');
 
 -- --------------------------------------------------------
 
@@ -237,7 +238,9 @@ CREATE TABLE `Payments` (
 
 INSERT INTO `Payments` (`payment_id`, `amount`, `payment_date`, `payment_method`, `check_id`, `invoice_id`) VALUES
 (157, '100.00', '2024-08-20 19:48:25', 'cash', NULL, 36),
-(158, '20.00', '2024-08-20 20:57:00', 'cash', NULL, 37);
+(158, '20.00', '2024-08-20 20:57:00', 'cash', NULL, 37),
+(159, '1000.00', '2024-08-21 16:12:06', 'cash', NULL, 38),
+(161, '100.00', '2024-08-24 23:00:00', 'cash', NULL, 36);
 
 -- --------------------------------------------------------
 
@@ -262,7 +265,8 @@ CREATE TABLE `Rentals` (
 
 INSERT INTO `Rentals` (`rental_id`, `reservation_id`, `start_date`, `end_date`, `car_mileage`, `car_condition`, `car_damage`, `note`) VALUES
 (154, 242, '2024-08-22 11:00:00', '2024-08-23 11:00:00', '123km', NULL, NULL, 'Ø¬Ø§Ù‡Ø²'),
-(155, 243, '2024-09-07 11:00:00', '2024-09-08 11:00:00', '22000', NULL, NULL, 'Ø¬Ø§Ù‡Ø²');
+(155, 243, '2024-09-07 11:00:00', '2024-09-08 11:00:00', '22000', NULL, NULL, 'Ø¬Ø§Ù‡Ø²'),
+(156, 244, '2024-08-22 11:00:00', '2024-08-31 11:00:00', '22000', NULL, NULL, 'Ø·Ø§ÙÙŠØ© Ø¨Ù†Ø²ÙŠÙ† ');
 
 -- --------------------------------------------------------
 
@@ -287,7 +291,8 @@ CREATE TABLE `Reservations` (
 
 INSERT INTO `Reservations` (`reservation_id`, `tenant_id`, `second_driver_id`, `vehicle_id`, `invoice_id`, `start_date`, `end_date`, `status`) VALUES
 (242, '453221', NULL, '1234-H', 36, '2024-08-22 11:00:00', '2024-08-23 11:00:00', 'confirmed'),
-(243, '875433', NULL, '1234-H', 37, '2024-09-07 11:00:00', '2024-09-08 11:00:00', 'confirmed');
+(243, '875433', NULL, '1234-H', 37, '2024-09-07 11:00:00', '2024-09-08 11:00:00', 'confirmed'),
+(244, '53421120', NULL, '60543-H', 38, '2024-08-22 11:00:00', '2024-08-31 11:00:00', 'confirmed');
 
 -- --------------------------------------------------------
 
@@ -368,7 +373,10 @@ INSERT INTO `Transactions` (`transaction_id`, `date`, `description`, `debit`, `c
 (231, '2024-08-21', 'Ù…ØµØ±ÙˆÙ ØµÙŠØ§Ù†Ø© - ÙƒØ±Ø§Ø¬ Ù‚Ø·Ø± ', '600.00', '0.00', NULL, 16),
 (232, '2024-08-21', 'Ø¯ÙØ¹ Ù…ØµØ±ÙˆÙ ØµÙŠØ§Ù†Ø© - ÙƒØ±Ø§Ø¬ Ù‚Ø·Ø± ', '0.00', '500.00', NULL, 16),
 (233, '2024-08-21', 'Ù…ØµØ±ÙˆÙ Ù‚Ø·Ø¹ ØºÙŠØ§Ø± - 1239', '200.00', '0.00', NULL, 17),
-(234, '2024-08-21', 'Ø¯ÙØ¹ Ù…ØµØ±ÙˆÙ Ù‚Ø·Ø¹ ØºÙŠØ§Ø± - 1239', '0.00', '200.00', NULL, 17);
+(234, '2024-08-21', 'Ø¯ÙØ¹ Ù…ØµØ±ÙˆÙ Ù‚Ø·Ø¹ ØºÙŠØ§Ø± - 1239', '0.00', '200.00', NULL, 17),
+(235, '2024-08-21', 'Ø§Ù„Ù…Ø·Ù„ÙˆØ¨ Ù…Ù‚Ø§Ø¨Ù„ Ø¹Ù‚Ø¯ Ø§Ù„Ø§ÙŠØ¬Ø§Ø±', '1170.00', '0.00', 159, NULL),
+(236, '2024-08-21', 'Ø¯ÙØ¹Ø© Ù…Ø§Ù„ÙŠØ© - Ø®Ø§Ù„Ø¯ Ø±Ø§Ù…ÙŠ', '0.00', '1000.00', 159, NULL),
+(237, '2024-08-25', 'Ø¯ÙØ¹Ø© Ù…Ø§Ù„ÙŠØ© - Ø§Ø­Ù…Ø¯ Ù†Ø§ØµØ±', '0.00', '100.00', 161, NULL);
 
 -- --------------------------------------------------------
 
@@ -377,7 +385,6 @@ INSERT INTO `Transactions` (`transaction_id`, `date`, `description`, `debit`, `c
 --
 
 CREATE TABLE `Users` (
-  `user_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -390,10 +397,10 @@ CREATE TABLE `Users` (
 -- Dumping data for table `Users`
 --
 
-INSERT INTO `Users` (`user_id`, `name`, `email`, `password`, `phone`, `address`, `role`) VALUES
-(1, 'Ahmad', 'ahmad@gmail.com', '$2y$10$rSIwkJJfHrM1wFXosDzz6.F01cDUBNe07..UqK9hLurnlxmsnDojG', '1234567890', 'Ramallah', 'administrator'),
-(2, 'Mujahed', 'abuali@gmail.com', '$2y$10$rSIwkJJfHrM1wFXosDzz6.F01cDUBNe07..UqK9hLurnlxmsnDojG', '0987654321', 'Ramallah', 'administrator'),
-(123, 'Rasha', 'rasha@gmail.com', '$2y$10$rSIwkJJfHrM1wFXosDzz6.F01cDUBNe07..UqK9hLurnlxmsnDojG', '12112212121', 'Ramallah', 'administrator');
+INSERT INTO `Users` (`name`, `email`, `password`, `phone`, `address`, `role`) VALUES
+('Mujahed', 'abuali@gmail.com', '$2y$10$rSIwkJJfHrM1wFXosDzz6.F01cDUBNe07..UqK9hLurnlxmsnDojG', '0987654321', 'Ramallah', 'administrator'),
+('Ahmad', 'ahmad@gmail.com', '$2y$10$rSIwkJJfHrM1wFXosDzz6.F01cDUBNe07..UqK9hLurnlxmsnDojG', '1234567890', 'Ramallah', 'administrator'),
+('Rasha', 'rasha@gmail.com', '$2y$10$rSIwkJJfHrM1wFXosDzz6.F01cDUBNe07..UqK9hLurnlxmsnDojG', '12112212121', 'Ramallah', 'administrator');
 
 -- --------------------------------------------------------
 
@@ -535,8 +542,7 @@ ALTER TABLE `Transactions`
 -- Indexes for table `Users`
 --
 ALTER TABLE `Users`
-  ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD PRIMARY KEY (`email`);
 
 --
 -- Indexes for table `Vehicles`
@@ -594,7 +600,7 @@ ALTER TABLE `Garages`
 -- AUTO_INCREMENT for table `Invoices`
 --
 ALTER TABLE `Invoices`
-  MODIFY `Invoice_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `Invoice_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `Maintenance`
@@ -606,19 +612,19 @@ ALTER TABLE `Maintenance`
 -- AUTO_INCREMENT for table `Payments`
 --
 ALTER TABLE `Payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
 
 --
 -- AUTO_INCREMENT for table `Rentals`
 --
 ALTER TABLE `Rentals`
-  MODIFY `rental_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
+  MODIFY `rental_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
 
 --
 -- AUTO_INCREMENT for table `Reservations`
 --
 ALTER TABLE `Reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=244;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=245;
 
 --
 -- AUTO_INCREMENT for table `Traders`
@@ -630,13 +636,7 @@ ALTER TABLE `Traders`
 -- AUTO_INCREMENT for table `Transactions`
 --
 ALTER TABLE `Transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=235;
-
---
--- AUTO_INCREMENT for table `Users`
---
-ALTER TABLE `Users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=238;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

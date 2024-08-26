@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import SingleCard from "./reuseable/SingleCard";
-import MileChart from "../charts/MileCharts";
-import CarStatsChart from "../charts/CarStatsChart";
+import RentalChart from "../charts/RentalCharts";
+import FinancialStatsChart from "../charts/FinancialStatsChart";
 import RecommendCarCard from "./UI/RecommendCarCard";
 import recommendCarsData from "../assets/dummy-data/recommendCars";
 import { getTenants } from '../controller/TenantController';
@@ -78,21 +79,29 @@ const Dashboard = () => {
     <div className="px-8 bg-bodyBg-color text-heading-color">
       <div className="pt-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <SingleCard item={carObj} />
-          <SingleCard item={rentObj} />
-          <SingleCard item={clientObj} />
-          <SingleCard item={availableCarObj} />
+          <Link to="/cars">
+            <SingleCard item={carObj} />
+          </Link>
+          <Link to="/renting/rental-contracts">
+            <SingleCard item={rentObj} />
+          </Link>
+          <Link to="/tenants">
+            <SingleCard item={clientObj} />
+          </Link>
+          <Link to="/cars">
+            <SingleCard item={availableCarObj} />
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           <div className="bg-primary-color p-8 rounded-md h-80 pb-12">
             <h3 className="text-white text-lg font-medium mb-5">{t("Rentals Statistics")}</h3>
-            <MileChart />
+            <RentalChart />
           </div>
 
           <div className="bg-primary-color p-8 rounded-md h-80 pb-12">
-            <h3 className="text-white text-lg font-medium mb-5">{t("Car Statistics")}</h3>
-            <CarStatsChart />
+            <h3 className="text-white text-lg font-medium mb-5">{t("Financial Statistics")}</h3>
+            <FinancialStatsChart />
           </div>
         </div>
 

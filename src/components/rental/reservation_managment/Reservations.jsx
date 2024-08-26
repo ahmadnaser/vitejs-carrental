@@ -20,8 +20,7 @@ const ReservationTable = () => {
     const fetchData = async () => {
       const data = await getReservations();
       setReservationsData(data);
-      console.log('Fetched reservations:', data);
-
+    
       const tenants = {};
       const vehicles = {};
 

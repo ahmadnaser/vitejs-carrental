@@ -22,6 +22,9 @@ const CarTable = () => {
   const handleAddNewClick = () => {
     navigate('/cars/add-car');
   };
+  const handleCarDetails = (carId) => {
+    navigate('/cars/details', { state: { carId } });
+  };
 
   const requestSort = (key) => {
     let direction = 'ascending';
@@ -109,52 +112,52 @@ const CarTable = () => {
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-3 py-3 cursor-pointer text-center" onClick={() => requestSort('year')}>
+              <th scope="col" className="px-3 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Year')}
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('vehicle_id')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Plate Number')}
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer text-center" onClick={() => requestSort('color')}>
+              <th scope="col" className="px-2 py-3 cursor-pointer text-center">
                 <div className="flex items-center">
                   {t('Color')}
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer text-center" onClick={() => requestSort('mileage')}>
+              <th scope="col" className="px-5 py-3 cursor-pointer text-center">
                 <div className="flex items-center">
                   {t('Mileage')}
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer text-center" onClick={() => requestSort('last_oil_change_miles')}>
+              <th scope="col" className="px-2 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Last Oil Change Mileage')}
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('last_oil_change_date')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Last Oil Change Date')}
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('license_expiry_date')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('License Expiry Date')}
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('insurance_expiry_date')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Insurance Expiry Date')}
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('change_oil_every_km')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Oil Change Every (km)')}
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer text-center" onClick={() => requestSort('change_oil_every_month')}>
+              <th scope="col" className="px-4 py-3 cursor-pointer text-center" >
                 <div className="flex items-center">
                   {t('Oil Change Every (month)')}
                 </div>
@@ -175,7 +178,7 @@ const CarTable = () => {
                   key={index}
                   className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}
                 >
-                  <td className="px-4 py-4  text-blue-500 text-center">{item.make} {item.model}</td>
+                  <td className="px-4 py-4  text-blue-500 cursor-pointer text-center text-lg font-bold"onClick={() => handleCarDetails(item.vehicle_id)}>{item.make} {item.model}</td>
                   <td className="px-4 py-4 text-center">{item.year}</td>
                   <td className="px-4 py-4 text-center">{item.vehicle_id}</td>
                   <td className="px-2 py-4 text-center">{item.color}</td>

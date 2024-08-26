@@ -1,9 +1,16 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header('Access-Control-Allow-Credentials: true');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 include 'dbconfig.php';
-
 
 define('ENCRYPTION_KEY', 'your-encryption-key'); 
 define('ENCRYPTION_METHOD', 'AES-256-CBC');
@@ -35,19 +42,32 @@ function getAllConfig($conn) {
     }
 }
 
-
-function updateConfigCode($conn, $newCode) {
-    $encryptedCode = encrypt($newCode);
-    $id = 1; 
-
-    $sql = "UPDATE Config SET code = :code WHERE id = :id";
+function updateConfigCode($conn, $oldCode, $newCode) {
+    $sql = "SELECT code FROM Config WHERE id = 1";
     try {
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':code', $encryptedCode, PDO::PARAM_STR);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        echo json_encode(["message" => "Code updated successfully"]);
+        if ($result) {
+            $decryptedCode = decrypt($result['code']);
+            if ($decryptedCode === $oldCode) {
+                $encryptedNewCode = encrypt($newCode);
+
+                $updateSql = "UPDATE Config SET code = :code WHERE id = 1";
+                $updateStmt = $conn->prepare($updateSql);
+                $updateStmt->bindParam(':code', $encryptedNewCode, PDO::PARAM_STR);
+                $updateStmt->execute();
+
+                echo json_encode(["message" => "Code updated successfully"]);
+            } else {
+                http_response_code(400);
+                echo json_encode(["message" => "Old code incorrect"]);
+            }
+        } else {
+            http_response_code(404);
+            echo json_encode(["message" => "No config found"]);
+        }
     } catch(PDOException $e) {
         http_response_code(500);
         echo json_encode(["message" => "Error: " . $e->getMessage()]);
@@ -56,15 +76,23 @@ function updateConfigCode($conn, $newCode) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     getAllConfig($conn);
+    
 } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    parse_str(file_get_contents("php://input"), $put_vars);
-    $newCode = $put_vars['newCode'] ?? null;
+    $data = json_decode(file_get_contents("php://input"), true);
 
-    if ($newCode) {
-        updateConfigCode($conn, $newCode);
+    if ($data === null) {
+        http_response_code(400);
+        echo json_encode(["message" => "Invalid JSON input"]);
+        exit;
+    }
+    $oldCode = $data['oldCode'] ?? null;
+    $newCode = $data['newCode'] ?? null;
+
+    if ($oldCode && $newCode) {
+        updateConfigCode($conn, $oldCode, $newCode);
     } else {
         http_response_code(400);
-        echo json_encode(["message" => "New code is required"]);
+        echo json_encode(["message" => "Old code and new code are required"]);
     }
 }
 

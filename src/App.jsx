@@ -15,6 +15,7 @@ import Tenants from './components/rental/tenants_management/Tenants';
 import PaymentForm from './components/rental/tenants_management/Payment';
 import TenantsDetalis from './components/rental/tenants_management/TenantsDetails';
 import Cars from './components/rental/cars_managemnt/Cars';
+import CarDetails from './components/rental/cars_managemnt/CarDetails';
 import AddCarForm from './components/rental/cars_managemnt/AddCar';
 import CarsMaintenanceTable from './components/expensese/cars_maintenance/CarsMaintenance';
 import AddMaintenanceForm from './components/expensese/cars_maintenance/AddCarMaintenance';
@@ -52,6 +53,7 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const tenantId = location.state?.tenantId;
+  const carId = location.state?.carId;
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -74,6 +76,7 @@ const App = () => {
       <Route path="/tenants/payment" element={isLoggedIn ? <Layout><PaymentForm tenantId={tenantId} /></Layout> : <Navigate to="/login" />} />
       <Route path="/cars" element={isLoggedIn ? <Layout><Cars /></Layout> : <Navigate to="/login" />} />
       <Route path="/cars/add-car" element={isLoggedIn ? <Layout><AddCarForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/cars/details" element={isLoggedIn ? <Layout><CarDetails carId={carId} /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses/car-maintenance" element={isLoggedIn ? <Layout><CarsMaintenanceTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses/general-expenses" element={isLoggedIn ? <Layout><GeneralExpenseseForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/expenses/car-maintenance/add-maintenance" element={isLoggedIn ? <Layout><AddMaintenanceForm /></Layout> : <Navigate to="/login" />} />
@@ -99,7 +102,7 @@ const App = () => {
       <Route path="/reports/trader-statement/statement" element={isLoggedIn ? <Layout><TraderStatementTable /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/garage-statement" element={isLoggedIn ? <Layout><GarageStatementForm /></Layout> : <Navigate to="/login" />} /> 
       <Route path="/reports/garage-statement/statement" element={isLoggedIn ? <Layout><GarageStatementTable /></Layout> : <Navigate to="/login" />} />
-      <Route path="/reports/ledger" element={isLoggedIn ? <Layout><LedgerForm /></Layout> : <Layout><LedgerForm /></Layout> } />
+      <Route path="/reports/ledger" element={isLoggedIn ? <Layout><LedgerForm /></Layout> : <Navigate to="/login" />} />
       <Route path="/reports/ledger/ledger-tables" element={isLoggedIn ? <Layout><LedgerTable /></Layout> : <Layout><LedgerTable /></Layout> } />
       <Route path="/settings" element={isLoggedIn ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
       <Route path="/settings/black-list" element={isLoggedIn ? <Layout><BlackListTable /></Layout> : <Navigate to="/login" />} />

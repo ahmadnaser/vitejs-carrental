@@ -28,17 +28,17 @@ export const getCars = async () => {
         car.model,
         car.year,
         car.color,
-        car.rental_rate,
         car.status,
-        car.category,
         car.mileage,
-        car.price_perday,
         car.last_oil_change_miles,
         car.last_oil_change_date,
         car.license_expiry_date,
         car.insurance_expiry_date,
         car.change_oil_every_month,
-        car.change_oil_every_km
+        car.change_oil_every_km,
+        car.insurance_image,
+        car.license_image,
+        car.active
       )
     );
   } catch (error) {
@@ -55,21 +55,21 @@ export const getCarById = async (vehicle_id) => {
     const car = response.data;
     return new Car(
       car.vehicle_id,
-      car.make,
-      car.model,
-      car.year,
-      car.color,
-      car.rental_rate,
-      car.status,
-      car.category,
-      car.mileage,
-      car.price_perday,
-      car.last_oil_change_miles,
-      car.last_oil_change_date,
-      car.license_expiry_date,
-      car.insurance_expiry_date,
-      car.change_oil_every_month,
-      car.change_oil_every_km
+        car.make,
+        car.model,
+        car.year,
+        car.color,
+        car.status,
+        car.mileage,
+        car.last_oil_change_miles,
+        car.last_oil_change_date,
+        car.license_expiry_date,
+        car.insurance_expiry_date,
+        car.change_oil_every_month,
+        car.change_oil_every_km,
+        car.insurance_image,
+        car.license_image,
+        car.active
     );
   } catch (error) {
     console.error("There was an error fetching the car!", error);
@@ -89,17 +89,17 @@ export const getAvailableCars = async (startDate, endDate) => {
         car.model,
         car.year,
         car.color,
-        car.rental_rate,
         car.status,
-        car.category,
         car.mileage,
-        car.price_perday,
-        car.last_oil_chnage_miles,
+        car.last_oil_change_miles,
         car.last_oil_change_date,
         car.license_expiry_date,
         car.insurance_expiry_date,
         car.change_oil_every_month,
-        car.change_oil_every_km
+        car.change_oil_every_km,
+        car.insurance_image,
+        car.license_image,
+        car.active
       )
     );
   } catch (error) {
@@ -121,17 +121,17 @@ export const getAllCarsInMaintenance = async (startDate, endDate) => {
         car.model,
         car.year,
         car.color,
-        car.rental_rate,
         car.status,
-        car.category,
         car.mileage,
-        car.price_perday,
-        car.last_oil_chnage_miles,
+        car.last_oil_change_miles,
         car.last_oil_change_date,
         car.license_expiry_date,
         car.insurance_expiry_date,
         car.change_oil_every_month,
-        car.change_oil_every_km
+        car.change_oil_every_km,
+        car.insurance_image,
+        car.license_image,
+        car.active
       )
     );
   } catch (error) {

@@ -1,4 +1,4 @@
-
+import axios from 'axios';
 async function loadConfig() {
   const config = await import('../../config.json', {
     assert: { type: 'json' }
@@ -37,5 +37,16 @@ export const addPayment = async (formData) => {
   
   } catch (error) {
     return { success: false, message: error.message };
+  }
+};
+
+export const getPayments = async () => {
+  try {
+    const response = await axios.get(config.Payment);
+    return response.data
+  
+  } catch (error) {
+    console.error("There was an error fetching the payment!", error);
+    throw error;
   }
 };

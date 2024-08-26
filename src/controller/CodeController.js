@@ -34,18 +34,27 @@ export const getConfigCode = async () => {
     throw error;
   }
 };
-
-export const updateConfigCode = async (newCode) => {
+export const updateConfigCode = async (newCode, oldCode) => {
   try {
-    const response = await axios.put(config.ConfigCode, { newCode }, {
+    const payload = { newCode, oldCode };
+
+    const response = await axios.put(config.ConfigCode, payload, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
     });
 
-    return response.data.message;
+    return {
+      success: true,
+      message: response.data.message,
+    };
   } catch (error) {
-    console.error('Error updating config code!', error);
-    throw error;
+    const errorMessage =
+      error.response?.data?.message || 'An unexpected error occurred';
+
+    return {
+      success: false,
+      message: errorMessage,
+    };
   }
 };

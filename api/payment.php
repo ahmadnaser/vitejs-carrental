@@ -5,6 +5,7 @@ header('Content-Type: application/json');
 include 'dbconfig.php';
 
 $response = array();
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (
@@ -37,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if (!is_writable($target_dir)) {
                 $response['status'] = 'error';
-                $response['message'] = 'Upload directory does not writable.';
+                $response['message'] = 'Upload directory is not writable.';
                 http_response_code(500);
                 echo json_encode($response);
                 exit();
@@ -76,18 +77,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ORDER BY i.Invoice_id ASC 
             LIMIT 1
         ");
-        $invoiceStmt->bindParam(':tenant_id', $tenant_id);
-        $invoiceStmt->execute();
-        $invoice = $invoiceStmt->fetch(PDO::FETCH_ASSOC);
+            $invoiceStmt->bindParam(':tenant_id', $tenant_id);
+            $invoiceStmt->execute();
+            $invoice = $invoiceStmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$invoice) {
-            throw new Exception('No unpaid or incomplete invoice found for this tenant.');
-        }
+            if (!$invoice) {
+                throw new Exception('No unpaid or incomplete invoice found for this tenant.');
+            }
 
             $invoice_id = $invoice['Invoice_id'];
 
             $payment_method = $check_number ? 'bank_check' : 'cash';
-            $paymentStmt = $conn->prepare("INSERT INTO Payments (amount, payment_date, payment_method, check_id,invoice_id) VALUES (:amount, :payment_date, :payment_method, :check_id,:invoice_id)");
+            $paymentStmt = $conn->prepare("INSERT INTO Payments (amount, payment_date, payment_method, check_id, invoice_id) VALUES (:amount, :payment_date, :payment_method, :check_id, :invoice_id)");
             $paymentStmt->bindParam(':amount', $amount_paid);
             $paymentStmt->bindParam(':payment_date', $current_date);
             $paymentStmt->bindParam(':payment_method', $payment_method);
@@ -96,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $paymentStmt->execute();
             $payment_id = $conn->lastInsertId();
 
-          
             $updateInvoicesStmt = $conn->prepare("UPDATE Invoices SET amount_paid = amount_paid + :amount_paid WHERE Invoice_id = :Invoice_id");
             $updateInvoicesStmt->bindParam(':amount_paid', $amount_paid);
             $updateInvoicesStmt->bindParam(':Invoice_id', $invoice_id);
@@ -144,6 +144,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(400);
         $response['status'] = 'error';
         $response['message'] = 'Missing required fields';
+        echo json_encode($response);
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    try {
+        $stmt = $conn->prepare("SELECT * FROM Payments");
+        $stmt->execute();
+
+        $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        http_response_code(200);
+        echo json_encode($payments);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        $response['status'] = 'error';
+        $response['message'] = 'Error: ' . $e->getMessage();
         echo json_encode($response);
     }
 } else {
