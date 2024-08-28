@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import 'flowbite';
 import Select from 'react-select';
-import flatpickr from 'flatpickr';
-import 'flatpickr/dist/themes/airbnb.css';
 import { getAvailableCars } from '../../../controller/CarController';
 import { addContract } from '../../../controller/RentedCarController';
 import { getTenants } from '../../../controller/TenantController';
@@ -42,6 +39,7 @@ const AddRentalForm = () => {
   const [isBankCheck, setIsBankCheck] = useState(false);
   const [paymentDate, setPaymentDate] = useState('');
   const [isPrintChecked, setIsPrintChecked] = useState(false);
+  const [isManualEdit, setIsManualEdit] = useState(false);
   const [bankDetails, setBankDetails] = useState({
     check_number: '',
     bank_name: '',
@@ -70,50 +68,7 @@ const AddRentalForm = () => {
       }));
     }
 
-    const today = new Date().toISOString().split('T')[0];
-
-    flatpickr('#from-date', {
-      dateFormat: 'Y-m-d',
-      minDate: today,
-      onChange: (selectedDates, dateStr) => {
-        setFormData(prevFormData => ({
-          ...prevFormData,
-          start_date: dateStr
-        }));
-      }
-    });
-
-    flatpickr('#to-date', {
-      dateFormat: 'Y-m-d',
-      minDate: today,
-      onChange: (selectedDates, dateStr) => {
-        setFormData(prevFormData => ({
-          ...prevFormData,
-          end_date: dateStr
-        }));
-      }
-    });
-
-    flatpickr('#timepicker', {
-      enableTime: true,
-      noCalendar: true,
-      dateFormat: 'H:i',
-      defaultDate: time,
-      onChange: (selectedDates, dateStr) => {
-        setTime(dateStr);
-      }
-    });
-
-    flatpickr('#return-timepicker', {
-      enableTime: true,
-      noCalendar: true,
-      dateFormat: 'H:i',
-      defaultDate: returnTime,
-      onChange: (selectedDates, dateStr) => {
-        setReturnTime(dateStr);
-      }
-    });
-  }, [time, returnTime, location.state]);
+  }, [location.state]);
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -157,70 +112,30 @@ const AddRentalForm = () => {
   }));
 
   useEffect(() => {
-    const arabicToEnglishMap = {
-        '٠': '0',
-        '١': '1',
-        '٢': '2',
-        '٣': '3',
-        '٤': '4',
-        '٥': '5',
-        '٦': '6',
-        '٧': '7',
-        '٨': '8',
-        '٩': '9'
-    };
-
-    const convertArabicNumbers = (input) => {
-        if (typeof input !== 'string') {
-            input = String(input);
-        }
-        return input.replace(/[٠-٩]/g, (match) => arabicToEnglishMap[match]);
-    };
-
-    const isValidDate = (date) => !isNaN(Date.parse(date));
-
-    if (formData.start_date && formData.end_date) {
-        const startDate = convertArabicNumbers(formData.start_date);
-        const endDate = convertArabicNumbers(formData.end_date);
-
-        if (!isValidDate(startDate) || !isValidDate(endDate)) {
-            console.error("Invalid date values detected");
-            return;
-        }
-
-        const from = new Date(startDate);
-        const to = new Date(endDate);
-
+    if (!isManualEdit) {
+      if (formData.start_date && formData.end_date) {
+        const from = new Date(formData.start_date);
+        const to = new Date(formData.end_date);
         if (to < from) return;
-
         const diffTime = Math.abs(to - from);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         setNumDays(diffDays);
-    } else if (formData.start_date && numDays) {
-        const startDate = convertArabicNumbers(formData.start_date);
-
-        if (!isValidDate(startDate)) {
-            console.error("Invalid start date value detected");
-            return;
-        }
-
-        const from = new Date(startDate);
-        const parsedNumDays = parseInt(convertArabicNumbers(numDays), 10);
-
-        if (isNaN(parsedNumDays)) {
-            console.error("Invalid number of days");
-            return;
-        }
-
-        from.setDate(from.getDate() + parsedNumDays);
-        const formattedDate = from.toISOString().split('T')[0];
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            end_date: formattedDate
-        }));
+      }
     }
-  }, [formData.start_date, formData.end_date, numDays]);
+  }, [formData.start_date, formData.end_date]);
+  
+  useEffect(() => {
+    if (isManualEdit && formData.start_date && numDays) {
+      const from = new Date(formData.start_date);
+      from.setDate(from.getDate() + parseInt(numDays, 10) - 1);
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        end_date: from.toISOString().split('T')[0],
+      }));
+    }
+  }, [numDays, isManualEdit]);
 
+  
   useEffect(() => {
     const arabicToEnglishMap = {
         '٠': '0',
@@ -311,9 +226,29 @@ const AddRentalForm = () => {
       [name]: value
     }));
   };
+  const handleNumDaysChange = (e) => {
+    setIsManualEdit(true); 
+    setNumDays(e.target.value);
+  };
+  
+  const handleStartDateChange = (e) => {
+    setIsManualEdit(false); 
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      start_date: e.target.value,
+    }));
+  };
+  
+  const handleEndDateChange = (e) => {
+    setIsManualEdit(false); 
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      end_date: e.target.value,
+    }));
+  };
+
   const handlePrintClick = async (form) => {
     setStatus('loading');
-    console.log('Press',form);
     try {
       const tenantData = await getTenantById(form.tenant_id);
       const carData = await getCarById(form.vehicle_id);
@@ -337,7 +272,8 @@ const AddRentalForm = () => {
   const validateForm = () => {
     const errors = {};
     const arabicNumberRegex = /[٠-٩]/g;
-    const onlyNumbersRegex = /^[0-9]+$/;
+    const arabicDecimalRegex = /٫/g; 
+    const onlyNumbersRegex = /^[0-9]+(\.[0-9]+)?$/; 
 
     const convertArabicNumbers = (input) => {
         if (typeof input !== 'string') {
@@ -357,7 +293,8 @@ const AddRentalForm = () => {
             '٩': '9'
         };
 
-        return input.replace(arabicNumberRegex, (match) => arabicToEnglishMap[match]);
+        return input.replace(arabicNumberRegex, (match) => arabicToEnglishMap[match])
+        .replace(arabicDecimalRegex, '.'); 
     };
 
     const validateNumericField = (fieldValue, fieldName, errorMessage) => {
@@ -378,6 +315,8 @@ const AddRentalForm = () => {
     if (!formData.start_date.trim()) errors.start_date = t('Start date is required');
     if (!formData.end_date.trim()) errors.end_date = t('End date is required');
     if (!formData.vehicle_id.trim()) errors.vehicle_id = t('Vehicle is required');
+    if (!formData.car_mileage.trim()) errors.car_mileage = t('Car Mileage is required');
+    if (!formData.note.trim()) errors.note = t('Note is required');
 
     validateNumericField(formData.price_perday, 'price_perday', 'Price per day');
     validateNumericField(formData.total_amount, 'total_amount', 'Total amount');
@@ -535,57 +474,67 @@ const AddRentalForm = () => {
           </div>
         )}
 
-        <div className="mb-5">
-          <label htmlFor="from-date" className="block mb-2 text-sm font-medium">{t('From Date')}</label>
-          <div className="relative max-w-sm">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
-            </div>
-            <input id="from-date" name="start_date" data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text" value={formData.start_date} onChange={handleInputChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
-          </div>
+      <div className="mb-5">
+          <label htmlFor="from-date" className="block mb-2 text-sm font-medium">{t('Start Date')}</label>
+          <input 
+            id="from-date" 
+            name="start_date" 
+            type="date" 
+          
+            onChange={handleStartDateChange} 
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
         </div>
 
         <div className="mb-5">
-          <label htmlFor="start_time" className="block mb-2 text-sm font-medium">{t('Time Out')}</label>
-          <div className="relative">
-            <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v3a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clipRule="evenodd"/>
-              </svg>
-            </div>
-            <input id="timepicker" type="text" value={time} onChange={(e) => setTime(e.target.value)} className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-          </div>
+          <label htmlFor="start_time" className="block mb-2 text-sm font-medium">{t('Start Time')}</label>
+          <input 
+            id="timepicker" 
+            type="time" 
+            value={time} 
+            onChange={(e) => setTime(e.target.value)} 
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
         </div>
 
         <div className="mb-5">
-          <label htmlFor="numDay" className="block mb-2 text-sm font-medium">{t('Number Of Day')}</label>
-          <input type="text" id="numDay" value={numDays} onChange={(e) => setNumDays(e.target.value)} className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Number of Days')} required />
+          <label htmlFor="numDays" className="block mb-2 text-sm font-medium">{t('Number of Days')}</label>
+          <input 
+            type="text" 
+            id="numDays" 
+            value={numDays} 
+            onChange={handleNumDaysChange}  
+            className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full"
+            placeholder={t('Number of Days')} 
+            required 
+          />
         </div>
 
         <div className="mb-5">
-          <label htmlFor="to-date" className="block mb-2 text-sm font-medium">{t('To Date')}</label>
-          <div className="relative max-w-sm">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
-            </div>
-            <input id="to-date" name="end_date" data-datepicker data-datepicker-buttons data-datepicker-autoselect-today type="text" value={formData.end_date} onChange={handleInputChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={t('Select date')} />
-          </div>
+          <label htmlFor="to_date" className="block mb-2 text-sm font-medium">{t('End Date')}</label>
+          <input 
+            id="to_date" 
+            name="end_date" 
+            type="date" 
+            value={formData.end_date} 
+            onChange={handleEndDateChange} 
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
         </div>
 
         <div className="mb-5">
           <label htmlFor="end_time" className="block mb-2 text-sm font-medium">{t('Return Time')}</label>
-          <div className="relative">
-            <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v3a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clipRule="evenodd"/>
-              </svg>
-            </div>
-            <input id="return-timepicker" type="text" value={returnTime} onChange={(e) => setReturnTime(e.target.value)} className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-          </div>
+          <input 
+            id="return-timepicker" 
+            type="time" 
+            value={returnTime} 
+            onChange={(e) => setReturnTime(e.target.value)} 
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
         </div>
 
         <div className="mb-5">

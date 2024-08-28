@@ -27,8 +27,8 @@ const PaymentForm = () => {
     check_image: null,
   });
   const { t, i18n } = useTranslation();
-  const [startDate, setStartDate] = useState('2012-01-01'); 
-  const [endDate, setEndDate] = useState('2029-05-05');   
+  const [startDate, setStartDate] = useState(null); 
+  const [endDate, setEndDate] = useState(null);   
 
   const fetchAccountData = async () => {
     try {

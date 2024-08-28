@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getContractsByRentalId } from '../../../controller/RentedCarController';
 
-const RentalContractDetails = () => {
+const ReservationDetails = () => {
   const location = useLocation();
   const { rentalId } = location.state || {}; 
   const { t, i18n } = useTranslation();
@@ -117,4 +117,4 @@ const RentalContractDetails = () => {
   );
 };
 
-export default RentalContractDetails;
+export default ReservationDetails;

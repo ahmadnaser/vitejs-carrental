@@ -8,7 +8,7 @@ import { getTenants, getTenantById } from '../../../controller/TenantController'
 import { pdf } from '@react-pdf/renderer';
 import Contract from '../../paper_documents/Contract';
 
-const EditRentalForm = () => {
+const EditReservationForm = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -648,4 +648,4 @@ const handleEndDateChange = (e) => {
   );
 };
 
-export default EditRentalForm;
+export default EditReservationForm;

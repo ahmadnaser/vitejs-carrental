@@ -194,8 +194,6 @@ const CarTable = () => {
                       {t('Edit')}
                     </Link>
                     <br />
-                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Extension')}</a>
-                    <br />
                     <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Details')}</a>
                     <br />
                     <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">{t('Delete')}</a>

@@ -6,11 +6,16 @@ import {Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Dashboard from './components/Dashboard'; 
 import RentedCar from './components/rental/rental_management/RentedCar'; 
 import RentalContract from './components/rental/rental_management/RentalContract'; 
+import RentalDetails from './components/rental/rental_management/RentalDetails'; 
+import ExtensionRentalContract from './components/rental/rental_management/ExtensionRentalContract'; 
 import AddRentalForm from './components/rental/rental_management/AddRentalContract';
 import EditRentalForm from './components/rental/rental_management/EditRentalContract';  
 import AddTenants from './components/rental/tenants_management/AddTenants';
 import Reservation from './components/rental/reservation_managment/Reservations';
 import AddReservationForm from './components/rental/reservation_managment/AddReservations';
+import ReservationDetails from './components/rental/reservation_managment/ReservationDetails';
+import ExtensionReservation from './components/rental/reservation_managment/ExtensionReservation';
+import EditReservationForm from './components/rental/reservation_managment/AddReservations';
 import Tenants from './components/rental/tenants_management/Tenants';
 import PaymentForm from './components/rental/tenants_management/Payment';
 import TenantsDetalis from './components/rental/tenants_management/TenantsDetails';
@@ -53,6 +58,8 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const tenantId = location.state?.tenantId;
+  const rentalId = location.state?.rentalId;
+  const reservationId = location.state?.reservationId;
   const carId = location.state?.carId;
 
   const handleLogin = () => {
@@ -67,9 +74,14 @@ const App = () => {
       <Route path="/renting/rented-car" element={isLoggedIn ? <Layout><RentedCar /></Layout> : <Navigate to="/login" />} />
       <Route path="/renting/rental-contracts" element={isLoggedIn ? <Layout><RentalContract /></Layout> : <Navigate to="/login" />} />
       <Route path="/renting/add-rental-contract" element={isLoggedIn ? <Layout><AddRentalForm /></Layout> : <Navigate to="/login" />} />
-      <Route path="/renting/edit-rental-contract" element={isLoggedIn ? <Layout><EditRentalForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/renting/edit-rental-contract" element={isLoggedIn ? <Layout><EditRentalForm rentalId={rentalId} /></Layout> : <Navigate to="/login" />} />
+      <Route path="/renting/extension-rental-contract" element={isLoggedIn ? <Layout><ExtensionRentalContract rentalId={rentalId} /></Layout> : <Navigate to="/login" />} />
+      <Route path="/renting/details" element={isLoggedIn ? <Layout><RentalDetails rentalId={rentalId} /></Layout> : <Navigate to="/login" />} />
       <Route path="/reservations" element={isLoggedIn ? <Layout><Reservation /></Layout> : <Navigate to="/login" />} />
       <Route path="/reservations/add-reservations" element={isLoggedIn ? <Layout><AddReservationForm /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reservations/edit-reservations" element={isLoggedIn ? <Layout><EditReservationForm reservationId={reservationId} /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reservations/extension-reservations" element={isLoggedIn ? <Layout><ExtensionReservation reservationId={reservationId} /></Layout> : <Navigate to="/login" />} />
+      <Route path="/reservations/details" element={isLoggedIn ? <Layout><ReservationDetails reservationId={reservationId} /></Layout> : <Navigate to="/login" />} />
       <Route path="/tenants" element={isLoggedIn ? <Layout><Tenants /></Layout> : <Navigate to="/login" />} />
       <Route path="/tenants/add-tenants" element={isLoggedIn ? <Layout><AddTenants /></Layout> : <Navigate to="/login" />} />
       <Route path="/tenants/details" element={isLoggedIn ? <Layout><TenantsDetalis tenantId={tenantId} /></Layout> : <Navigate to="/login" />} />

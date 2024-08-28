@@ -289,16 +289,38 @@ const ReservationTable = () => {
                   <td className="px-1 py-4 text-center">{item.amount_paid}</td>
                   <td className="px-1 py-4 text-center">{item.status}</td>
                   <td className="px-4 py-4 text-center">
-                    <Link to="/renting/edit-rental-contract" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                      {t('Edit')}
+                  <Link 
+                    to="/reservations/edit-reservations" 
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    state={{ rentalId: item.rental_id }} 
+                    >
+                    {t('Edit')}
+                  </Link>
+                  <br/>
+
+                  <Link
+                      to="/reservations/extension-reservations"
+                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      state={{ rentalId: item.rental_id }} 
+                    >
+                      {t('Extension')}
                     </Link>
-                    <br />
-                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Extension')}</a>
-                    <br />
-                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Details')}</a>
-                    <br />
-                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">{t('Delete')}</a>
-                  </td>
+                    <br/>
+
+                    <Link
+                      to="/reservations/details"
+                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      state={{ rentalId: item.rental_id }} 
+                    >
+                      {t('Details')}
+                    </Link>
+                    <br/>
+                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
+                      onClick={() => handleDelete(item.rental_id)}
+                    >
+                      {t('Delete')}
+                    </a>
+                </td>
                 </tr>
               ))
             )}

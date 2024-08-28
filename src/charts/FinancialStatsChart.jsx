@@ -17,8 +17,7 @@ const FinancialStatsChart = () => {
     const fetchPaymentData = async () => {
       try {
         const payments = await getPayments();
-        console.log(payments);
-        
+      
         const formattedData = payments.map(payment => {
           const dateObj = new Date(payment.payment_date);
           const formattedDate = `${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;

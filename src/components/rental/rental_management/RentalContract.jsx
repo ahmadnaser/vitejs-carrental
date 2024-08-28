@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
-import { getContracts } from '../../../controller/RentedCarController';
+import { getContracts,deleteContractById } from '../../../controller/RentedCarController';
 import { getTenantById } from '../../../controller/TenantController';
 import { getCarById } from '../../../controller/CarController';
 import { useTranslation } from 'react-i18next';
@@ -24,11 +24,13 @@ const RentalContractTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
+
+  const fetchData = async () => {
+    const data = await getContracts();
+    setRentedCarData(data);
+  };
+
   useEffect(() => { 
-    const fetchData = async () => {
-      const data = await getContracts();
-      setRentedCarData(data);
-    };
     fetchData();
   }, []);
 
@@ -160,6 +162,29 @@ const RentalContractTable = () => {
 
   const handleDropdownToggle = () => {
     setDropdownVisible(!dropdownVisible);
+  };
+
+  const handleDelete = async (rentalId) => {
+    const deleteConfirmation = window.confirm(
+      `${t('Are you sure you want to delete the Rental')} ` +
+      `(${rentalId})?`,
+      'color: red; font-weight: bold;'
+    );
+  
+    if (deleteConfirmation) {
+      try {
+        const result = await deleteContractById(rentalId);
+        if (result.success) {
+          alert(t('Contract deleted successfully'));
+          fetchData();
+        } else {
+          alert(t(`Failed to delete Contract: ${result.message}`));
+        }
+      } catch (error) {
+        console.error('Error deleting Contract:', error);
+        alert(t('An error occurred while trying to delete the Contract.'));
+      }
+    }
   };
 
 
@@ -323,22 +348,45 @@ const RentalContractTable = () => {
                   <td className="px-1 py-4 text-center">{item.end_date}</td>
                   <td className="px-2 py-4 text-center">{item.price_perday}</td>
                   <td className="px-1 py-4 text-center">{item.total_amount}</td>
-                  <td className="px-1 py-4 text-center">{(item.total_amount - item.amount_paid).toFixed(2)}</td>
+                  <td className="px-1 py-4 text-center text-red-500">{(item.total_amount - item.amount_paid).toFixed(2)}</td>
                   <td className="px-4 py-4 text-center">{item.hasReturned ? t('Yes') : t('No')}</td>
 
                   <td className="px-4 py-4 text-center" onClick={() => handlePrintClick(item)}>
                     <img src={PrintIcon} alt="Generate PDF" className="w-13 h-10 cursor-pointer" />
                   </td>
 
-                  <td class="px-4 py-4">
-                  <Link to="/renting/edit-rental-contract" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                  <td class="px-4 py-4 text-center">
+                  <Link 
+                    to="/renting/edit-rental-contract" 
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    state={{ rentalId: item.rental_id }} 
+                    >
                     {t('Edit')}
                   </Link>
                   <br/>
-                  
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Extension')}</a><br/>
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Details')}</a><br/>
-                    <a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">{t('Delete')}</a>
+
+                  <Link
+                      to="/renting/extension-rental-contract"
+                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      state={{ rentalId: item.rental_id }} 
+                    >
+                      {t('Extension')}
+                    </Link>
+                    <br/>
+
+                    <Link
+                      to="/renting/details"
+                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      state={{ rentalId: item.rental_id }} 
+                    >
+                      {t('Details')}
+                    </Link>
+                    <br/>
+                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
+                      onClick={() => handleDelete(item.rental_id)}
+                    >
+                      {t('Delete')}
+                    </a>
                 </td>
                 
                 </tr>
