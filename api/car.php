@@ -48,7 +48,7 @@ function addVehicle() {
     $change_oil_every_km = $_POST['change_oil_every_km'] ?? null;
     $change_oil_every_month = $_POST['change_oil_every_month'] ?? null;
     $active = isset($_POST['active']) ? $_POST['active'] : 0;
-    $status = $active ? 'available' : 'maintenance';
+    $status ='available';
 
     $missing_fields = [];
 
