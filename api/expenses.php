@@ -15,6 +15,8 @@ $endpoint = isset($_GET['endpoint']) ? $_GET['endpoint'] : '';
 
 if ($requestMethod === 'POST' && $endpoint === 'add_expense_type') {
     addExpenseType();
+} elseif ($requestMethod === 'POST' && $endpoint === 'add_expense') {
+    addExpense(); 
 } elseif ($requestMethod === 'GET' && $endpoint === 'get_expense_type_by_id') {
     getExpenseTypeById();
 } elseif ($requestMethod === 'GET' && $endpoint === 'list_expense_types') {
@@ -27,6 +29,7 @@ if ($requestMethod === 'POST' && $endpoint === 'add_expense_type') {
     http_response_code(400);
     echo json_encode(["status" => "error", "message" => "Invalid request method or endpoint."]);
 }
+
 
 function addExpenseType() {
     global $conn;
@@ -66,6 +69,55 @@ function addExpenseType() {
     }
     $conn = null;
 }
+function addExpense() {
+    global $conn;
+
+    
+    $type_id = $_POST['expense_type_id'] ?? null;
+    $amount = $_POST['expenses_amount'] ?? null;
+    $date = $_POST['expenses_date'] ?? null;
+    $detail = $_POST['detail'] ?? null;
+    $check_id = $_POST['check_id'] ?? null;
+
+    $missing_fields = [];
+    if (empty($type_id)) $missing_fields[] = 'expense_type_id';
+    if (empty($amount)) $missing_fields[] = 'expenses_amount';
+    if (empty($date)) $missing_fields[] = 'expenses_date';
+
+    if (!empty($missing_fields)) {
+        $missing_fields_list = implode(', ', $missing_fields);
+        echo json_encode(["status" => "error", "message" => "Required fields are missing: $missing_fields_list"]);
+        exit();
+    }
+
+    try {
+        $sql = "INSERT INTO Expenses (expense_type_id, expenses_amount, expenses_date, detail, check_id) 
+                VALUES (:type_id, :amount, :date, :detail, :check_id)";
+                
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Failed to prepare statement: " . json_encode($conn->errorInfo()));
+        }
+
+        $stmt->bindValue(':type_id', $type_id);
+        $stmt->bindValue(':amount', $amount);
+        $stmt->bindValue(':date', $date);
+        $stmt->bindValue(':detail', $detail);
+        $stmt->bindValue(':check_id', $check_id);
+
+        if ($stmt->execute()) {
+            echo json_encode(["status" => "success", "message" => "New expense record created successfully"]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Error executing query"]);
+        }
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["status" => "error", "message" => "Error: " . $e->getMessage()]);
+    }
+    $conn = null;
+}
+
 
 function getExpenseTypeById() {
     global $conn;
