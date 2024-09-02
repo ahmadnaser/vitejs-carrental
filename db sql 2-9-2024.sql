@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sdb-65.hosting.stackcp.net
--- Generation Time: Aug 26, 2024 at 08:55 AM
+-- Generation Time: Sep 02, 2024 at 09:55 AM
 -- Server version: 10.6.18-MariaDB-log
 -- PHP Version: 7.4.33
 
@@ -41,8 +41,6 @@ CREATE TABLE `BankChecks` (
 -- Dumping data for table `BankChecks`
 --
 
-INSERT INTO `BankChecks` (`check_id`, `check_number`, `account_number`, `check_holder`, `bank_name`, `check_date`, `check_image`) VALUES
-(15, '5423412', '45352', 'Ù…Ø¬Ø§Ù‡Ø¯ Ø§Ø¨ÙˆØ¹Ù„ÙŠ', 'ÙÙ„Ø³Ø·ÙŠÙ†', '2024-09-07', 'check_uploads/Palestinian Check.jpg');
 
 -- --------------------------------------------------------
 
@@ -51,7 +49,7 @@ INSERT INTO `BankChecks` (`check_id`, `check_number`, `account_number`, `check_h
 --
 
 CREATE TABLE `Beneficiaries` (
-  `beneficiarie_id` int(11) NOT NULL,
+  `beneficiary_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `contact_info` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL
@@ -61,9 +59,6 @@ CREATE TABLE `Beneficiaries` (
 -- Dumping data for table `Beneficiaries`
 --
 
-INSERT INTO `Beneficiaries` (`beneficiarie_id`, `name`, `contact_info`, `type`) VALUES
-(3, 'Ù…Ø¬Ø§Ù‡Ø¯ Ø§Ø¨ÙˆØ¹Ù„ÙŠ', '0598109016', 'Ø¯Ø¹Ø§ÙŠØ©'),
-(4, 'Ø§Ø­Ù…Ø¯ Ù…Ø­Ù…Ø¯ ', '0598209026', 'ØµÙŠØ§Ù†Ø© Ø§Ù„Ø³ÙŠØ³ØªÙ…');
 
 -- --------------------------------------------------------
 
@@ -112,16 +107,6 @@ CREATE TABLE `Expenses` (
   `check_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `Expenses`
---
-
-INSERT INTO `Expenses` (`expenses_id`, `expense_type_id`, `expenses_amount`, `expenses_date`, `detail`, `check_id`) VALUES
-(14, 5, '200.00', '2024-08-21', 'Ø¨Ù†Ø²ÙŠÙ†', NULL),
-(15, 6, '100.00', '2024-08-21', 'ØªØ¬Ø¯ÙŠØ¯ ØªØ±Ø®ÙŠØµ ', NULL),
-(16, NULL, '500.00', '2024-08-21', 'ØµÙŠØ§Ù†Ø© Ø§Ù„ØµØ¨Ø§Ø¨Ø§Øª', 15),
-(17, NULL, '200.00', '2024-08-21', 'ØµØ¨Ø§Ø¨Ø§Øª', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -138,10 +123,6 @@ CREATE TABLE `ExpensesType` (
 -- Dumping data for table `ExpensesType`
 --
 
-INSERT INTO `ExpensesType` (`expense_type_id`, `type`, `type_info`) VALUES
-(5, 'ÙˆÙ‚ÙˆØ¯', 'Ø¨Ù†Ø²ÙŠÙ† ÙˆØ³ÙˆÙ„Ø§Ø± Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª'),
-(6, 'ØªØ±Ø®ÙŠØµ', 'ØªØ¬Ø¯ÙŠØ¯ ØªØ±Ø®ÙŠØµ Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª'),
-(7, 'ØªØ§Ù…ÙŠÙ†', 'ØªØ¬Ø¯ÙŠØ¯ ØªØ§Ù…ÙŠÙ† Ø§Ù„Ù…Ø±ÙƒØ¨Ø§Øª');
 
 -- --------------------------------------------------------
 
@@ -162,10 +143,6 @@ CREATE TABLE `Garages` (
 -- Dumping data for table `Garages`
 --
 
-INSERT INTO `Garages` (`garage_id`, `name`, `type`, `location`, `contact_info`, `garage_info`) VALUES
-(7, 'ÙƒØ±Ø§Ø¬ Ù‚Ø·Ø± ', 'ØµÙŠØ§Ù†Ø©', 'Ø±Ø§Ù… Ø§Ù„Ù„Ù‡', '0598787230', 'ØµÙŠØ§Ù†Ø© Ø§Ù„Ù…Ø­Ø±Ùƒ'),
-(8, 'ÙƒØ±Ø§Ø¬ Ø§Ù„Ø¨ÙŠØ±Ø©', 'ØµÙŠØ§Ù†Ø©', 'Ø§Ù„Ø¨ÙŠØ±Ø©', '0596687239', 'ØªØµÙ„ÙŠØ­ Ø¨ÙˆØ¯ÙŠ ÙˆØ¯Ù‡Ø§Ù†'),
-(9, 'Ù…ØºØ³Ù„Ø© Ø§Ù„ÙƒØ±Ù…', 'Ù…ØºØ³Ù„Ø©', 'Ø³Ù„ÙˆØ§Ø¯', '0566623709', 'Ù…ØºØ³Ù„Ø© Ø³ÙŠØ§Ø±Ø§Øª ');
 
 -- --------------------------------------------------------
 
@@ -185,9 +162,7 @@ CREATE TABLE `Invoices` (
 --
 
 INSERT INTO `Invoices` (`Invoice_id`, `price_perday`, `total_amount`, `amount_paid`) VALUES
-(36, '100.00', '100.00', '200.00'),
-(37, '80.00', '80.00', '20.00'),
-(38, '130.00', '1170.00', '1000.00');
+(41, '100.00', '400.00', '300.00');
 
 -- --------------------------------------------------------
 
@@ -210,13 +185,6 @@ CREATE TABLE `Maintenance` (
   `spare_part_expensese_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `Maintenance`
---
-
-INSERT INTO `Maintenance` (`maintenance_id`, `vehicle_id`, `maintenance_date`, `details`, `cost`, `trader_id`, `spare_parts`, `spare_parts_price`, `car_mileage`, `garage_id`, `garage_expensese_id`, `spare_part_expensese_id`) VALUES
-(439, '60543-H', '2024-08-21', 'ØµÙŠØ§Ù†Ø© Ø§Ù„ØµØ¨Ø§Ø¨Ø§Øª', '600.00', 1239, 'ØµØ¨Ø§Ø¨Ø§Øª', '200.00', '', 7, 16, 17);
-
 -- --------------------------------------------------------
 
 --
@@ -237,10 +205,7 @@ CREATE TABLE `Payments` (
 --
 
 INSERT INTO `Payments` (`payment_id`, `amount`, `payment_date`, `payment_method`, `check_id`, `invoice_id`) VALUES
-(157, '100.00', '2024-08-20 19:48:25', 'cash', NULL, 36),
-(158, '20.00', '2024-08-20 20:57:00', 'cash', NULL, 37),
-(159, '1000.00', '2024-08-21 16:12:06', 'cash', NULL, 38),
-(161, '100.00', '2024-08-24 23:00:00', 'cash', NULL, 36);
+(164, '300.00', '2024-09-02 08:51:04', '', 18, 41);
 
 -- --------------------------------------------------------
 
@@ -256,17 +221,14 @@ CREATE TABLE `Rentals` (
   `car_mileage` varchar(255) NOT NULL,
   `car_condition` varchar(255) DEFAULT NULL,
   `car_damage` varchar(255) DEFAULT NULL,
-  `note` text NOT NULL
+  `note` text NOT NULL,
+  `has_return` tinyint(4) NOT NULL DEFAULT 0,
+  `return_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Rentals`
 --
-
-INSERT INTO `Rentals` (`rental_id`, `reservation_id`, `start_date`, `end_date`, `car_mileage`, `car_condition`, `car_damage`, `note`) VALUES
-(154, 242, '2024-08-22 11:00:00', '2024-08-23 11:00:00', '123km', NULL, NULL, 'Ø¬Ø§Ù‡Ø²'),
-(155, 243, '2024-09-07 11:00:00', '2024-09-08 11:00:00', '22000', NULL, NULL, 'Ø¬Ø§Ù‡Ø²'),
-(156, 244, '2024-08-22 11:00:00', '2024-08-31 11:00:00', '22000', NULL, NULL, 'Ø·Ø§ÙÙŠØ© Ø¨Ù†Ø²ÙŠÙ† ');
 
 -- --------------------------------------------------------
 
@@ -289,10 +251,6 @@ CREATE TABLE `Reservations` (
 -- Dumping data for table `Reservations`
 --
 
-INSERT INTO `Reservations` (`reservation_id`, `tenant_id`, `second_driver_id`, `vehicle_id`, `invoice_id`, `start_date`, `end_date`, `status`) VALUES
-(242, '453221', NULL, '1234-H', 36, '2024-08-22 11:00:00', '2024-08-23 11:00:00', 'confirmed'),
-(243, '875433', NULL, '1234-H', 37, '2024-09-07 11:00:00', '2024-09-08 11:00:00', 'confirmed'),
-(244, '53421120', NULL, '60543-H', 38, '2024-08-22 11:00:00', '2024-08-31 11:00:00', 'confirmed');
 
 -- --------------------------------------------------------
 
@@ -318,11 +276,7 @@ CREATE TABLE `Tenants` (
 -- Dumping data for table `Tenants`
 --
 
-INSERT INTO `Tenants` (`id_number`, `tenant_name`, `address`, `phone_number`, `blood_type`, `birth_date`, `license_number`, `license_start_date`, `license_end_date`, `id_image_path`, `license_image_path`) VALUES
-('453221', 'Ø§Ø­Ù…Ø¯ Ù†Ø§ØµØ±', 'Ø³Ù„ÙˆØ§Ø¯', '0598324234', 'B-', '2000-08-18', '908765432', '2024-08-14', '2024-08-20', 'id_uploads/id_453221e_868.jpg', 'license_uploads/license_453221e_409.jpg'),
-('53421120', 'Ø®Ø§Ù„Ø¯ Ø±Ø§Ù…ÙŠ', 'Ù…Ø®Ù…Ø§Ø³', '059810213', 'AB+', '2003-08-16', '9023121213', '2024-07-31', '2024-09-07', 'id_uploads/id_53421120_745.jpg', 'license_uploads/license_53421120_570.jpg'),
-('875433', 'Rashwi', 'Ø±Ø§Ù… Ø§Ù„Ù„Ù‡', 'Ù¡Ù¦Ù¤Ù¦Ù¤Ù¦', 'O+', '2001-08-20', '1929292', '2024-08-03', '2024-08-17', 'id_uploads/id_875433_768.jpeg', 'license_uploads/license_875433_990.jpeg'),
-('8764532', 'Ù…Ø¬Ø§Ù‡Ø¯ Ø§Ø¨ÙˆØ¹Ù„ÙŠ', 'Ramallah', '0598109016', 'A-', '2024-07-28', '908765432', '2024-07-31', '2024-09-06', 'id_uploads/id_8764532_365.jpg', 'license_uploads/license_8764532_147.jpg');
+
 
 -- --------------------------------------------------------
 
@@ -341,9 +295,6 @@ CREATE TABLE `Traders` (
 -- Dumping data for table `Traders`
 --
 
-INSERT INTO `Traders` (`trader_id`, `name`, `contact_info`, `type`) VALUES
-(1239, 'Ø®Ø§Ù„Ø¯ Ù…ØµØ·ÙÙ‰', '0598899231', 'ØªØ§Ø¬Ø± Ù‚Ø·Ø¹ Ø§Ù„Ù…Ø­Ø±Ùƒ '),
-(1240, 'Â Ø§ÙŠÙ…Ù† Ù…Ø³Ù„Ù… ', '0567789780', 'ØªØ§Ø¬Ø± Ø§Ø·Ø§Ø±Ø§Øª');
 
 -- --------------------------------------------------------
 
@@ -365,18 +316,6 @@ CREATE TABLE `Transactions` (
 -- Dumping data for table `Transactions`
 --
 
-INSERT INTO `Transactions` (`transaction_id`, `date`, `description`, `debit`, `credit`, `payment_id`, `expensese_id`) VALUES
-(227, '2024-08-20', 'Ø§Ù„Ù…Ø·Ù„ÙˆØ¨ Ù…Ù‚Ø§Ø¨Ù„ Ø¹Ù‚Ø¯ Ø§Ù„Ø§ÙŠØ¬Ø§Ø±', '100.00', '0.00', 157, NULL),
-(228, '2024-08-20', 'Ø¯ÙØ¹Ø© Ù…Ø§Ù„ÙŠØ© - Ø§Ø­Ù…Ø¯ Ù†Ø§ØµØ±', '0.00', '100.00', 157, NULL),
-(229, '2024-08-20', 'Ø§Ù„Ù…Ø·Ù„ÙˆØ¨ Ù…Ù‚Ø§Ø¨Ù„ Ø¹Ù‚Ø¯ Ø§Ù„Ø§ÙŠØ¬Ø§Ø±', '80.00', '0.00', 158, NULL),
-(230, '2024-08-20', 'Ø¯ÙØ¹Ø© Ù…Ø§Ù„ÙŠØ© - Rashwi', '0.00', '20.00', 158, NULL),
-(231, '2024-08-21', 'Ù…ØµØ±ÙˆÙ ØµÙŠØ§Ù†Ø© - ÙƒØ±Ø§Ø¬ Ù‚Ø·Ø± ', '600.00', '0.00', NULL, 16),
-(232, '2024-08-21', 'Ø¯ÙØ¹ Ù…ØµØ±ÙˆÙ ØµÙŠØ§Ù†Ø© - ÙƒØ±Ø§Ø¬ Ù‚Ø·Ø± ', '0.00', '500.00', NULL, 16),
-(233, '2024-08-21', 'Ù…ØµØ±ÙˆÙ Ù‚Ø·Ø¹ ØºÙŠØ§Ø± - 1239', '200.00', '0.00', NULL, 17),
-(234, '2024-08-21', 'Ø¯ÙØ¹ Ù…ØµØ±ÙˆÙ Ù‚Ø·Ø¹ ØºÙŠØ§Ø± - 1239', '0.00', '200.00', NULL, 17),
-(235, '2024-08-21', 'Ø§Ù„Ù…Ø·Ù„ÙˆØ¨ Ù…Ù‚Ø§Ø¨Ù„ Ø¹Ù‚Ø¯ Ø§Ù„Ø§ÙŠØ¬Ø§Ø±', '1170.00', '0.00', 159, NULL),
-(236, '2024-08-21', 'Ø¯ÙØ¹Ø© Ù…Ø§Ù„ÙŠØ© - Ø®Ø§Ù„Ø¯ Ø±Ø§Ù…ÙŠ', '0.00', '1000.00', 159, NULL),
-(237, '2024-08-25', 'Ø¯ÙØ¹Ø© Ù…Ø§Ù„ÙŠØ© - Ø§Ø­Ù…Ø¯ Ù†Ø§ØµØ±', '0.00', '100.00', 161, NULL);
 
 -- --------------------------------------------------------
 
@@ -420,6 +359,8 @@ CREATE TABLE `Vehicles` (
   `last_oil_change_date` date NOT NULL,
   `license_expiry_date` date NOT NULL,
   `insurance_expiry_date` date NOT NULL,
+  `license_start_date` date NOT NULL,
+  `insurance_start_date` date NOT NULL,
   `change_oil_every_km` varchar(50) NOT NULL,
   `change_oil_every_month` varchar(50) NOT NULL,
   `license_image` varchar(255) DEFAULT NULL,
@@ -431,10 +372,6 @@ CREATE TABLE `Vehicles` (
 -- Dumping data for table `Vehicles`
 --
 
-INSERT INTO `Vehicles` (`vehicle_id`, `make`, `model`, `year`, `color`, `status`, `mileage`, `last_oil_change_miles`, `last_oil_change_date`, `license_expiry_date`, `insurance_expiry_date`, `change_oil_every_km`, `change_oil_every_month`, `license_image`, `insurance_image`, `active`) VALUES
-('1234-H', 'Ø³ÙƒÙˆØ¯Ø§ ', 'Ø§ÙƒØªØ§ÙÙŠØ§', 2022, 'Ø§Ø³ÙˆØ¯', 'available', '20000', '1000', '2024-08-01', '2024-08-31', '2024-08-31', '1000', '6', 'car_license_uploads/IMG_1044.jpeg', 'car_insurance_uploads/IMG_1045.jpeg', 1),
-('60543-H', 'Ø´ÙŠÙØ±ÙˆÙ„ÙŠØª', 'Ø³Ø¨Ø§Ø±Ùƒ', 2021, 'Ø§Ø­Ù…Ø±', 'available', '265509', '189000', '2024-07-31', '2024-09-06', '2024-09-06', '10000', '6', 'car_license_uploads/Palestinian vehicle insurance.jpg', 'car_insurance_uploads/Palestinian Check.jpg', 1),
-('69870-H', 'ÙÙˆØ±Ø¯', 'ÙÙˆÙƒØ³', 2018, 'Ø§Ø¨ÙŠØ¶', 'available', '200000', '15000', '2021-08-06', '2024-08-31', '2024-09-07', '5000', '6', 'car_license_uploads/Palestinian vehicle license.jpeg', 'car_insurance_uploads/Palestinian vehicle insurance.jpg', 1);
 
 --
 -- Indexes for dumped tables
@@ -450,7 +387,7 @@ ALTER TABLE `BankChecks`
 -- Indexes for table `Beneficiaries`
 --
 ALTER TABLE `Beneficiaries`
-  ADD PRIMARY KEY (`beneficiarie_id`);
+  ADD PRIMARY KEY (`beneficiary_id`);
 
 --
 -- Indexes for table `BlackList`
@@ -558,13 +495,13 @@ ALTER TABLE `Vehicles`
 -- AUTO_INCREMENT for table `BankChecks`
 --
 ALTER TABLE `BankChecks`
-  MODIFY `check_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `check_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `Beneficiaries`
 --
 ALTER TABLE `Beneficiaries`
-  MODIFY `beneficiarie_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `beneficiary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `BlackList`
@@ -600,7 +537,7 @@ ALTER TABLE `Garages`
 -- AUTO_INCREMENT for table `Invoices`
 --
 ALTER TABLE `Invoices`
-  MODIFY `Invoice_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `Invoice_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `Maintenance`
@@ -612,19 +549,19 @@ ALTER TABLE `Maintenance`
 -- AUTO_INCREMENT for table `Payments`
 --
 ALTER TABLE `Payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
 
 --
 -- AUTO_INCREMENT for table `Rentals`
 --
 ALTER TABLE `Rentals`
-  MODIFY `rental_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
+  MODIFY `rental_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=160;
 
 --
 -- AUTO_INCREMENT for table `Reservations`
 --
 ALTER TABLE `Reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=245;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=248;
 
 --
 -- AUTO_INCREMENT for table `Traders`
@@ -636,7 +573,7 @@ ALTER TABLE `Traders`
 -- AUTO_INCREMENT for table `Transactions`
 --
 ALTER TABLE `Transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=238;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=242;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
