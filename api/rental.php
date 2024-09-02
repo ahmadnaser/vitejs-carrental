@@ -264,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $updateVehicleMileageStmt->bindParam(':vehicle_id', $vehicle_id);
             $updateVehicleMileageStmt->execute();
 
-            $tenantNameStmt = $conn->prepare("SELECT tenant_name FROM tenants WHERE id_number = :tenant_id");
+            $tenantNameStmt = $conn->prepare("SELECT tenant_name FROM Tenants WHERE id_number = :tenant_id");
             $tenantNameStmt->bindParam(':tenant_id', $tenant_id);
             $tenantNameStmt->execute();
             $tenant = $tenantNameStmt->fetch(PDO::FETCH_ASSOC);
