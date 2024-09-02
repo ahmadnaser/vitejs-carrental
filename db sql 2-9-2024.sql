@@ -195,7 +195,7 @@ CREATE TABLE `Payments` (
   `payment_id` int(11) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `payment_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `payment_method` enum('bank_check','cash') NOT NULL,
+  `payment_method` enum('Bank Check','Cash') NOT NULL,
   `check_id` int(11) DEFAULT NULL,
   `invoice_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
