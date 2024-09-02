@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getCars } from '../../../controller/CarController';
-import { getMaintenanceRecords, getMaintenanceByVehicleId } from '../../../controller/MaintenanceController';
+import { getMaintenanceRecords, getMaintenanceByVehicleId,deleteMaintenanceById } from '../../../controller/MaintenanceController';
 import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
 
@@ -22,7 +22,7 @@ const CarsMaintenanceTable = () => {
           { value: 'all', label: t('All Cars') },
           ...carsList.map(car => ({
             value: car.vehicle_id,
-            label: `${car.make} ${car.model}  - ${car.vehicle_id}`
+               label: `(${car.vehicle_id}) - ${car.make} ${car.model} `
           }))
         ]);
       } catch (error) {
@@ -33,51 +33,56 @@ const CarsMaintenanceTable = () => {
     fetchCars();
   }, [t]);
 
-  useEffect(() => {
-    const fetchMaintenanceRecords = async () => {
-      try {
-        let records;
-        if (selectedCar.value !== 'all') {
-          records = await getMaintenanceByVehicleId(selectedCar.value);
-          if (records.message === 'No maintenance records found for the given vehicle ID') {
-            records = [];
-          }
-        } else {
-          records = await getMaintenanceRecords();
+  const fetchMaintenanceRecords = async () => {
+    try {
+      let records;
+      if (selectedCar.value !== 'all') {
+        records = await getMaintenanceByVehicleId(selectedCar.value);
+        if (records.message === 'No maintenance records found for the given vehicle ID') {
+          records = [];
         }
-
-        setMaintenanceData(records);
-
-        console.log("Fetched Maintenance Records:");
-        records.forEach((record, index) => {
-          console.log(`Record ${index + 1}:`);
-          Object.entries(record).forEach(([key, value]) => {
-            console.log(`  ${key}: ${value}`);
-          });
-        });
-      } catch (error) {
-        console.error('Error fetching maintenance records:', error);
-        setMaintenanceData([]); 
+      } else {
+        records = await getMaintenanceRecords();
       }
-    };
+      setMaintenanceData(records);
+    } catch (error) {
+      console.error('Error fetching maintenance records:', error);
+      setMaintenanceData([]); 
+    }
+  };
 
+  useEffect(() => {
     fetchMaintenanceRecords();
   }, [selectedCar]);
 
   const handleCarChange = (selectedOption) => {
     setSelectedCar(selectedOption);
-    setSelectedRows([]); 
   };
 
   const handleAddNewClick = () => {
     navigate('/expenses/car-maintenance/add-maintenance');
   };
 
-  const handleRowSelect = (index) => {
-    if (selectedRows.includes(index)) {
-      setSelectedRows(selectedRows.filter((i) => i !== index));
-    } else {
-      setSelectedRows([...selectedRows, index]);
+  const handleDelete = async (maintenance_id) => {
+    const deleteConfirmation = window.confirm(
+      `${t('Are you sure you want to delete the maintenance')} ` +
+      `(${maintenance_id})?`,
+      'color: red; font-weight: bold;'
+    );
+  
+    if (deleteConfirmation) {
+      try {
+        const result = await deleteMaintenanceById(maintenance_id);
+        if (result.success) {
+          alert(t('Maintenance deleted successfully'));
+          fetchMaintenanceRecords();
+        } else {
+          alert(t(`Failed to delete Maintenance: ${result.message}`));
+        }
+      } catch (error) {
+        console.error('Error deleting Maintenance:', error);
+        alert(t('An error occurred while trying to delete the Maintenance.'));
+      }
     }
   };
 
@@ -170,87 +175,68 @@ const CarsMaintenanceTable = () => {
           />
 
         </div>
-        <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-gray-800 dark:text-gray-100 rounded-lg mt-10">
+        <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-gray-800 dark:text-gray-100 rounded-lg">
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-3 py-3 cursor-pointer" onClick={() => requestSort('vehicle_id')}>
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   {t('Car')}
                   <svg className={`w-4 h-3 ms-1.5 ${getClassNamesFor('vehicle_id')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                   </svg>
                 </div>
               </th>
-              <th scope="col" className="px-3 py-3 cursor-pointer" onClick={() => requestSort('garage_name')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-3 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Garage')}
-                  <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('garage_name')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer" onClick={() => requestSort('maintenance_date')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-5 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Maintenance')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('maintenance_date')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
+              
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer" onClick={() => requestSort('cost')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-2 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Garage Cost')}
-                  <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('cost')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
+                 
                 </div>
               </th>
-              <th scope="col" className="px-5 py-3 cursor-pointer" onClick={() => requestSort('amount_paid')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-5 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Amount Paid')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('amount_paid')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
+                  
                 </div>
               </th>
-              <th scope="col" className="px-2 py-3 cursor-pointer" onClick={() => requestSort('trader')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-2 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Traders')}
-                  <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('trader')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
+                 
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('spare_parts')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-4 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Spare Parts')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('spare_parts')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
+                 
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('spare_parts_price')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-4 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Spare Parts Price')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('spare_parts_price')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
+                  
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('amount_paid_of_spare_parts')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-4 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Amount Paid For Spare Parts')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('amount_paid_of_spare_parts')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
+                  
                 </div>
               </th>
-              <th scope="col" className="px-4 py-3 cursor-pointer" onClick={() => requestSort('maintenance_date')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-4 py-3 cursor-pointer" >
+                <div className="flex items-center  justify-center">
                   {t('Date Of Maintenance')}
-                  <svg className={`w-5 h-3 ms-1.5 ${getClassNamesFor('maintenance_date')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                  </svg>
+                  
                 </div>
               </th>
               <th scope="col" className="px-3 py-3"><span className="sr-only">{t('Action')}</span></th>
@@ -268,24 +254,36 @@ const CarsMaintenanceTable = () => {
                   className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}
                  
                 >
-                  <td className="px-4 py-4">{`${item.make} ${item.model}`}</td>
-                  <td className="px-4 py-4">{item.garage_name}</td>
-                  <td className="px-4 py-4">{item.maintenance_date}</td>
-                  <td className="px-2 py-4">{item.cost}</td>
-                  <td className="px-1 py-4">{item.amount_paid}</td>
-                  <td className="px-1 py-4">{item.trader_name}</td>
-                  <td className="px-1 py-4">{item.spare_parts}</td>
-                  <td className="px-1 py-4">{item.spare_parts_price}</td>
-                  <td className="px-1 py-4">{item.amount_paid_of_spare_parts}</td>
-                  <td className="px-1 py-4">{item.maintenance_date}</td>
+                  <td className="px-4 py-4 items-center  justify-center">{`${item.make} ${item.model}`}</td>
+                  <td className="px-4 py-4 items-center  justify-center">{item.garage_name}</td>
+                  <td className="px-4 py-4 items-center  justify-center">{item.maintenance_date}</td>
+                  <td className="px-2 py-4 items-center  justify-center">{item.cost}</td>
+                  <td className="px-1 py-4 items-center  justify-center">{item.garage_expenses_amount}</td>
+                  <td className="px-1 py-4 items-center  justify-center">{item.trader_name}</td>
+                  <td className="px-1 py-4 items-center  justify-center">{item.spare_parts}</td>
+                  <td className="px-1 py-4 items-center  justify-center">{item.spare_parts_price}</td>
+                  <td className="px-1 py-4 items-center  justify-center">{item.spare_parts_expenses_amount}</td>
+                  <td className="px-1 py-4 items-center  justify-center">{item.maintenance_date}</td>
                   <td className="px-4 py-4">
-                    <Link to={`/expenses/car-maintenance/edit/${item.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+
+                   <Link to="/expenses/car-maintenance/edit" className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                     state={{ maintenanceId: item.maintenance_id }} >
                       {t('Edit')}
                     </Link>
-                    <br />
-                    <Link to={`/expenses/car-maintenance/details/${item.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Details')}</Link>
-                    <br />
-                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">{t('Delete')}</a>
+                    <br/>
+                    <Link 
+                    to="/expenses/car-maintenance/details" 
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    state={{ maintenanceId: item.maintenance_id }} 
+                    >
+                      {t('Details')}
+                    </Link>
+                    <br/>
+                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
+                      onClick={() => handleDelete(item.maintenance_id)}
+                    >
+                      {t('Delete')}
+                    </a>
                   </td>
                 </tr>
               ))

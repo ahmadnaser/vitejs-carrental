@@ -4,7 +4,6 @@ import { getContracts,deleteContractById } from '../../../controller/RentedCarCo
 import { getTenantById } from '../../../controller/TenantController';
 import { getCarById } from '../../../controller/CarController';
 import { useTranslation } from 'react-i18next';
-import PrintIcon from "../../../assets/images/print.png";
 import {pdf} from '@react-pdf/renderer';
 import Contract from '../../paper_documents/Contract';
 
@@ -115,19 +114,19 @@ const RentalContractTable = () => {
       if (filterTerm === 'lastday') {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        items = items.filter(item => new Date(item.startDate) >= yesterday);
+        items = items.filter(item => new Date(item.start_date) >= yesterday);
       } else if (filterTerm === 'last7days') {
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
-        items = items.filter(item => new Date(item.startDate) >= lastWeek);
+        items = items.filter(item => new Date(item.start_date) >= lastWeek);
       } else if (filterTerm === 'last30days') {
         const lastMonth = new Date();
         lastMonth.setDate(lastMonth.getDate() - 30);
-        items = items.filter(item => new Date(item.startDate) >= lastMonth);
+        items = items.filter(item => new Date(item.start_date) >= lastMonth);
       } else if (filterTerm === 'lastyear') {
         const lastYear = new Date();
         lastYear.setFullYear(lastYear.getFullYear() - 1);
-        items = items.filter(item => new Date(item.startDate) >= lastYear);
+        items = items.filter(item => new Date(item.start_date) >= lastYear);
       }
     }
 
@@ -349,11 +348,18 @@ const RentalContractTable = () => {
                   <td className="px-2 py-4 text-center">{item.price_perday}</td>
                   <td className="px-1 py-4 text-center">{item.total_amount}</td>
                   <td className="px-1 py-4 text-center text-red-500">{(item.total_amount - item.amount_paid).toFixed(2)}</td>
-                  <td className="px-4 py-4 text-center">{item.hasReturned ? t('Yes') : t('No')}</td>
-
-                  <td className="px-4 py-4 text-center" onClick={() => handlePrintClick(item)}>
-                    <img src={PrintIcon} alt="Generate PDF" className="w-13 h-10 cursor-pointer" />
+                  <td className={`px-4 py-4 text-center ${item.has_return === 1 ? 'text-green-500' : ''}`}>
+                    {item.has_return === 1 ? t('Yes') : t('No')}
                   </td>
+
+
+                  <td
+                      className="px-4 py-4 text-center font-bold text-green-500 cursor-pointer hover:text-green-700"
+                      onClick={() => handlePrintClick(item)}
+                    >
+                      {t('Print')}
+                    </td>
+
 
                   <td class="px-4 py-4 text-center">
                   <Link 

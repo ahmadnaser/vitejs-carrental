@@ -120,7 +120,7 @@ const GarageStatementTable = () => {
             <span className="text-secondary-color">{t('To')}:</span> {end_date}
           </h3>
         )}
-        <div className="mb-1 mt-10">
+       <div className="mb-1 mt-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
           <button
             type="button"
             onClick={handlePrintClick}
@@ -130,12 +130,13 @@ const GarageStatementTable = () => {
           </button>
           <button
             type="button"
-            className="bg-gray-500 text-white m-5 rounded-md opacity-100 font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+            className="bg-gray-500 text-white rounded-lg opacity-100 font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center"
             onClick={handleGoBack}
           >
             {t('Go Back')}
           </button>
         </div>
+
         {status === 'success' && (
           <div className="text-green-500">{t('Printing Done!')}</div>
         )}

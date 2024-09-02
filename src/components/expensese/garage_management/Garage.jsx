@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getGarages } from '../../../controller/GarageController';
+import { getGarages,deleteGarageById } from '../../../controller/GarageController';
 import { useTranslation } from 'react-i18next';
 
 const GarageTable = () => {
@@ -11,17 +11,17 @@ const GarageTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchData = async () => {
+    try {
+      const data = await getGarages();
+      setGarageData(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getGarages();
-        setGarageData(data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
@@ -38,6 +38,29 @@ const GarageTable = () => {
       item.contact_info.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm, garageData]);
+
+  const handleDelete = async (garage_id) => {
+    const deleteConfirmation = window.confirm(
+      `${t('Are you sure you want to delete the Garage')} ` +
+      `(${garage_id})?`,
+      'color: red; font-weight: bold;'
+    );
+  
+    if (deleteConfirmation) {
+      try {
+        const result = await deleteGarageById(garage_id);
+        if (result.success) {
+          alert(t('Garage deleted successfully'));
+          fetchData();
+        } else {
+          alert(t(`Failed to delete Garage: ${result.message}`));
+        }
+      } catch (error) {
+        console.error('Error deleting Garage:', error);
+        alert(t('An error occurred while trying to delete the Garage.'));
+      }
+    }
+  };
 
   return (
     <div
@@ -135,20 +158,24 @@ const GarageTable = () => {
                   <td className="px-4 py-4 text-center">{item.contact_info}</td>
                   <td className="px-4 py-4 text-center">{item.garage_info}</td>
                   <td className="px-4 py-4 text-center">
-                    <Link
-                      to="/renting/edit-garage"
-                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                    >
+                  <Link to="/expenses/garages/edit-garage" className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                     state={{ garageId: item.garage_id }} >
                       {t('Edit')}
                     </Link>
-                    <br />
-                    <Link to="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                    <br/>
+                    <Link 
+                    to="/expenses/garages/details" 
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    state={{ garageId: item.garage_id }} 
+                    >
                       {t('Details')}
                     </Link>
-                    <br />
-                    <Link to="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">
+                    <br/>
+                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
+                      onClick={() => handleDelete(item.garage_id)}
+                    >
                       {t('Delete')}
-                    </Link>
+                    </a>
                   </td>
                 </tr>
               ))

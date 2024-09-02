@@ -204,11 +204,21 @@ const TenantTable = () => {
                     </span>
                   </td>
                   <td className="px-4 py-4">
-                    <Link to="/renting/edit-rental-contract" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                  <Link 
+                    to="/tenants/edit-tenant" 
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    state={{ tenantId: tenant.id_number }} 
+                    >
                       {t('Edit')}
                     </Link>
                     <br />
-                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Details')}</a>
+                    <Link 
+                    to="/tenants/details" 
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    state={{ tenantId: tenant.id_number }} 
+                    >
+                      {t('Details')}
+                    </Link>
                     <br />
                     <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
                       onClick={() => handleDelete(tenant.id_number, tenant.tenant_name)}

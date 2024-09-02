@@ -11,7 +11,7 @@ const CarAccountStatementForm = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    car_id: '',
+    vehicle_id: '',
     start_date: '',
     end_date: '',
   });
@@ -19,13 +19,13 @@ const CarAccountStatementForm = () => {
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
   const [errors, setErrors] = useState({});
-  const [retrievedCode, setRetrievedCode] = useState(''); 
+  const [retrievedCode, setRetrievedCode] = useState('');
   const [enteredCode, setEnteredCode] = useState('');
 
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const carsList = await getCars(); 
+        const carsList = await getCars();
         setCars(carsList);
       } catch (error) {
         console.error('Error fetching cars:', error);
@@ -65,15 +65,15 @@ const CarAccountStatementForm = () => {
   }, []);
 
   const carOptions = cars.map(car => ({
-    value: car.id,
-    label: `${car.make} ${car.model} - ${car.vehicle_id}`
+    value: car.vehicle_id,
+    label: `(${car.vehicle_id}) - ${car.make} ${car.model} `
   }));
 
   const handleCarChange = (selectedOption) => {
     setSelectedCar(selectedOption);
     setFormData(prevFormData => ({
       ...prevFormData,
-      car_id: selectedOption ? selectedOption.value : ''
+      vehicle_id: selectedOption ? selectedOption.value : ''
     }));
   };
 
@@ -83,7 +83,7 @@ const CarAccountStatementForm = () => {
 
   const handleNavigation = (path) => {
     const validationErrors = {};
-    if (!formData.car_id.trim()) validationErrors.car_id = t('Car is required.');
+    if (!formData.vehicle_id.trim()) validationErrors.vehicle_id = t('Car is required.');
     if (enteredCode !== retrievedCode) validationErrors.code = t('The code you entered is incorrect.');
 
     if (Object.keys(validationErrors).length > 0) {
@@ -138,7 +138,7 @@ const CarAccountStatementForm = () => {
               styles={customStyles}
               required
             />
-            {errors.car_id && <span className="text-red-500 mt-2 text-sm">{errors.car_id}</span>}
+            {errors.vehicle_id && <span className="text-red-500 mt-2 text-sm">{errors.vehicle_id}</span>}
           </div>
         </div>
 
@@ -178,14 +178,13 @@ const CarAccountStatementForm = () => {
           </button>
           <button
             type="button"
-            onClick={() => handleNavigation('/reports/customer-statement/contract')}
+            onClick={() => handleNavigation('/reports/car-statement/account-statement')}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             {status === 'loading' ? t('Submitting...') : t('Account Statement')}
           </button>
           <button
             type="button"
-            onClick={() => handleNavigation('/reports/customer-statement/movements')}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             {status === 'loading' ? t('Submitting...') : t('Car Movements')}

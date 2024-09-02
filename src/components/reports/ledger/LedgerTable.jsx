@@ -102,7 +102,7 @@ const LedgerTable = () => {
           </h3>
         )}
         
-        <div className="flex items-center mb-1 mt-10">
+        <div className="mb-1 mt-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
           <button type="button" onClick={handlePrintClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Printing...') : t('Print')}
           </button>
@@ -121,40 +121,43 @@ const LedgerTable = () => {
       </div>
 
       <div className="relative overflow-x-auto shadow-md w-full max-w-7xl px-4 sm:px-5 lg:px-8 md:px-8 mb-10 rounded-lg mt-1">
-      <h3 className="font-bold text-l mt-3 align-middle text-center text-white-400">
-        <div className="flex justify-between mb-3">
-          <div>
-            <span>{t('Total Required Balance:')} </span>
-            <span className="text-green-500">{totalRequiredOfHim.toFixed(2)} {t('Shekels')}</span>
-          </div>
-          <div>
-            <span>{t('Total Payment:')} </span>
-            <span className="text-green-500">{totalPayment.toFixed(2)} {t('Shekels')}</span>
-          </div>
+        <div className="bg-white p-4 rounded-xl shadow-md w-full max-w-screen-lg mx-auto">
+          <h3 className="font-bold text-l mt-3 align-middle text-center text-gray-700">
+            <div className="flex justify-between mb-3">
+              <div>
+                <span>{t('Total Required Balance:')} </span>
+                <span className="text-green-500">{totalRequiredOfHim.toFixed(2)} {t('Shekels')}</span>
+              </div>
+              <div>
+                <span>{t('Total Payment:')} </span>
+                <span className="text-green-500">{totalPayment.toFixed(2)} {t('Shekels')}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between mb-3">
+              <div>
+                <span>{t('Total Required Expenses:')} </span>
+                <span className="text-red-500">{totalRequiredOfMe.toFixed(2)} {t('Shekels')}</span>
+              </div>
+              <div>
+                <span>{t('Total Expenses Paid:')} </span>
+                <span className="text-red-500">{totalExpense.toFixed(2)} {t('Shekels')}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between mb-3">
+              <div>
+                <span>{t('Debts Due:')} </span>
+                <span className="text-green-700">{(totalRequiredOfHim - totalPayment).toFixed(2)} {t('Shekels')}</span>
+              </div>
+              <div>
+                <span>{t('Total Balance:')} </span>
+                <span className="text-green-700">{finalRunningTotal.toFixed(2)} {t('Shekels')}</span>
+              </div>
+            </div>
+          </h3>
         </div>
 
-        <div className="flex justify-between mb-3">
-          <div>
-            <span>{t('Total Required Expenses:')} </span>
-            <span className="text-red-500">{totalRequiredOfMe.toFixed(2)} {t('Shekels')}</span>
-          </div>
-          <div>
-            <span>{t('Total Expenses Paid:')} </span>
-            <span className="text-red-500">{totalExpense.toFixed(2)} {t('Shekels')}</span>
-          </div>
-        </div>
-
-        <div className="flex justify-between mb-3">
-          <div>
-            <span>{t('Debts Due:')} </span>
-            <span className="text-green-300">{(totalRequiredOfHim - totalPayment).toFixed(2)} {t('Shekels')}</span>
-          </div>
-          <div>
-            <span>{t('Total Balance:')} </span>
-            <span className="text-green-300">{finalRunningTotal.toFixed(2)} {t('Shekels')}</span>
-          </div>
-        </div>
-      </h3>
 
         <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-left mt-5 text-gray-800 dark:text-gray-100 rounded-lg bg-white">
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

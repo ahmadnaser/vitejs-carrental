@@ -552,6 +552,7 @@ const handleEndDateChange = (e) => {
             className="rounded-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full"
             placeholder={t('Enter total amount')} 
             required 
+            readOnly
           />
         </div>
 

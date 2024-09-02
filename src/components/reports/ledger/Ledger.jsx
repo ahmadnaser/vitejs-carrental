@@ -55,10 +55,10 @@ const LedgerForm = () => {
         
       <div className="bg-white p-3 rounded-md mb-5">
               <h2 className="text-black font-medium mb-1 text-xl">
-                {t("Ledger Statment")}
+                {t("Ledger Statement")}
               </h2>
               <p className="text-small-text-color mb-8">
-                {t("Here you are informed of all your store statements, including profits, expenses and costs.")}<span className='text-blue-500'>{t(" Go with admin code")}</span>
+                {t("Here you are informed of all your store statements, including profits, expenses and costs.")}<span className='text-blue-500'>{t("Go with admin code")}</span>
               </p>
             </div>
 

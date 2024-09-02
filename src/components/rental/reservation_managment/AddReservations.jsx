@@ -143,7 +143,7 @@ const AddReservationForm = () => {
 
   const carOptions = cars.map(car => ({
     value: car.vehicle_id,
-    label: `${car.make} ${car.model} ${car.year} - ${car.vehicle_id}`
+       label: `(${car.vehicle_id}) - ${car.make} ${car.model} `
   }));
 
   useEffect(() => {
@@ -559,7 +559,7 @@ const AddReservationForm = () => {
 
         <div className="mb-5">
           <label htmlFor="total_amount" className="block mb-2 text-sm font-medium">{t('Total Amount')}</label>
-          <input type="text" id="total_amount" name="total_amount" value={formData.total_amount} onChange={handleInputChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter total amount')} required />
+          <input type="text" id="total_amount" name="total_amount" value={formData.total_amount} onChange={handleInputChange} className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder={t('Enter total amount')} required readOnly/>
         </div>
 
         <div className="mb-5">
@@ -608,14 +608,23 @@ const AddReservationForm = () => {
             </div>
 
             <div className="mb-5">
-              <label htmlFor="check_image" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
+              <label
+                htmlFor="check_image"
+                className={`block mb-2 text-sm font-medium ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}
+              >
+                {t('Copy of Check')}
+              </label>
               <input
                 name="check_image"
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                className={`block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 ${
+                  i18n.language === 'ar' ? 'pr-4' : 'pl-4'
+                }`}
                 type="file"
                 onChange={handleBankDetailsChange}
+                required
               />
             </div>
+
           </div>
         )}
 
@@ -627,7 +636,7 @@ const AddReservationForm = () => {
         </div>
         {status === 'success' && (
           <div className="text-green-500">
-            {t('Rental Contract added successfully! Redirecting...')}
+            {t('Reservation added successfully! Redirecting...')}
           </div>
         )}
         {status === 'error' && (

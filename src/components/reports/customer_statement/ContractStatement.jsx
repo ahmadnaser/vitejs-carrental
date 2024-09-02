@@ -3,7 +3,6 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getTenantById } from '../../../controller/TenantController';
 import { getContractsByTenantId } from '../../../controller/RentedCarController';
-import PrintIcon from "../../../assets/images/print.png";
 import {pdf} from '@react-pdf/renderer';
 import ContractStatement from '../../paper_documents/ContractStatement';
 

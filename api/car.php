@@ -1,7 +1,14 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 include 'dbconfig.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204); 
+    exit();
+}
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $endpoint = isset($_GET['endpoint']) ? $_GET['endpoint'] : '';
@@ -14,6 +21,10 @@ if ($requestMethod === 'POST' && $endpoint === 'add_vehicle') {
     getVehicleById();
 } elseif ($requestMethod === 'GET' && $endpoint === 'list_vehicles') {
     listVehicles();
+} elseif ($requestMethod === 'PUT' ) {
+    updateVehicles();
+} elseif ($requestMethod === 'DELETE' ) {
+    deleteVehicles();
 } else {
     http_response_code(400);
     echo json_encode(["status" => "error", "message" => "Invalid request method or endpoint."]);
@@ -50,6 +61,8 @@ function addVehicle() {
     if (empty($last_oil_change_date)) $missing_fields[] = 'last_oil_change_date';
     if (empty($license_expiry_date)) $missing_fields[] = 'license_expiry_date';
     if (empty($insurance_expiry_date)) $missing_fields[] = 'insurance_expiry_date';
+    if (empty($license_start_date)) $missing_fields[] = 'license_start_date';
+    if (empty($insurance_start_date)) $missing_fields[] = 'insurance_start_date';
     if (empty($change_oil_every_km)) $missing_fields[] = 'change_oil_every_km';
     if (empty($change_oil_every_month)) $missing_fields[] = 'change_oil_every_month';
 
@@ -75,8 +88,8 @@ function addVehicle() {
     $license_image = uploadImage('license_image', 'car_license_uploads/', $vehicle_id);
 
     try {
-        $sql = "INSERT INTO Vehicles (vehicle_id, make, model, year, color, status, mileage, last_oil_change_miles, last_oil_change_date, license_expiry_date, insurance_expiry_date, change_oil_every_km, change_oil_every_month, license_image, insurance_image,active)
-                VALUES (:vehicle_id, :make, :model, :year, :color, :status, :mileage, :last_oil_change_miles, :last_oil_change_date, :license_expiry_date, :insurance_expiry_date, :change_oil_every_km, :change_oil_every_month, :license_image, :insurance_image,:active)";
+        $sql = "INSERT INTO Vehicles (vehicle_id, make, model, year, color, status, mileage, last_oil_change_miles, last_oil_change_date, license_expiry_date, insurance_expiry_date, change_oil_every_km, change_oil_every_month, license_image, insurance_image,active,license_start_date,insurance_start_date)
+                VALUES (:vehicle_id, :make, :model, :year, :color, :status, :mileage, :last_oil_change_miles, :last_oil_change_date, :license_expiry_date, :insurance_expiry_date, :change_oil_every_km, :change_oil_every_month, :license_image, :insurance_image,:active,:license_start_date,:insurance_start_date)";
 
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':vehicle_id', $vehicle_id);
@@ -95,6 +108,8 @@ function addVehicle() {
         $stmt->bindValue(':license_image', $license_image);
         $stmt->bindValue(':insurance_image', $insurance_image);
         $stmt->bindValue(':active', $active);
+        $stmt->bindValue(':insurance_start_date', $insurance_start_date);
+        $stmt->bindValue(':license_start_date', $license_start_date);
 
         if ($stmt->execute()) {
             http_response_code(200);
@@ -216,4 +231,239 @@ function uploadImage($inputName, $directory, $vehicle_id) {
     }
     return null;
 }
+function saveBase64Image($base64String, $target_dir, $vehicle_id, $inputName) {
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+    
+    if (strpos($base64String, ',') === false) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Invalid base64 format"]);
+        exit();
+    }
+    
+    list($metadata, $base64Data) = explode(',', $base64String);
+    $data = base64_decode($base64Data);
+    
+    if ($data === false) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Invalid base64 data"]);
+        exit();
+    }
+    
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime_type = finfo_buffer($finfo, $data);
+    finfo_close($finfo);
+    
+    if ($mime_type === false) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Could not determine MIME type"]);
+        exit();
+    }
+    
+    $extension = substr(strrchr($mime_type, '/'), 1);
+    if (!in_array($extension, $allowed_extensions)) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Invalid file extension. Only JPG, JPEG, PNG, and GIF are allowed."]);
+        exit();
+    }
+
+    
+    $newFileName = $vehicle_id . '_' . uniqid($inputName . '_') . ".$extension";
+    $filePath = $target_dir . $newFileName;
+
+    if (file_put_contents($filePath, $data) === false) {
+        http_response_code(500);
+        echo json_encode(["status" => "error", "message" => "Failed to save image."]);
+        exit();
+    }
+
+    return $filePath;
+}
+
+
+function updateVehicles() {
+    global $conn;
+
+    
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if ($data === null) {
+        http_response_code(400);
+        echo json_encode(["message" => "Invalid JSON input"]);
+        exit;
+    }
+
+    $vehicle_id = $data['vehicle_id'] ?? null;
+
+    if (empty($vehicle_id)) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Vehicle ID is required"]);
+        return;
+    }
+
+    $make = $data['make'] ?? null;
+    $model = $data['model'] ?? null;
+    $year = $data['year'] ?? null;
+    $color = $data['color'] ?? null;
+    $mileage = $data['mileage'] ?? null;
+    $last_oil_change_miles = $data['last_oil_change_miles'] ?? null;
+    $last_oil_change_date = $data['last_oil_change_date'] ?? null;
+    $license_expiry_date = $data['license_expiry_date'] ?? null;
+    $insurance_expiry_date = $data['insurance_expiry_date'] ?? null;
+    $license_start_date = $data['license_start_date'] ?? null;
+    $insurance_start_date = $data['insurance_start_date'] ?? null;
+    $change_oil_every_km = $data['change_oil_every_km'] ?? null;
+    $change_oil_every_month = $data['change_oil_every_month'] ?? null;
+    $active = $data['active'] ?? null;
+    $status = ($active === true || $active === 'true') ? 'available' : 'maintenance';
+
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+    $target_insurance_dir = "car_insurance_uploads/";
+    $target_license_dir = "car_license_uploads/";
+
+    try {
+        $conn->beginTransaction();
+
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM Vehicles WHERE vehicle_id = :vehicle_id");
+        $stmt->bindParam(':vehicle_id', $vehicle_id);
+        $stmt->execute();
+        $count = $stmt->fetchColumn();
+
+        if ($count == 0) {
+            http_response_code(404);
+            echo json_encode(["status" => "error", "message" => "Vehicle not found"]);
+            $conn->rollBack();
+            return;
+        }
+
+    
+        if (isset($data['insurance_image'])) {
+            $stmt = $conn->prepare("SELECT insurance_image FROM Vehicles WHERE vehicle_id = :vehicle_id");
+            $stmt->bindParam(':vehicle_id', $vehicle_id);
+            $stmt->execute();
+            $currentInsuranceImage = $stmt->fetchColumn();
+
+            if ($currentInsuranceImage && file_exists($currentInsuranceImage)) {
+                unlink($currentInsuranceImage);
+            }
+
+            $insurance_image_path = saveBase64Image($data['insurance_image'], $target_insurance_dir, $vehicle_id, 'insurance');
+            $updateStmt = $conn->prepare("UPDATE Vehicles SET insurance_image = :insurance_image WHERE vehicle_id = :vehicle_id");
+            $updateStmt->bindParam(':insurance_image', $insurance_image_path);
+            $updateStmt->bindParam(':vehicle_id', $vehicle_id);
+            $updateStmt->execute();
+        }
+
+        if (isset($data['license_image'])) {
+            $stmt = $conn->prepare("SELECT license_image FROM Vehicles WHERE vehicle_id = :vehicle_id");
+            $stmt->bindParam(':vehicle_id', $vehicle_id);
+            $stmt->execute();
+            $currentLicenseImage = $stmt->fetchColumn();
+            if ($currentLicenseImage && file_exists($currentLicenseImage)) {
+                unlink($currentLicenseImage);
+            }
+            
+            $license_image_path = saveBase64Image($data['license_image'], $target_license_dir, $vehicle_id, 'license');
+            $updateStmt = $conn->prepare("UPDATE Vehicles SET license_image = :license_image WHERE vehicle_id = :vehicle_id");
+            $updateStmt->bindParam(':license_image', $license_image_path);
+            $updateStmt->bindParam(':vehicle_id', $vehicle_id);
+            $updateStmt->execute();
+        }
+
+        $sql = "UPDATE Vehicles SET make = :make, model = :model, year = :year, color = :color, mileage = :mileage, 
+                last_oil_change_miles = :last_oil_change_miles, last_oil_change_date = :last_oil_change_date, 
+                license_expiry_date = :license_expiry_date, insurance_expiry_date = :insurance_expiry_date,
+                license_start_date = :license_start_date, insurance_start_date = :insurance_start_date, 
+                change_oil_every_km = :change_oil_every_km, change_oil_every_month = :change_oil_every_month
+                WHERE vehicle_id = :vehicle_id";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':vehicle_id', $vehicle_id);
+        $stmt->bindParam(':make', $make);
+        $stmt->bindParam(':model', $model);
+        $stmt->bindParam(':year', $year);
+        $stmt->bindParam(':color', $color);
+        $stmt->bindParam(':mileage', $mileage);
+        $stmt->bindParam(':last_oil_change_miles', $last_oil_change_miles);
+        $stmt->bindParam(':last_oil_change_date', $last_oil_change_date);
+        $stmt->bindParam(':license_expiry_date', $license_expiry_date);
+        $stmt->bindParam(':insurance_expiry_date', $insurance_expiry_date);
+        $stmt->bindParam(':license_start_date', $license_start_date);
+        $stmt->bindParam(':insurance_start_date', $insurance_start_date);
+        $stmt->bindParam(':change_oil_every_km', $change_oil_every_km);
+        $stmt->bindParam(':change_oil_every_month', $change_oil_every_month);
+
+        if ($stmt->execute()) {
+            $conn->commit();
+            http_response_code(200);
+            echo json_encode(["status" => "success", "message" => "Vehicle updated successfully"]);
+        } else {
+            $conn->rollBack();
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Failed to update vehicle"]);
+        }
+    } catch (PDOException $e) {
+        $conn->rollBack();
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+
+
+function deleteVehicles() {
+    global $conn;
+
+    $vehicle_id = $_GET['vehicle_id'] ?? null;
+
+    if (empty($vehicle_id)) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Vehicle ID is required"]);
+        return;
+    }
+
+    try {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM Reservations WHERE vehicle_id = :vehicle_id");
+        $stmt->bindParam(':vehicle_id', $vehicle_id);
+        $stmt->execute();
+        $reservationCount = $stmt->fetchColumn();
+
+        if ($reservationCount > 0) {
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "Cannot delete vehicle with existing reservations"]);
+            return;
+        }
+
+        $stmt = $conn->prepare("SELECT license_image, insurance_image FROM Vehicles WHERE vehicle_id = :vehicle_id");
+        $stmt->bindParam(':vehicle_id', $vehicle_id);
+        $stmt->execute();
+        $vehicle = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($vehicle) {
+            if (!empty($vehicle['license_image']) && file_exists($vehicle['license_image'])) {
+                unlink($vehicle['license_image']);
+            }
+            if (!empty($vehicle['insurance_image']) && file_exists($vehicle['insurance_image'])) {
+                unlink($vehicle['insurance_image']);
+            }
+
+            $stmt = $conn->prepare("DELETE FROM Vehicles WHERE vehicle_id = :vehicle_id");
+            $stmt->bindParam(':vehicle_id', $vehicle_id);
+
+            if ($stmt->execute()) {
+                http_response_code(200);
+                echo json_encode(["status" => "success", "message" => "Vehicle deleted successfully"]);
+            } else {
+                http_response_code(500);
+                echo json_encode(["status" => "error", "message" => "Error executing delete query"]);
+            }
+        } else {
+            http_response_code(404);
+            echo json_encode(["status" => "error", "message" => "Vehicle not found"]);
+        }
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
 ?>

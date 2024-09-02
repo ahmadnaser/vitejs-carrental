@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getExpensesTypes } from '../../../controller/ExpensesController';
+import { getExpensesTypes,deleteExpenseTypeById } from '../../../controller/ExpensesController';
 import { useTranslation } from 'react-i18next';
 
 const ExpenseTypeTable = () => {
@@ -11,22 +11,45 @@ const ExpenseTypeTable = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const fetchData = async () => {
+    try {
+      const data = await getExpensesTypes();
+      setExpenseData(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getExpensesTypes();
-        setExpenseData(data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
   const handleAddNewClick = () => {
     navigate('/expenses/types-of-expenses/add-expenses-type');
+  };
+
+  const handleDelete = async (expenses_type_id) => {
+    const deleteConfirmation = window.confirm(
+      `${t('Are you sure you want to delete the Expenses Type')} ` +
+      `(${expenses_type_id})?`,
+      'color: red; font-weight: bold;'
+    );
+  
+    if (deleteConfirmation) {
+      try {
+        const result = await deleteExpenseTypeById(expenses_type_id);
+        if (result.success) {
+          alert(t('Expenses Type deleted successfully'));
+          fetchData();
+        } else {
+          alert(t(`Failed to delete Expenses Type: ${result.message}`));
+        }
+      } catch (error) {
+        console.error('Error deleting Expenses Type:', error);
+        alert(t('An error occurred while trying to delete the Expenses Type.'));
+      }
+    }
   };
 
   const filteredItems = useMemo(() => {
@@ -122,23 +145,29 @@ const ExpenseTypeTable = () => {
                   </td>
                   <td className="px-4 py-4 text-center">{item.type_info}</td>
                   <td className="px-4 py-4 text-center">
-                    <Link
-                      to="/expenses/types/edit-expense-type"
+                  <Link to="/expenses/types-of-expenses/edit-expenses-type" className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      state={{ expensesTypeId: item.expense_type_id }} >
+                        {t('Edit')}
+                      </Link>
+                      <br/>
+                      <Link 
+                      to="/expenses/types-of-expenses/details"
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                    >
-                      {t('Edit')}
-                    </Link>
-                    <br />
-                    <Link to="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                      {t('Details')}
-                    </Link>
-                    <br />
-                    <Link to="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">
-                      {t('Delete')}
-                    </Link>
-                  </td>
-                </tr>
-              ))
+                      state={{ expensesTypeId: item.expense_type_id }} 
+                      >
+                        {t('Details')}
+                      </Link>
+                      <br/>
+                      <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
+                        onClick={() => handleDelete(item.expense_type_id )}
+                      >
+                        {t('Delete')}
+                      </a>
+                    </td>
+                  </tr>
+                ))
+                   
+             
             )}
           </tbody>
         </table>

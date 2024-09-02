@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getCarById, getCars } from '../../../controller/CarController';
 import Select from 'react-select';
+import { useLocation } from 'react-router-dom';
 
 async function loadConfig() {
   const config = await import('../../../../config.json', {
@@ -20,12 +21,14 @@ initializeConfig().catch(error => {
   console.error("Failed to load configuration:", error);
 });
 
-const CarDetails = ({ carId }) => {
+const CarDetails = () => {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('Summary');
   const [car, setCar] = useState(null);
   const [selectedCar, setSelectedCar] = useState(null);
   const [cars, setCars] = useState([]);
+  const location = useLocation();
+  const { carId } = location.state || {};
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -136,17 +139,20 @@ const CarDetails = ({ carId }) => {
 
       {activeTab === t('Summary') && (
         <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 text-black">
-          <div className="flex flex-col sm:flex-row gap-6">
-            <div className='bg-white p-4 rounded-xl flex-1'>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <div className='bg-white p-4 rounded-xl'>
               <h3 className="text-lg font-bold mb-2">{t('Car Information')}</h3>
               <div className="space-y-2">
                 <div><strong>{t('Make')}:</strong> {car.make}</div>
                 <div><strong>{t('Model')}:</strong> {car.model}</div>
                 <div><strong>{t('Year')}:</strong> {car.year}</div>
                 <div><strong>{t('License Plate')}:</strong> {car.vehicle_id}</div>
+                <div><strong>{t('Milage')}:</strong> {car.mileage}</div>
+                <div><strong>{t('Color')}:</strong> {car.color}</div>
               </div>
             </div>
-            <div className='bg-white p-4 rounded-xl flex-1'>
+
+            <div className='bg-white p-4 rounded-xl'>
               <h3 className="text-lg font-bold mb-2">{t('Maintenance/Billing')}</h3>
               <div className="space-y-2">
                 <div><strong>{t('Maintenance Costs')}:</strong> {car.maintenance_costs} {t('Shekel')}</div>
@@ -154,8 +160,41 @@ const CarDetails = ({ carId }) => {
               </div>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className='bg-white p-4 rounded-xl'>
+              <h3 className="text-lg font-bold mb-2">{t('About Insurance')}</h3>
+              <div className="space-y-2">
+                <div><strong>{t('Insurance start date')}:</strong> {car.insurance_start_date}</div>
+                <div><strong>{t('Insurance expiry date')}:</strong> {car.insurance_expiry_date}</div>
+              </div>
+            </div>
+
+            <div className='bg-white p-4 rounded-xl'>
+              <h3 className="text-lg font-bold mb-2">{t('About License')}</h3>
+              <div className="space-y-2">
+                <div><strong>{t('License start date')}:</strong> {car.license_start_date}</div>
+                <div><strong>{t('License expiry date')}:</strong> {car.license_expiry_date}</div>
+              </div>
+            </div>
+
+            
+            <div className="sm:col-span-2 flex justify-center">
+              <div className='bg-white p-4 rounded-xl max-w-sm w-full'>
+                <h3 className="text-lg font-bold mb-2">{t('About Oil Change')}</h3>
+                <div className="space-y-2">
+                  <div><strong>{t('Last oil change miles')}:</strong> {car.last_oil_change_miles}</div>
+                  <div><strong>{t('Last oil change date')}:</strong> {car.last_oil_change_date}</div>
+                  <div><strong>{t('Oil change every (km)')}:</strong> {car.change_oil_every_km}</div>
+                  <div><strong>{t('Oil change every (month)')}:</strong> {car.change_oil_every_month}</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
+
+
 
       {activeTab === t('Insurance Image') && (
         <div className="w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 mb-6 text-black flex items-center justify-center" style={{ height: '100%' }}>

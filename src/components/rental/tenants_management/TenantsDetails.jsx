@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import {useLocation } from 'react-router-dom';
 import { getTenantById, getTenants, getAccountStatmentById } from '../../../controller/TenantController';
 import Select from 'react-select';
 
@@ -20,10 +21,12 @@ initializeConfig().catch(error => {
   console.error(t("Failed to load configuration:"), error);
 });
 
-const TenantsDetails = ({ tenantId }) => {
+const TenantsDetails = () => {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState(t('Summary'));
+  const location = useLocation();
   const [accountData, setaccountData] = useState([]);
+  const {tenantId}=location.state || {};
   const [tenant, setTenant] = useState(null);
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [tenants, setTenants] = useState([]);

@@ -15,6 +15,8 @@ export class Car {
     change_oil_every_km,
     insurance_image,
     license_image,
+    insurance_start_date,
+    license_start_date,
     active
   ) {
     this.vehicle_id = vehicle_id;
@@ -32,6 +34,8 @@ export class Car {
     this.change_oil_every_km = change_oil_every_km;
     this.insurance_image = insurance_image;
     this.license_image = license_image;
+    this.insurance_start_date = insurance_start_date;
+    this.license_start_date = license_start_date;
     this.active = active;
   }
 }

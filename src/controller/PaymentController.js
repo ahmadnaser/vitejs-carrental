@@ -50,3 +50,17 @@ export const getPayments = async () => {
     throw error;
   }
 };
+
+
+export const geBankCheckById = async (check_id) => {
+  try {
+    const response = await axios.get(config.Payment, {
+      params: { check_id }
+    });
+    const check = response.data;
+    return check;
+  } catch (error) {
+    console.error("There was an error fetching the garage!", error);
+    throw error;
+  }
+};

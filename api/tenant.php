@@ -5,13 +5,12 @@ header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 include 'dbconfig.php';
 
-$response = array();
-
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204); 
     exit();
 }
 
+$response = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -196,7 +195,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 i.price_perday,
                 i.total_amount,
                 i.amount_paid,
-                DATEDIFF(r.end_date, r.start_date) AS dayNum
+                DATEDIFF(r.end_date, r.start_date) AS dayNum,
+                CASE 
+                    WHEN t.credit > 0 AND t.debit = 0 THEN t.credit 
+                    ELSE NULL 
+                END AS amount,
+                CASE 
+                    WHEN t.credit > 0 AND t.debit = 0 THEN COALESCE(p.payment_method, 'Bank Check') 
+                    ELSE NULL 
+                END AS payment_method
             FROM Transactions t
             LEFT JOIN Payments p ON t.payment_id = p.payment_id
             LEFT JOIN Invoices i ON p.invoice_id = i.Invoice_id
@@ -204,6 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             LEFT JOIN Vehicles v ON r.vehicle_id = v.vehicle_id
             LEFT JOIN Tenants ten ON r.tenant_id = ten.id_number
             WHERE ten.id_number = :tenantId
+
         ";
     
         if ($startDate && $endDate) {
@@ -327,6 +335,153 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         http_response_code(400);
         echo json_encode(["status" => "error", "message" => "Tenant ID is required"]);
+    }
+
+} elseif ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if ($data === null) {
+        http_response_code(400);
+        echo json_encode(["message" => "Invalid JSON input"]);
+        exit;
+    }
+
+    if (isset($data['id_number'])) {
+        $id_number = $data['id_number'];
+
+        try {
+            $conn->beginTransaction();
+
+            $stmt = $conn->prepare("SELECT COUNT(*) FROM Reservations WHERE tenant_id = :id_number");
+            $stmt->bindParam(':id_number', $id_number, PDO::PARAM_STR);
+            $stmt->execute();
+            $reservationCount = $stmt->fetchColumn();
+
+            if ($reservationCount > 0 && isset($data['id_number']) && $data['id_number'] != $id_number) {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "Cannot change tenant ID as there are existing reservations."]);
+                exit();
+            }
+
+            $fieldsToUpdate = [
+                'tenant_name' => 'tenant_name',
+                'address' => 'address',
+                'phone_number' => 'phone_number',
+                'blood_type' => 'blood_type',
+                'birth_date' => 'birth_date',
+                'license_number' => 'license_number',
+                'license_start_date' => 'license_start_date',
+                'license_end_date' => 'license_end_date'
+            ];
+
+            foreach ($fieldsToUpdate as $key => $field) {
+                if (isset($data[$key])) {
+                    $updateStmt = $conn->prepare("UPDATE Tenants SET $field = :value WHERE id_number = :id_number");
+                    $updateStmt->bindParam(':value', $data[$key], PDO::PARAM_STR);
+                    $updateStmt->bindParam(':id_number', $id_number, PDO::PARAM_STR);
+                    $updateStmt->execute();
+                }
+            }
+
+            $target_id_dir = "id_uploads/";
+            $target_license_dir = "license_uploads/";
+            $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+            function generateFileName($prefix, $id_number, $extension) {
+                $random_number = rand(100, 999);
+                return $prefix . '_' . $id_number . '_' . $random_number . '.' . $extension;
+            }
+
+            function saveBase64Image($base64String, $target_dir, $prefix, $id_number) {
+                global $allowed_extensions;
+
+                $parts = explode(',', $base64String);
+                $data = base64_decode($parts[1]);
+                $finfo = finfo_open();
+                $mime_type = finfo_buffer($finfo, $data, FILEINFO_MIME_TYPE);
+                finfo_close($finfo);
+
+                $extension = explode('/', $mime_type)[1];
+                if (!in_array($extension, $allowed_extensions)) {
+                    http_response_code(400);
+                    echo json_encode(["status" => "error", "message" => "Invalid file extension. Only JPG, JPEG, PNG, and GIF are allowed."]);
+                    exit();
+                }
+
+                $filePath = $target_dir . generateFileName($prefix, $id_number, $extension);
+                if (file_put_contents($filePath, $data)) {
+                    return $filePath;
+                } else {
+                    http_response_code(500);
+                    echo json_encode(["status" => "error", "message" => "Failed to save image."]);
+                    exit();
+                }
+            }
+
+            if (isset($data['id_image'])) {
+                $stmt = $conn->prepare("SELECT id_image_path FROM Tenants WHERE id_number = :id_number");
+                $stmt->bindParam(':id_number', $id_number, PDO::PARAM_STR);
+                $stmt->execute();
+                $currentIdImage = $stmt->fetchColumn();
+
+                if ($currentIdImage && file_exists($currentIdImage)) {
+                    unlink($currentIdImage);
+                }
+
+                $id_image_path = saveBase64Image($data['id_image'], $target_id_dir, 'id', $id_number);
+
+                $updateStmt = $conn->prepare("UPDATE Tenants SET id_image_path = :id_image WHERE id_number = :id_number");
+                $updateStmt->bindParam(':id_image', $id_image_path, PDO::PARAM_STR);
+                $updateStmt->bindParam(':id_number', $id_number, PDO::PARAM_STR);
+                $updateStmt->execute();
+            }
+
+            if (isset($data['license_image'])) {
+                $stmt = $conn->prepare("SELECT license_image_path FROM Tenants WHERE id_number = :id_number");
+                $stmt->bindParam(':id_number', $id_number, PDO::PARAM_STR);
+                $stmt->execute();
+                $currentLicenseImage = $stmt->fetchColumn();
+
+                if ($currentLicenseImage && file_exists($currentLicenseImage)) {
+                    unlink($currentLicenseImage);
+                }
+
+                $license_image_path = saveBase64Image($data['license_image'], $target_license_dir, 'license', $id_number);
+
+                $updateStmt = $conn->prepare("UPDATE Tenants SET license_image_path = :license_image WHERE id_number = :id_number");
+                $updateStmt->bindParam(':license_image', $license_image_path, PDO::PARAM_STR);
+                $updateStmt->bindParam(':id_number', $id_number, PDO::PARAM_STR);
+                $updateStmt->execute();
+            }
+
+            $conn->commit();
+
+            http_response_code(200);
+            echo json_encode([
+                "status" => "success",
+                "message" => "Tenant updated successfully"
+            ]);
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            http_response_code(500);
+            echo json_encode([
+                "status" => "error",
+                "message" => 'Error: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            $conn->rollBack();
+            http_response_code(400);
+            echo json_encode([
+                "status" => "error",
+                "message" => $e->getMessage()
+            ]);
+        }
+    } else {
+        http_response_code(400);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Missing tenant id"
+        ]);
     }
 
 } else {

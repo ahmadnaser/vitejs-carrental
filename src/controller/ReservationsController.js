@@ -97,12 +97,31 @@ export const getReservationById = async (reservation_id) => {
   }
 };
 
-export const updateEndDate = async (rentalId, endDate = null) => {
+export const getReservationByVehicleId = async (vehicle_id) => {
+  try {
+    const response = await axios.get(config.Reservation, {
+      params: {
+        vehicle_id: vehicle_id,
+      },
+    });
+    if (response.data.message === "No contracts found") {
+      console.warn("No contracts found for the given criteria.");
+      return []; 
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error("There was an error fetching the contracts by vehicle ID!", error);
+    throw error;
+  }
+};
+
+export const updateEndDate = async (reservation_id, endDate = null) => {
   try {
     
-    const payload = { rental_id: rentalId, end_date: endDate };
+    const payload = { reservation_id: reservation_id, end_date: endDate };
 
-    const response = await axios.put(`${config.Rental}`, payload, {
+    const response = await axios.put(`${config.Reservation}`, payload, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -114,25 +133,20 @@ export const updateEndDate = async (rentalId, endDate = null) => {
   }
 };
 
-export const updateReservation = async (rentalId, formData) => {
+export const updateReservation = async (reservationId, formData) => {
   try {
   
     const payload = {
-      rental_id: rentalId,
+      reservation_id: reservationId,
       tenant_id: formData.tenant_id,
       vehicle_id: formData.vehicle_id,
       start_date: formData.start_date,
       end_date: formData.end_date,
       price_perday: formData.price_perday,
       total_amount: formData.total_amount,
-      amount_paid: formData.amount_paid,
-      car_mileage: formData.car_mileage,
-      note: formData.note,
-      car_condition: formData.car_condition, 
-      car_damage: formData.car_damage,        
       second_driver_id: formData.second_driver_id, 
     };
-    const response = await axios.put(`${config.Rental}`, payload, {
+    const response = await axios.put(`${config.Reservation}`, payload, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -144,11 +158,11 @@ export const updateReservation = async (rentalId, formData) => {
   }
 };
 
-export const deleteReservationById = async (rentalId) => {
+export const deleteReservationById = async (reservationId) => {
   try {
-    const response = await axios.delete(`${config.Rental}`, {
+    const response = await axios.delete(`${config.Reservation}`, {
       params: {
-        rental_id: rentalId,
+        reservation_id: reservationId,
       },
       headers: {
         'Accept': 'application/json',

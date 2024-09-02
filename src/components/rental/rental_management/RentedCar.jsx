@@ -71,20 +71,20 @@ const RentedCarTable = () => {
       if (filterTerm === 'lastday') {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        items = items.filter(item => new Date(item.startDate) >= yesterday);
+        items = items.filter(item => new Date(item.start_date) >= yesterday);
       } else if (filterTerm === 'last7days') {
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
-        items = items.filter(item => new Date(item.startDate) >= lastWeek);
+        items = items.filter(item => new Date(item.start_date) >= lastWeek);
       } else if (filterTerm === 'last30days') {
         const lastMonth = new Date();
         lastMonth.setDate(lastMonth.getDate() - 30);
-        items = items.filter(item => new Date(item.startDate) >= lastMonth);
-        items = items.filter(item => new Date(item.startDate) >= lastMonth);
+        items = items.filter(item => new Date(item.start_date) >= lastMonth);
+        items = items.filter(item => new Date(item.start_date) >= lastMonth);
       } else if (filterTerm === 'lastyear') {
         const lastYear = new Date();
         lastYear.setFullYear(lastYear.getFullYear() - 1);
-        items = items.filter(item => new Date(item.startDate) >= lastYear);
+        items = items.filter(item => new Date(item.start_date) >= lastYear);
       }
     }
 
@@ -186,8 +186,8 @@ const RentedCarTable = () => {
         <table dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} className="w-full text-sm text-left text-gray-800 dark:text-gray-100 rounded-lg">
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-3 py-3 cursor-pointer text-center" onClick={() => requestSort('car')}>
-                <div className="flex items-center">
+              <th scope="col" className="px-3 py-3 cursor-pointer text-center items-center justify-center" onClick={() => requestSort('car')}>
+                <div className="flex items-center justify-center">
                   {t('Car')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('car')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
@@ -195,7 +195,7 @@ const RentedCarTable = () => {
                 </div>
               </th>
               <th scope="col" className="px-3 py-3 cursor-pointer text-center" onClick={() => requestSort('customer')}>
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   {t('Customer')}
                   <svg className={`w-3 h-3 ms-1.5 ${getClassNamesFor('customer')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
@@ -264,7 +264,7 @@ const RentedCarTable = () => {
                   key={index}
                   className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}
                 >
-                  <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{item.make} {item.model}</td>
+                  <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white justify-center text-center">{item.make} {item.model}</td>
                   <td className="px-4 py-4 text-blue-500 cursor-pointer text-center" onClick={() => handleCustomerClick(item.tenantID)}>{item.customer}</td>
                   <td className="px-1 py-4 text-center">{item.start_date}</td>
                   <td className="px-2 py-4 text-center">{item.dayNum}</td>

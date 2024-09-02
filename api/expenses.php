@@ -1,73 +1,31 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 include 'dbconfig.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit();
+}
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $endpoint = isset($_GET['endpoint']) ? $_GET['endpoint'] : '';
 
-if ($requestMethod === 'POST' && $endpoint === 'add_expense') {
-    addExpense();
-} elseif ($requestMethod === 'POST' && $endpoint === 'add_expense_type') {
+if ($requestMethod === 'POST' && $endpoint === 'add_expense_type') {
     addExpenseType();
 } elseif ($requestMethod === 'GET' && $endpoint === 'get_expense_type_by_id') {
     getExpenseTypeById();
 } elseif ($requestMethod === 'GET' && $endpoint === 'list_expense_types') {
     listExpenseTypes();
-} elseif ($requestMethod === 'GET' && $endpoint === 'list_expenses') {
-    listExpenses();
+} elseif ($requestMethod === 'DELETE') {
+    deleteExpenseType();
+} elseif ($requestMethod === 'PUT') {
+    updateExpenseType();
 } else {
     http_response_code(400);
     echo json_encode(["status" => "error", "message" => "Invalid request method or endpoint."]);
-}
-
-function addExpense() {
-    global $conn;
-
-    $expenses_amount = $_POST['amount'] ?? null;
-    $expense_type_id = $_POST['expense_type_id'] ?? null;
-    $expenses_date = $_POST['expense_date'] ?? null;
-    $detail = $_POST['details'] ?? null;
-
-    $missing_fields = [];
-
-    if (empty($expense_type_id)) $missing_fields[] = 'expense_type_id';
-    if (empty($expenses_amount)) $missing_fields[] = 'expenses_amount';
-    if (empty($expenses_date)) $missing_fields[] = 'expenses_date';
- 
-    if (!empty($missing_fields)) {
-        http_response_code(500);
-        $missing_fields_list = implode(', ', $missing_fields);
-        echo json_encode(["status" => "error", "message" => "Required fields are missing: $missing_fields_list"]);
-        exit();
-    }
-
-    try {
-        $sql = "INSERT INTO Expenses (expenses_amount,expense_type_id, expenses_date, detail)
-                VALUES (:expenses_amount,:expense_type_id, :expenses_date, :detail)";
-
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Failed to prepare statement: " . json_encode($conn->errorInfo()));
-        }
-
-        $stmt->bindValue(':expenses_amount', $expenses_amount);
-        $stmt->bindValue(':expense_type_id', $expense_type_id);
-        $stmt->bindValue(':expenses_date', $expenses_date);
-        $stmt->bindValue(':detail', $detail);
-
-        if ($stmt->execute()) {
-            echo json_encode(["status" => "success", "message" => "New expense record created successfully"]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["status" => "error", "message" => "Error executing query"]);
-        }
-    } catch (PDOException $e) {
-        http_response_code(500);
-        echo json_encode(["status" => "error", "message" => "Error: " . $e->getMessage()]);
-    }
-
-    $conn = null;
 }
 
 function addExpenseType() {
@@ -97,7 +55,7 @@ function addExpenseType() {
         $stmt->bindValue(':type_info', $type_info);
 
         if ($stmt->execute()) {
-            echo json_encode(["status" => "success", "message" => "New expenses type record created successfully"]);
+            echo json_encode(["status" => "success", "message" => "New expense type record created successfully"]);
         } else {
             http_response_code(500);
             echo json_encode(["status" => "error", "message" => "Error executing query"]);
@@ -124,9 +82,9 @@ function getExpenseTypeById() {
         $stmt = $conn->prepare('SELECT * FROM ExpensesType WHERE expense_type_id = :expense_type_id');
         $stmt->bindParam(':expense_type_id', $expense_type_id, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         $expensesTypes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         echo json_encode($expensesTypes);
     } catch (PDOException $e) {
         http_response_code(500);
@@ -142,9 +100,9 @@ function listExpenseTypes() {
     try {
         $stmt = $conn->prepare('SELECT * FROM ExpensesType');
         $stmt->execute();
-        
+
         $expensesTypes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         echo json_encode($expensesTypes);
     } catch (PDOException $e) {
         http_response_code(500);
@@ -153,41 +111,82 @@ function listExpenseTypes() {
     $conn = null;
 }
 
-function listExpenses() {
+function deleteExpenseType() {
     global $conn;
 
-    try {
-        $startDate = isset($_GET['start_date']) ? $_GET['start_date'] : null;
-        $endDate = isset($_GET['end_date']) ? $_GET['end_date'] : null;
+    $expense_type_id = $_GET['expense_type_id'] ?? null;
 
-        $sql = '
-            SELECT Expenses.*, ExpensesType.type as expense_type_name 
-            FROM Expenses 
-            LEFT JOIN ExpensesType ON Expenses.expense_type_id = ExpensesType.expense_type_id 
-            WHERE 1=1';
-        
-        if ($startDate) {
-            $sql .= ' AND expenses_date >= :startDate';
-        }
-        if ($endDate) {
-            $sql .= ' AND expenses_date <= :endDate';
-        }
+    if ($expense_type_id) {
+        try {
+            $conn->beginTransaction();
+            $stmt = $conn->prepare("DELETE FROM ExpensesType WHERE expense_type_id = :expense_type_id");
+            $stmt->bindParam(':expense_type_id', $expense_type_id, PDO::PARAM_INT);
+            $stmt->execute();
 
-        $stmt = $conn->prepare($sql);
-
-        if ($startDate) {
-            $stmt->bindParam(':startDate', $startDate);
+            if ($stmt->rowCount() > 0) {
+                $conn->commit();
+                http_response_code(200);
+                echo json_encode(["status" => "success", "message" => "Expense type record deleted successfully"]);
+            } else {
+                http_response_code(404);
+                echo json_encode(["status" => "error", "message" => "Expense type record not found"]);
+            }
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
         }
-        if ($endDate) {
-            $stmt->bindParam(':endDate', $endDate);
-        }
+    } else {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Expense type ID is required"]);
+    }
 
-        $stmt->execute();
-        $expenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($expenses);
-    } catch (PDOException $e) {
-        http_response_code(500);
-        echo json_encode(['error' => $e->getMessage()]);
+    $conn = null;
+}
+
+function updateExpenseType() {
+    global $conn;
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if ($data === null) {
+        http_response_code(400);
+        echo json_encode(["message" => "Invalid JSON input"]);
+        exit;
+    }
+
+    if (isset($data['expense_type_id']) && !empty($data['expense_type_id'])) {
+        $expense_type_id = $data['expense_type_id'];
+
+        $type = isset($data['type']) ? $data['type'] : null;
+        $type_info = isset($data['type_info']) ? $data['type_info'] : null;
+
+        try {
+            $conn->beginTransaction();
+
+            $stmt = $conn->prepare("
+                UPDATE ExpensesType SET 
+                    type = :type,
+                    type_info = :type_info
+                WHERE expense_type_id = :expense_type_id
+            ");
+            $stmt->bindParam(':type', $type);
+            $stmt->bindParam(':type_info', $type_info);
+            $stmt->bindParam(':expense_type_id', $expense_type_id);
+            $stmt->execute();
+
+            $conn->commit();
+
+            http_response_code(200);
+            echo json_encode(["status" => "success", "message" => "Expense type record updated successfully"]);
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    } else {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Expense type ID is required for updating the record"]);
     }
 
     $conn = null;

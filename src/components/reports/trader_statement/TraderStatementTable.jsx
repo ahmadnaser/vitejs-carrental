@@ -116,7 +116,7 @@ const TraderStatementTable = () => {
             <span className="text-secondary-color">{t('To')}:</span> {end_date}
           </h3>
         )}
-        <div className="mb-1 mt-10">
+        <div className="mb-1 mt-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
           <button
             type="button"
             onClick={handlePrintClick}

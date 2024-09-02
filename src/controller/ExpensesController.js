@@ -116,3 +116,48 @@ export const getExpenses = async () => {
     throw error;
   }
 };
+
+
+export const deleteExpenseTypeById = async (expense_type_id) => {
+  try {
+    const response = await axios.delete(`${config.Expenses}`, {
+      params: {
+        expense_type_id: expense_type_id,
+      },
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error('Failed to delete the expense type');
+    }
+
+    return { success: true, message: 'Expense type deleted successfully' };
+
+  } catch (error) {
+    console.error('There was an error deleting the expense type!', error);
+    return { success: false, message: `Error: ${error.message}` };
+  }
+};
+
+export const updateExpensesType = async (expense_type_id, formData) => {
+  try {
+    const payload = {
+      expense_type_id: expense_type_id,
+      type: formData.type,
+      type_info: formData.type_info,
+    };
+
+    const response = await axios.put(`${config.Expenses}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+    return { success: false, message: errorMessage };
+  }
+};

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation,Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getTenantById, getAccountStatmentById } from '../../../controller/TenantController';
 import { addPayment } from '../../../controller/PaymentController';
@@ -196,7 +196,7 @@ const PaymentForm = () => {
           {tenantName || t('Loading tenant name...')} - {tenant_id}
         </h3>
        
-        <div className="mb-1 mt-10">
+        <div className="mb-1 mt-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
           <button type="button" onClick={handlePrintClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Printing...') : t('Print')}
           </button>
@@ -212,6 +212,7 @@ const PaymentForm = () => {
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-3 py-3 text-center">{t('Description')}</th>
+              <th scope="col" className="px-3 py-3 text-center">{t('Payment Method')}</th>
               <th scope="col" className="px-3 py-3 text-center">{t('Reservation Id')}</th>
               <th scope="col" className="px-5 py-3 text-center">{t('Date')}</th>
               <th scope="col" className="px-2 py-3 text-center">{t('Debit')}</th>
@@ -235,6 +236,26 @@ const PaymentForm = () => {
                   <tr key={index} 
                   className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}`}>
                     <td className="px-1 py-4 text-center">{item.description}</td>
+                    <td className="px-1 py-4 text-center">
+                      {item.payment_method ? (
+                        item.payment_method === 'Bank Check' ? (
+                          <Link
+                            to="/tenants/payment/check_details"
+                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                            state={{ check_id: item.check_id }} 
+                            onClick={() => console.log('Check ID:', item.check_id)} 
+                          >
+                            {t(item.payment_method)}
+                          </Link>
+                        ) : (
+                          t(item.payment_method)
+                        )
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+
+
                     <td className="px-1 py-4 text-center">{item.reservation_id}</td>
                     <td className="px-2 py-4 text-center">{item.date}</td>
                     <td className="px-1 py-4 text-center text-red-500">{item.debit}</td>
@@ -248,7 +269,7 @@ const PaymentForm = () => {
           <tfoot>
             <tr   className={` border-b dark:bg-gray-800 dark:border-gray-700  bg-gray-50 dark:bg-gray-900' : ''}`}> 
               
-              <td colSpan="3" className="px-2 py-4 text-center font-bold">{t('Total')}</td>
+              <td colSpan="4" className="px-2 py-4 text-center font-bold">{t('Total')}</td>
               <td className="px-2 py-4 text-center text-red-500 font-bold">{totalDebit}</td>
               <td className="px-2 py-4 text-center text-green-500 font-bold">{totalCredit}</td>
               <td className="px-2 py-4 text-center font-bold">{totalAmount}</td>
@@ -365,14 +386,23 @@ const PaymentForm = () => {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="check_image" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
+                <label
+                  htmlFor="check_image"
+                  className={`block mb-2 text-sm font-medium ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}
+                >
+                  {t('Copy of Check')}
+                </label>
                 <input
                   name="check_image"
-                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                  className={`block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 ${
+                    i18n.language === 'ar' ? 'pr-4' : 'pl-4'
+                  }`}
                   type="file"
                   onChange={handleBankDetailsChange}
+                  required
                 />
               </div>
+
             </div>
           )}
 

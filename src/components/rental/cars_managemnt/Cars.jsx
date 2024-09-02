@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getCars } from '../../../controller/CarController';
+import { getCars,deleteCarById } from '../../../controller/CarController';
 import { useTranslation } from 'react-i18next';
 
 const CarTable = () => {
@@ -9,11 +9,13 @@ const CarTable = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [searchTerm, setSearchTerm] = useState('');
 
+
+  const fetchData = async () => {
+    const data = await getCars();
+    setCarsData(data);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getCars();
-      setCarsData(data);
-    };
     fetchData();
   }, []);
 
@@ -74,6 +76,29 @@ const CarTable = () => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
+  const handleDelete = async (vehicle_id) => {
+    const deleteConfirmation = window.confirm(
+      `${t('Are you sure you want to delete the car')} ` +
+      `(${vehicle_id})?`,
+      'color: red; font-weight: bold;'
+    );
+  
+    if (deleteConfirmation) {
+      try {
+        const result = await deleteCarById(vehicle_id);
+        if (result.success) {
+          alert(t('Car deleted successfully'));
+          fetchData();
+        } else {
+          alert(t(`Failed to delete Car: ${result.message}`));
+        }
+      } catch (error) {
+        console.error('Error deleting Car:', error);
+        alert(t('An error occurred while trying to delete the Car.'));
+      }
+    }
+  };
+
   return (
     <div className={`flex flex-col items-center min-h-screen bg-bodyBg-color text-heading-color ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}>
       <div className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} p-10 mt-20 mb-10`}>
@@ -105,7 +130,7 @@ const CarTable = () => {
           <thead className="text-xs text-gray-900 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-3 py-3 cursor-pointer text-center" onClick={() => requestSort('make')}>
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   {t('Cars')}
                   <svg className={`w-4 h-3 ms-1.5 ${getClassNamesFor('make')}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
@@ -190,13 +215,24 @@ const CarTable = () => {
                   <td className="px-4 py-4 text-center">{item.change_oil_every_km}</td>
                   <td className="px-4 py-4 text-center">{item.change_oil_every_month}</td>
                   <td className="px-4 py-4">
-                    <Link to="/renting/edit-rental-contract" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                    <Link to="/cars/edit-car" className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                     state={{ carId: item.vehicle_id }} >
                       {t('Edit')}
                     </Link>
                     <br />
-                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{t('Details')}</a>
+                    <Link 
+                    to="/cars/details" 
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    state={{ carId: item.vehicle_id }} 
+                    >
+                      {t('Details')}
+                    </Link>
                     <br />
-                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">{t('Delete')}</a>
+                    <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
+                      onClick={() => handleDelete(item.vehicle_id)}
+                    >
+                      {t('Delete')}
+                    </a>
                   </td>
                 </tr>
               ))

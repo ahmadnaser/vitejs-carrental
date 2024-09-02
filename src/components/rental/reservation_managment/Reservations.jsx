@@ -4,6 +4,8 @@ import { getReservations } from '../../../controller/ReservationsController';
 import { getCarById } from '../../../controller/CarController';
 import { getTenantById } from '../../../controller/TenantController';
 import { useTranslation } from 'react-i18next';
+import { deleteReservationById } from '../../../controller/ReservationsController';
+
 
 const ReservationTable = () => {
   const { t, i18n } = useTranslation();
@@ -16,27 +18,27 @@ const ReservationTable = () => {
   const [vehicleDetails, setVehicleDetails] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getReservations();
-      setReservationsData(data);
-    
-      const tenants = {};
-      const vehicles = {};
+  const fetchData = async () => {
+    const data = await getReservations();
+    setReservationsData(data);
+  
+    const tenants = {};
+    const vehicles = {};
 
-      for (const item of data) {
-        if (!tenants[item.tenant_id]) {
-          tenants[item.tenant_id] = await getTenantById(item.tenant_id);
-        }
-        if (!vehicles[item.vehicle_id]) {
-          vehicles[item.vehicle_id] = await getCarById(item.vehicle_id);
-        }
+    for (const item of data) {
+      if (!tenants[item.tenant_id]) {
+        tenants[item.tenant_id] = await getTenantById(item.tenant_id);
       }
+      if (!vehicles[item.vehicle_id]) {
+        vehicles[item.vehicle_id] = await getCarById(item.vehicle_id);
+      }
+    }
 
-      setTenantNames(tenants);
-      setVehicleDetails(vehicles);
-    };
+    setTenantNames(tenants);
+    setVehicleDetails(vehicles);
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -144,6 +146,29 @@ const ReservationTable = () => {
     setFilterTerm(value);
     setDropdownText(text);
     setDropdownVisible(false);
+  };
+
+  const handleDelete = async (reservation_id) => {
+    const deleteConfirmation = window.confirm(
+      `${t('Are you sure you want to delete the Reservation')} ` +
+      `(${reservation_id})?`,
+      'color: red; font-weight: bold;'
+    );
+  
+    if (deleteConfirmation) {
+      try {
+        const result = await deleteReservationById(reservation_id);
+        if (result.success) {
+          alert(t('Contract deleted successfully'));
+          fetchData();
+        } else {
+          alert(t(`Failed to delete Contract: ${result.message}`));
+        }
+      } catch (error) {
+        console.error('Error deleting Contract:', error);
+        alert(t('An error occurred while trying to delete the Contract.'));
+      }
+    }
   };
 
   return (
@@ -267,6 +292,7 @@ const ReservationTable = () => {
                 </div>
               </th>
               <th scope="col" className="px-3 py-3"><span className="sr-only">{t('Action')}</span></th>
+              <th scope="col" className="px-3 py-3"><span className="sr-only">{t('Action')}</span></th>
             </tr>
           </thead>
           <tbody>
@@ -288,11 +314,21 @@ const ReservationTable = () => {
                   <td className="px-1 py-4 text-center">{item.total_amount}</td>
                   <td className="px-1 py-4 text-center">{item.amount_paid}</td>
                   <td className="px-1 py-4 text-center">{item.status}</td>
+                  <td className="px-1 py-4 text-center">
+                  <Link 
+                    to="/reservations/convert-reservations" 
+                    className="font-sm text-green-500 dark:text-green-500 hover:underline"
+                    state={{ reservationId: item.reservation_id }} 
+                    >
+                    {t('Convert to contract')}
+                  </Link>
+
+                  </td>
                   <td className="px-4 py-4 text-center">
                   <Link 
                     to="/reservations/edit-reservations" 
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                    state={{ rentalId: item.rental_id }} 
+                    state={{ reservationId: item.reservation_id }} 
                     >
                     {t('Edit')}
                   </Link>
@@ -301,7 +337,7 @@ const ReservationTable = () => {
                   <Link
                       to="/reservations/extension-reservations"
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      state={{ rentalId: item.rental_id }} 
+                      state={{ reservationId: item.reservation_id }} 
                     >
                       {t('Extension')}
                     </Link>
@@ -310,13 +346,13 @@ const ReservationTable = () => {
                     <Link
                       to="/reservations/details"
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      state={{ rentalId: item.rental_id }} 
+                      state={{ reservationId: item.reservation_id }} 
                     >
                       {t('Details')}
                     </Link>
                     <br/>
                     <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
-                      onClick={() => handleDelete(item.rental_id)}
+                      onClick={() => handleDelete(item.reservation_id)}
                     >
                       {t('Delete')}
                     </a>

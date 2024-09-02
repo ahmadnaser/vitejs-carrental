@@ -1,7 +1,14 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 include 'dbconfig.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204); 
+    exit();
+}
 
 try {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -67,12 +74,88 @@ try {
             $traders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($traders);
         }
+
+    } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+        $trader_id = $_GET['trader_id'] ?? null;
+
+        if ($trader_id) {
+            try {
+                $conn->beginTransaction();
+                $stmt = $conn->prepare("DELETE FROM Traders WHERE trader_id = :trader_id");
+                $stmt->bindParam(':trader_id', $trader_id, PDO::PARAM_INT);
+                $stmt->execute();
+
+                if ($stmt->rowCount() > 0) {
+                    $conn->commit();
+                    http_response_code(200);
+                    echo json_encode(["status" => "success", "message" => "Trader record deleted successfully"]);
+                } else {
+                    http_response_code(404);
+                    echo json_encode(["status" => "error", "message" => "Trader record not found"]);
+                }
+            } catch (PDOException $e) {
+                $conn->rollBack();
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "Trader ID is required"]);
+        }
+
+    } elseif ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if ($data === null) {
+            http_response_code(400);
+            echo json_encode(["message" => "Invalid JSON input"]);
+            exit;
+        }
+
+        if (isset($data['trader_id']) && !empty($data['trader_id'])) {
+            $trader_id = $data['trader_id'];
+
+            $name = isset($data['name']) ? $data['name'] : null;
+            $contact_info = isset($data['contact_info']) ? $data['contact_info'] : null;
+            $type = isset($data['type']) ? $data['type'] : null;
+
+            try {
+                $conn->beginTransaction();
+
+                $traderStmt = $conn->prepare("
+                    UPDATE Traders SET 
+                        name = :name,
+                        contact_info = :contact_info,
+                        type = :type
+                    WHERE trader_id = :trader_id
+                ");
+                $traderStmt->bindParam(':name', $name);
+                $traderStmt->bindParam(':contact_info', $contact_info);
+                $traderStmt->bindParam(':type', $type);
+                $traderStmt->bindParam(':trader_id', $trader_id);
+                $traderStmt->execute();
+
+                $conn->commit();
+
+                http_response_code(200);
+                echo json_encode(["status" => "success", "message" => "Trader record updated successfully"]);
+            } catch (PDOException $e) {
+                $conn->rollBack();
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "Trader ID is required for updating the record"]);
+        }
     } else {
-        echo json_encode(["status" => "error", "message" => "Invalid request method."]);
+        http_response_code(405);
+        echo json_encode(["status" => "error", "message" => "Invalid request method"]);
     }
+
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
 }
 
 $conn = null;

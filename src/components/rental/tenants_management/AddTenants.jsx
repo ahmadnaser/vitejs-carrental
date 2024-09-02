@@ -200,14 +200,44 @@ const AddTenantsForm = () => {
           {errors.license_end_date && <div className="text-red-500">{errors.license_end_date}</div>}
         </div>
         <div className="mb-5">
-          <label htmlFor="id_image" className="block mb-2 text-sm font-medium">{t('Copy of personal ID')}</label>
-          <input name="id_image" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
-          
-        </div>
-        <div className="flex items-center h-5 mt-8 mb-5">
-          <label htmlFor="license_image" className="block mb-2 text-sm font-medium">{t('Copy of personal Driving licence')}</label>
-          <input name="license_image" onChange={handleChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file"  />
-        </div>
+          <label
+            htmlFor="id_image"
+            className={`block mb-2 text-sm font-medium ${i18n.language === 'ar' ? 'text-right pr-4' : 'text-left'}`}
+          >
+            {t('Copy of personal ID')}
+          </label>
+          <div className={`flex ${i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row'}`}>
+            <input
+              name="id_image"
+              onChange={handleChange}
+              className={`block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 ${
+                i18n.language === 'ar' ? 'pr-4' : 'pl-4'
+              }`}
+              type="file"
+            />
+          </div>
+          </div>
+
+          <div className="mb-5">
+            <label
+              htmlFor="license_image"
+              className={`block mb-2 text-sm font-medium ${i18n.language === 'ar' ? 'text-right pr-4' : 'text-left'}`}
+            >
+              {t('Copy of personal Driving license')}
+            </label>
+            <div className={`flex ${i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row'}`}>
+              <input
+                name="license_image"
+                onChange={handleChange}
+                className={`block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 ${
+                  i18n.language === 'ar' ? 'pr-4' : 'pl-4'
+                }`}
+                type="file"
+              />
+            </div>
+          </div>
+
+
         <div className="flex items-center h-5 mt-8 mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Submitting...') : t('Submit')}
@@ -216,7 +246,7 @@ const AddTenantsForm = () => {
         </div>
         {status === 'success' && (
           <div className="text-green-500">
-            {t('Rental Contract added successfully! Redirecting...')}
+            {t('Tenant added successfully! Redirecting...')}
           </div>
         )}
         {status === 'error' && (

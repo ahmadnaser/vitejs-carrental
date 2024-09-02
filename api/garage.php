@@ -1,9 +1,14 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
-
+header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 include 'dbconfig.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204); 
+    exit();
+}
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'] ?? null;
     $type = $_POST['type'] ?? null;
@@ -90,7 +95,97 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $conn = null;
 
+
+} elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+   
+    $garage_id = $_GET['garage_id'] ?? null;
+
+    if ($garage_id) {
+        try {
+            $conn->beginTransaction();
+            $stmt = $conn->prepare("DELETE FROM Garages WHERE garage_id = :garage_id");
+            $stmt->bindParam(':garage_id', $garage_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                $conn->commit();
+                http_response_code(200);
+                echo json_encode(["status" => "success", "message" => "Garage record deleted successfully"]);
+            } else {
+                http_response_code(404);
+                echo json_encode(["status" => "error", "message" => "Garage record not found"]);
+            }
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    } else {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Garage ID is required"]);
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if ($data === null) {
+        http_response_code(400);
+        echo json_encode(["message" => "Invalid JSON input"]);
+        exit;
+    }
+
+    if (isset($data['garage_id']) && !empty($data['garage_id'])) {
+        $garage_id = $data['garage_id'];
+
+        $name = isset($data['name']) ? $data['name'] : null;
+        $type = isset($data['type']) ? $data['type'] : null;
+        $location = isset($data['location']) ? $data['location'] : null;
+        $contact_info = isset($data['contact_info']) ? $data['contact_info'] : null;
+        $garage_info = isset($data['garage_info']) ? $data['garage_info'] : null;
+
+        try {
+            $conn->beginTransaction();
+
+            $garageStmt = $conn->prepare("
+                UPDATE Garages SET 
+                    name = :name,
+                    type = :type,
+                    location = :location,
+                    contact_info = :contact_info,
+                    garage_info = :garage_info
+                WHERE garage_id = :garage_id
+            ");
+            $garageStmt->bindParam(':name', $name);
+            $garageStmt->bindParam(':type', $type);
+            $garageStmt->bindParam(':location', $location);
+            $garageStmt->bindParam(':contact_info', $contact_info);
+            $garageStmt->bindParam(':garage_info', $garage_info);
+            $garageStmt->bindParam(':garage_id', $garage_id);
+            $garageStmt->execute();
+
+            $conn->commit();
+
+            http_response_code(200);
+            $response['status'] = 'success';
+            $response['message'] = 'Garage record updated successfully';
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            http_response_code(500);
+            $response['status'] = 'error';
+            $response['message'] = 'Error: ' . $e->getMessage();
+        }
+    } else {
+        http_response_code(400);
+        $response['status'] = 'error';
+        $response['message'] = 'Garage ID is required for updating the record';
+    }
+
+    echo json_encode($response);
 } else {
-    echo json_encode(["status" => "error", "message" => "Invalid request method."]);
+    http_response_code(405);
+    $response['status'] = 'error';
+    $response['message'] = 'Invalid request method';
+    echo json_encode($response);
 }
+
+$conn = null;
 ?>

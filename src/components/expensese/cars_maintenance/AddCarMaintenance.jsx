@@ -49,6 +49,7 @@ const AddMaintenanceForm = () => {
   const [selectedTrader, setSelectedTrader] = useState(null);
   const [isBankCheck, setIsBankCheck] = useState(false);
   const [isBankCheck2, setIsBankCheck2] = useState(false);
+  const [isOilChange, setIsOilChange] = useState(false);
 
   useEffect(() => {
     flatpickr('#maintenance-date', {
@@ -184,6 +185,27 @@ const AddMaintenanceForm = () => {
     if (!formData.amount_paid_of_spare_parts.trim()) errors.amount_paid_of_spare_parts = t('Amount paid for spare parts is required');
     if (!formData.garage_id) errors.garage_id = t('Garage ID is required');
 
+    if (formData.check_number || formData.bank_name || formData.check_holder || formData.account_number || formData.check_date) {
+      if (!formData.check_number.trim()) errors.check_number = t('Check number is required');
+      if (!formData.bank_name.trim()) errors.bank_name = t('Bank name is required');
+      if (!formData.check_holder.trim()) errors.check_holder = t('Check holder name is required');
+      if (!formData.account_number.trim()) errors.account_number = t('Account number is required');
+      if (!formData.check_date.trim()) errors.check_date = t('Check date is required');
+    }
+
+    if (formData.check_number2 || formData.bank_name2 || formData.check_holder2 || formData.account_number2 || formData.check_date2) {
+      if (!formData.check_number2.trim()) errors.check_number2 = t('Second check number is required');
+      if (!formData.bank_name2.trim()) errors.bank_name2 = t('Second bank name is required');
+      if (!formData.check_holder2.trim()) errors.check_holder2 = t('Second check holder name is required');
+      if (!formData.account_number2.trim()) errors.account_number2 = t('Second account number is required');
+      if (!formData.check_date2.trim()) errors.check_date2 = t('Second check date is required');
+    }
+
+    if (formData.car_mileage ){
+      if (!formData.car_mileage.trim()) errors.check_number2 = t('Car Mileage is required');
+    }
+    
+
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -206,10 +228,6 @@ const AddMaintenanceForm = () => {
 
     submissionData.append('trader_name', selectedTrader ? selectedTrader.label : '');
     submissionData.append('garage_name', selectedGarage ? selectedGarage.label : '');
-
-    for (const [key, value] of submissionData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
 
     setStatus('loading');
     try {
@@ -405,9 +423,12 @@ const AddMaintenanceForm = () => {
               <label htmlFor="check_image" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
               <input
                 name="check_image"
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                className={`block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 ${
+                  i18n.language === 'ar' ? 'pr-4' : 'pl-4'
+                }`}
                 type="file"
                 onChange={handleFileChange}
+                required
               />
             </div>
           </div>
@@ -532,13 +553,45 @@ const AddMaintenanceForm = () => {
               <label htmlFor="check_image2" className="block mb-2 text-sm font-medium">{t('Copy of Check')}</label>
               <input
                 name="check_image2"
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                className={`block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 ${
+                  i18n.language === 'ar' ? 'pr-4' : 'pl-4'
+                }`}
                 type="file"
                 onChange={handleFileChange}
+                required
               />
             </div>
           </div>
         )}
+         <div className="flex items-center h-5 mt-8 mb-5">
+          <input
+            id="oilCheck"
+            type="checkbox"
+            checked={isOilChange}
+            onChange={(e) => setIsOilChange(e.target.checked)}
+            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
+          />
+          <label htmlFor="oilCheck" className="ms-2 text-sm font-medium text-heading-color dark:text-gray-300">{t('Oil Change?')}</label>
+        </div>
+
+        {isOilChange && (
+          <div className="mb-10 mt-10">
+            <div className="mb-5">
+              <label htmlFor="car_mileage" className="block mb-2 text-sm font-medium">{t('Car Mileage')}</label>
+              <input
+                type="text"
+                id="car_mileage"
+                name="car_mileage"
+                value={formData.car_mileage}
+                onChange={handleInputChange}
+                className="rounded-lg rounded-e-lg text-gray-900 focus:outline-none focus:border-secondary-color focus:ring focus:ring-secondary-color focus:ring-opacity-100 text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder={t('Enter car mileage')}
+                required
+              />
+            </div>           
+          </div>
+        )}
+
         <div className="flex items-center h-5 mt-8 mb-5">
           <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {status === 'loading' ? t('Submitting...') : t('Submit')}

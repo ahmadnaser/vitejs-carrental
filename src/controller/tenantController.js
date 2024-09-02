@@ -125,3 +125,46 @@ export const deleteTenantById = async (tenantId) => {
     return { success: false, message: `Error: ${error.message}` };
   }
 };
+
+export const updateTenant = async (formData) => {
+  try { 
+    const payload = {
+      id_number: formData.get('id_number'),
+      tenant_name: formData.get('tenant_name'),
+      address: formData.get('address'),
+      phone_number: formData.get('phone_number'),
+      blood_type: formData.get('blood_type'),
+      birth_date: formData.get('birth_date'),
+      license_number: formData.get('license_number'),
+      license_start_date: formData.get('license_start_date'),
+      license_end_date: formData.get('license_end_date'),
+    };
+
+    if (formData.get('id_image')) {
+      payload.id_image = await convertFileToBase64(formData.get('id_image'));
+    }
+
+    if (formData.get('license_image')) {
+      payload.license_image = await convertFileToBase64(formData.get('license_image'));
+    }
+    const response = await axios.put(`${config.Tenant}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+    return { success: false, message: errorMessage };
+  }
+};
+
+const convertFileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+};

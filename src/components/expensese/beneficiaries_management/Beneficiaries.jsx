@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getBeneficiaries } from '../../../controller/BeneficiaryController';
+import { getBeneficiaries,deleteBeneficiaryById } from '../../../controller/BeneficiaryController';
 import { useTranslation } from 'react-i18next';
 
 const BeneficiaryTable = () => {
@@ -15,6 +15,7 @@ const BeneficiaryTable = () => {
     const fetchData = async () => {
       try {
         const data = await getBeneficiaries();
+        console.log(data);
         setBeneficiaryData(data);
       } catch (error) {
         setError(error);
@@ -39,6 +40,29 @@ const BeneficiaryTable = () => {
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleDelete = async (beneficiarie_id) => {
+    const deleteConfirmation = window.confirm(
+      `${t('Are you sure you want to delete the Beneficiary')} ` +
+      `(${beneficiarie_id})?`,
+      'color: red; font-weight: bold;'
+    );
+  
+    if (deleteConfirmation) {
+      try {
+        const result = await deleteBeneficiaryById(beneficiarie_id);
+        if (result.success) {
+          alert(t('Beneficiary deleted successfully'));
+          fetchData();
+        } else {
+          alert(t(`Failed to delete Beneficiary: ${result.message}`));
+        }
+      } catch (error) {
+        console.error('Error deleting Beneficiary:', error);
+        alert(t('An error occurred while trying to delete the Beneficiary.'));
+      }
+    }
   };
 
   return (
@@ -128,23 +152,27 @@ const BeneficiaryTable = () => {
                   <td className="px-4 py-4 text-center">{item.type}</td>
                   <td className="px-4 py-4 text-center">{item.contact_info}</td>
                   <td className="px-4 py-4 text-center">
-                    <Link
-                      to="/beneficiaries/edit-beneficiary"
+                    <Link to="/expenses/beneficiaries/edit-beneficiary" className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      state={{ beneficiaryId: item.beneficiary_id }} >
+                        {t('Edit')}
+                      </Link>
+                      <br/>
+                      <Link 
+                      to="/expenses/beneficiaries/details" 
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                    >
-                      {t('Edit')}
-                    </Link>
-                    <br />
-                    <Link to="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                      {t('Details')}
-                    </Link>
-                    <br />
-                    <Link to="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">
-                      {t('Delete')}
-                    </Link>
-                  </td>
-                </tr>
-              ))
+                      state={{ beneficiaryId: item.beneficiary_id }} 
+                      >
+                        {t('Details')}
+                      </Link>
+                      <br/>
+                      <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
+                        onClick={() => handleDelete(item.beneficiary_id )}
+                      >
+                        {t('Delete')}
+                      </a>
+                    </td>
+                  </tr>
+                ))
             )}
           </tbody>
         </table>

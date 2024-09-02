@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getContractsByRentalId } from '../../../controller/RentedCarController';
+import { getReservationById } from '../../../controller/ReservationsController';
 
 const ReservationDetails = () => {
   const location = useLocation();
-  const { rentalId } = location.state || {}; 
+  const { reservationId } = location.state || {}; 
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('Summary');
   const [contractDetails, setContractDetails] = useState(null);
@@ -15,7 +15,7 @@ const ReservationDetails = () => {
   useEffect(() => {
     const fetchContractDetails = async () => {
       try {
-        const details = await getContractsByRentalId(rentalId);
+        const details = await getReservationById(reservationId);
         setContractDetails(details[0]);
         console.log(details[0]);
       } catch (error) {
@@ -27,7 +27,7 @@ const ReservationDetails = () => {
     };
 
     fetchContractDetails();
-  }, [rentalId, t]);
+  }, [reservationId, t]);
 
   if (isLoading) {
     return <div>{t('Loading...')}</div>;
@@ -78,14 +78,13 @@ const ReservationDetails = () => {
                 <div><strong>{t('Total Amount')}:</strong> {contractDetails.total_amount}</div>
                 <div><strong>{t('Amount Paid')}:</strong> {contractDetails.amount_paid}</div>
                 <div><strong>{t('Remain Amount')}:</strong> {Number(contractDetails.total_amount) - Number(contractDetails.amount_paid)}</div>
-                <div><strong>{t('Notes')}:</strong> {contractDetails.note}</div>
               </div>
             </div>
             <div className='bg-white p-4 rounded-xl flex-1'>
               <h3 className="text-lg font-bold mb-2">{t('Tenant Information')}</h3>
               <div className="space-y-2">
-                <div><strong>{t('Tenant Name')}:</strong> {contractDetails.customer}</div>
-                <div><strong>{t('ID Number')}:</strong> {contractDetails.tenantID}</div>
+                <div><strong>{t('Tenant Name')}:</strong> {contractDetails.tenant_name}</div>
+                <div><strong>{t('ID Number')}:</strong> {contractDetails.id_number}</div>
                 <div><strong>{t('Address')}:</strong> {contractDetails.address}</div>
                 <div><strong>{t('Contact Number')}:</strong> {contractDetails.phone_number}</div>
                 <div><strong>{t('Second Driver Name')}:</strong> {contractDetails.second_driver_name}</div>
@@ -106,9 +105,7 @@ const ReservationDetails = () => {
               <div><strong>{t('Make')}:</strong> {contractDetails.make}</div>
               <div><strong>{t('Model')}:</strong> {contractDetails.model}</div>
               <div><strong>{t('Year')}:</strong> {contractDetails.year}</div>
-              <div><strong>{t('Mileage')}:</strong> {contractDetails.car_mileage}</div>
-              <div><strong>{t('Condition')}:</strong> {contractDetails.car_condition}</div>
-              <div><strong>{t('Damage')}:</strong> {contractDetails.car_damage}</div>
+              <div><strong>{t('Mileage')}:</strong> {contractDetails.mileage}</div>
             </div>
           </div>
         </div>

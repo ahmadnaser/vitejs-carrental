@@ -84,3 +84,51 @@ export const addGarage = async (formData) => {
     return { success: false, message: 'An unexpected error occurred' };
   }
 };
+
+export const updateGarage = async (garage_id,formData) => {
+  try {
+    const payload = {
+      garage_id:garage_id,
+      name: formData.name,
+      type: formData.type,
+      location: formData.location,
+      contact_info: formData.contact_info,
+      garage_info: formData.garage_info,
+    };
+
+    const response = await axios.put(`${config.Garage}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+    return { success: false, message: errorMessage };
+  }
+};
+
+
+export const deleteGarageById = async (garage_id) => {
+  try {
+    const response = await axios.delete(`${config.Garage}`, {
+      params: {
+        garage_id: garage_id,
+      },
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.status === 200) {
+      throw new Error('Failed to delete the tenant');
+    }
+
+    return { success: true, message: 'Garage deleted successfully' };
+
+  } catch (error) {
+    console.error('There was an error deleting the tenant!', error);
+    return { success: false, message: `Error: ${error.message}` };
+  }
+};

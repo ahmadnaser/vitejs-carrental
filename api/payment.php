@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $invoice_id = $invoice['Invoice_id'];
 
-            $payment_method = $check_number ? 'bank_check' : 'cash';
+            $payment_method = $check_number ? 'Bank Check' : 'Cash';
             $paymentStmt = $conn->prepare("INSERT INTO Payments (amount, payment_date, payment_method, check_id, invoice_id) VALUES (:amount, :payment_date, :payment_method, :check_id, :invoice_id)");
             $paymentStmt->bindParam(':amount', $amount_paid);
             $paymentStmt->bindParam(':payment_date', $current_date);
@@ -148,13 +148,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
     try {
-        $stmt = $conn->prepare("SELECT * FROM Payments");
-        $stmt->execute();
+        if (isset($_GET['check_id'])) {
+            $check_id = $_GET['check_id'];
+            $stmt = $conn->prepare("SELECT * FROM BankChecks WHERE check_id = :check_id");
+            $stmt->bindParam(':check_id', $check_id, PDO::PARAM_INT);
+            $stmt->execute();
 
-        $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $checkDetails = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        http_response_code(200);
-        echo json_encode($payments);
+            if ($checkDetails) {
+                http_response_code(200);
+                echo json_encode($checkDetails);
+            } else {
+                http_response_code(404);
+                $response['status'] = 'error';
+                $response['message'] = 'Check not found';
+                echo json_encode($response);
+            }
+        } else {
+            $stmt = $conn->prepare("SELECT * FROM Payments");
+            $stmt->execute();
+
+            $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            http_response_code(200);
+            echo json_encode($payments);
+        }
     } catch (PDOException $e) {
         http_response_code(500);
         $response['status'] = 'error';
@@ -167,6 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $response['message'] = 'Invalid request method';
     echo json_encode($response);
 }
+
 
 $conn = null;
 ?>

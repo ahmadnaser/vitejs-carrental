@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getTraders } from '../../../controller/TraderController'; 
+import { getTraders,deleteTraderById } from '../../../controller/TraderController'; 
 import { useTranslation } from 'react-i18next';
 
 const TraderTable = () => {
@@ -11,22 +11,45 @@ const TraderTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchData = async () => {
+    try {
+      const data = await getTraders();
+      setTraderData(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getTraders();
-        setTraderData(data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
   const handleAddNewClick = () => {
     navigate('/expenses/traders/add-trader');
+  };
+
+  const handleDelete = async (trader_id) => {
+    const deleteConfirmation = window.confirm(
+      `${t('Are you sure you want to delete the Trader')} ` +
+      `(${trader_id})?`,
+      'color: red; font-weight: bold;'
+    );
+  
+    if (deleteConfirmation) {
+      try {
+        const result = await deleteTraderById(trader_id);
+        if (result.success) {
+          alert(t('Trader deleted successfully'));
+          fetchData();
+        } else {
+          alert(t(`Failed to delete Trader: ${result.message}`));
+        }
+      } catch (error) {
+        console.error('Error deleting Beneficiary:', error);
+        alert(t('An error occurred while trying to delete the Trader.'));
+      }
+    }
   };
 
   const filteredItems = useMemo(() => {
@@ -129,23 +152,27 @@ const TraderTable = () => {
                   <td className="px-4 py-4 text-center">{item.type}</td>
                   <td className="px-4 py-4 text-center">{item.contact_info}</td>
                   <td className="px-4 py-4 text-center">
-                    <Link
-                      to="/traders/edit-trader"
+                  <Link to="/expenses/traders/edit-trader" className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      state={{ traderId: item.trader_id }} >
+                        {t('Edit')}
+                      </Link>
+                      <br/>
+                      <Link 
+                      to="/expenses/traders/details" 
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                    >
-                      {t('Edit')}
-                    </Link>
-                    <br />
-                    <Link to="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                      {t('Details')}
-                    </Link>
-                    <br />
-                    <Link to="#" className="font-medium text-red-500 dark:text-red-500 hover:underline">
-                      {t('Delete')}
-                    </Link>
-                  </td>
-                </tr>
-              ))
+                      state={{ traderId: item.trader_id }} 
+                      >
+                        {t('Details')}
+                      </Link>
+                      <br/>
+                      <a href="#" className="font-medium text-red-500 dark:text-red-500 hover:underline"
+                        onClick={() => handleDelete(item.trader_id )}
+                      >
+                        {t('Delete')}
+                      </a>
+                    </td>
+                  </tr>
+                ))
             )}
           </tbody>
         </table>

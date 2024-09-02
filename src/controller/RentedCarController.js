@@ -98,6 +98,36 @@ export const addContract = async (formData) => {
   }
 };
 
+export const reservationToContract = async (formData) => {  
+  try {
+    console.log(formData)
+    const response = await fetch(config.Rental, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    let responseData;
+
+    try {
+      responseData = await response.json();
+    } catch (jsonError) {
+      return { success: false, message: 'Invalid response format from server' };
+    }
+
+    if (!response.ok) {
+      const errorMessage = responseData?.message || 'An error occurred while processing the request.';
+      return { success: false, message: errorMessage };
+    }
+
+    return { success: true, message: responseData.message };
+
+  } catch (error) {
+    return { success: false, message: `Network or server error: ${error.message}` };
+  }
+};
+
 export const updateEndDate = async (rentalId, endDate = null) => {
   try {
     
@@ -165,5 +195,39 @@ export const deleteContractById = async (rentalId) => {
   } catch (error) {
     console.error('There was an error deleting the tenant!', error);
     return { success: false, message: `Error: ${error.message}` };
+  }
+};
+export const returnCar = async (formData) => {
+  try {
+    console.log('Received formData:', formData);
+
+    const payload = {
+      rental_id: formData.get ? formData.get('rental_id') : formData.rental_id,
+      return_date: formData.get ? formData.get('return_date') : formData.return_date,
+      car_mileage: formData.get ? formData.get('car_mileage') : formData.car_mileage,
+    };
+
+    console.log('Constructed payload:', payload);
+
+    if (!payload.rental_id || !payload.return_date || !payload.car_mileage) {
+      console.error('Error: Missing payload data', payload);
+      throw new Error('Payload data is incomplete');
+    }
+
+    console.log('Sending payload to:', config.Rental, 'with data:', payload);
+
+    const response = await axios.put(`${config.Rental}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('Response received:', response);
+
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    console.error('Error occurred:', error);
+    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+    return { success: false, message: errorMessage };
   }
 };

@@ -18,6 +18,7 @@ initializeConfig().catch(error => {
   console.error("Failed to load configuration:", error);
 });
 
+
 export const getCars = async () => {
   try {
     const response = await axios.get(`${config.Car}?endpoint=list_vehicles`);
@@ -38,6 +39,8 @@ export const getCars = async () => {
         car.change_oil_every_km,
         car.insurance_image,
         car.license_image,
+        car.insurance_start_date,
+        car.license_start_date,
         car.active
       )
     );
@@ -69,6 +72,8 @@ export const getCarById = async (vehicle_id) => {
         car.change_oil_every_km,
         car.insurance_image,
         car.license_image,
+        car.insurance_start_date,
+        car.license_start_date,
         car.active
     );
   } catch (error) {
@@ -99,6 +104,8 @@ export const getAvailableCars = async (startDate, endDate) => {
         car.change_oil_every_km,
         car.insurance_image,
         car.license_image,
+        car.insurance_start_date,
+        car.license_start_date,
         car.active
       )
     );
@@ -131,6 +138,8 @@ export const getAllCarsInMaintenance = async (startDate, endDate) => {
         car.change_oil_every_km,
         car.insurance_image,
         car.license_image,
+        car.insurance_start_date,
+        car.license_start_date,
         car.active
       )
     );
@@ -169,4 +178,79 @@ export const AddCar = async (formData) => {
   } catch (error) {
     return { success: false, message: `Network or server error: ${error.message}` };
   }
+};
+
+
+export const deleteCarById = async (carId) => {
+  try {
+    const response = await axios.delete(`${config.Car}`, {
+      params: {
+        vehicle_id: carId,
+      },
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.status === 200) {
+      throw new Error('Failed to delete the tenant');
+    }
+
+    return { success: true, message: 'Tenant deleted successfully' };
+
+  } catch (error) {
+    console.error('There was an error deleting the tenant!', error);
+    return { success: false, message: `Error: ${error.message}` };
+  }
+};
+
+export const updateCar = async (form) => {
+  try {
+    console.log('FormData to be sent:', form);
+
+    const payload = {
+      vehicle_id: form.get('vehicle_id'),
+      make: form.get('make'),
+      model: form.get('model'),
+      year: form.get('year'),
+      color: form.get('color'),
+      mileage: form.get('mileage'),
+      last_oil_change_miles: form.get('last_oil_change_miles'),
+      last_oil_change_date: form.get('last_oil_change_date'),
+      license_start_date: form.get('license_start_date'),
+      insurance_start_date: form.get('insurance_start_date'),
+      license_expiry_date: form.get('license_expiry_date'),
+      insurance_expiry_date: form.get('insurance_expiry_date'),
+      change_oil_every_km: form.get('change_oil_every_km'),
+      change_oil_every_month: form.get('change_oil_every_month'),
+      active: form.get('active') === '1' || form.get('active') === true,
+    };
+
+    if (form.get('license_image')) {
+      payload.license_image = await convertFileToBase64(form.get('license_image'));
+    }
+    if (form.get('insurance_image')) {
+      payload.insurance_image = await convertFileToBase64(form.get('insurance_image'));
+    }
+
+    console.log('Payload to be sent:', payload);
+
+    const response = await axios.put(`${config.Car}`, payload, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+    return { success: false, message: errorMessage };
+  }
+};
+
+const convertFileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 };
