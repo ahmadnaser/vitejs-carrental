@@ -1,71 +1,33 @@
 import axios from 'axios';
-import { User } from '../models/UserModel';
 
-async function loadConfig() {
-  const config = await import('../../config.json', {
-    assert: { type: 'json' }
-  });
-  return config.default;
-}
 
-let config;
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+const API_KEY = import.meta.env.VITE_SECRET_API_KEY;
 
-async function initializeConfig() {
-  config = await loadConfig();
-}
+console.log('BASE_URL:', BASE_URL);
+console.log('API_KEY:', API_KEY);
 
-initializeConfig().catch(error => {
-  console.error("Failed to load configuration:", error);
-});
-
-export const getUserByEmail = async (email) => {
+async function deleteUserByPhoneEmail(phone, email, password) {
   try {
-    const response = await axios.get(config.User, {
-      params: { email }
+    const response = await axios.delete(`${BASE_URL}/users/deleteUserByPhoneEmail`, {
+      headers: {
+        'x-api-key': API_KEY,  
+        'Content-Type': 'application/json'
+      },
+      data: { phone, email, password }  
     });
-    const user = response.data;
-    return new User(user.email, user.password, user.name, user.phone, user.address, user.role);
+
+
+    if (response.data.success) {
+      return { success: true, message: response.data.message };
+    } else {
+      throw new Error(response.data.message);
+    }
   } catch (error) {
-    console.error('Error fetching user by email:', error);
+    console.error('Error deleting user:', error);
     throw error;
   }
-};
+}
 
 
-export const updateUserDetails = async (
-  email,
-  new_name = null,
-  new_address = null,
-  old_password = null,
-  new_password = null
-) => {
-  try {
-    const payload = { email };
-
-    if (new_name) {
-      payload.new_name = new_name;
-    }
-
-    if (new_address) {
-      payload.new_address = new_address;
-    }
-
-    if (old_password && new_password) {
-      payload.old_password = old_password;
-      payload.new_password = new_password;
-    }
-
-  
-
-    const response = await axios.put(`${config.User}`, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    return { success: true, message: response.data.message };
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
-    return { success: false, message: errorMessage };
-  }
-};
+export default deleteUserByPhoneEmail;
